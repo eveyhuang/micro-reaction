@@ -1,49 +1,83 @@
 import React from 'react';
-import { Button, Comment, Form, Header, Icon } from 'semantic-ui-react'
-import './Post.css';
-
-
+import { Button, Comment, Form, Header, Icon, Popup, Grid, Container } from 'semantic-ui-react'
 
 const Post = (props) => {
     return (
-        <div className="module">
-            <div className="main-post">
-                <div className='container'>
-                <div className='up'>
-                    <div className='info'>
-                        <a href="#" className='avatar'>
-                        <img src='https://react.semantic-ui.com/images/avatar/small/joe.jpg' title=''/></a>
-                        
-                        <a class='user'>Ordinary Joe</a>
-                        
-                        <span class='ca'> 
-                        <a className = 'time' href='#' title="21 October at 18:03">21 August at 18:03</a> 
-                        </span>        
-                    </div>
-                    <p> Infuse your life with action. Dont wait for it to happen. Make it happen. Make your own future. Make your own hope. Make your own love. And whatever your beliefs, honor your creator, not by passively waiting for grace to come down from upon high, but by doing what you can to make grace happen yourself, right now, right down here on Earth.
-                    </p>
+        <Container>
             
-                    <div className='react'>
-                            <span className="like-main"> 
-                            <span className='like' onHover={() => console.log("hover")} >Like</span>
-                            </span>
-                            <span href='#' className='comment' title="Leave a comment">Comment</span>
-                        
-                    </div>
-                    <ul className='emoji'>
-                        <li  className="reaction reaction-like" data-reaction="Like"></li>
-                        <li  className="reaction reaction-love" data-reaction="Love"></li>
-                        <li  className="reaction reaction-haha" data-reaction="HaHa"></li>
-                        <li className="reaction reaction-wow" data-reaction="Wow"></li>
-                        <li className="reaction reaction-sad" data-reaction="Sad"></li>
-                        <li className="reaction reaction-angry" data-reaction="Angry"></li>
-                    </ul>
-                </div>
+            <Comment.Group threaded>
                 
-                </div>
+            <Comment>
+                <Comment.Avatar as='a' src='https://react.semantic-ui.com/images/avatar/small/joe.jpg' />
+                <Comment.Content>
 
-         </div>
-     </div>
+                    <Comment.Author>Tom Lukic</Comment.Author>
+                    <Comment.Metadata>
+                    <span>Today at 5:42PM</span>
+                    </Comment.Metadata>
+                    <Comment.Text>
+                    I honestly don't know how my Republican friends can still call themselves Republicans. In  supporting this president the true essence of the Republican voter is revealed and it is not pretty.  $175,000,000.oo to renovate the White House...fine. Voting against class action suits against banks that have broken the law...fine.  Going back on our word and agreements with our allies....fine. Throwing out the children of immigrants even if born here...fine.  Doing away with special education...fine.  Tormenting young widow of fallen soldier...fine.
+Doing away with clean air and water...fine. Cutting a trillion dollars out of medicaid and medicare...fine..and on and on.  The things that they are ok with define them...why would anyone with a social concious want anything to do with them?
+                    </Comment.Text>
+                    <Comment.Actions>
+                        <Comment.Action> 
+                            <Popup trigger={<Button icon= "thumbs up" content='Like' size = 'mini'/>} on='click'>
+                                <Grid devided columns='equal'  >
+                                <Grid.Row>
+                                    <Popup
+                                    trigger={<Button color='blue' content='Fairness'  />}
+                                    content='The story ends. You wake up in your bed and believe whatever you want to believe.'
+                                    position='bottom left'
+                                    size='mini'
+                                    inverted
+                                    />
+                                </Grid.Row>
+                                <Grid.Row>
+                                    <Popup
+                                    trigger={<Button color='red' content='Novelty'  />}
+                                    content='Stay in Wonderland, and I show you how deep the rabbit hole goes.'
+                                    position='bottom left'
+                                    size='mini'
+                                    inverted
+                                    />
+                                </Grid.Row>
+                                <Grid.Row>
+                                    <Popup
+                                    trigger={<Button color='yellow' content='Personal Experience'  />}
+                                    content='The story ends. You wake up in your bed and believe whatever you want to believe.'
+                                    position='bottom left'
+                                    size='mini'
+                                    inverted
+                                    />
+                                </Grid.Row>
+                                <Grid.Row>
+                                    <Popup
+                                    trigger={<Button color='green' content='Readability' />}
+                                    content='The story ends. You wake up in your bed and believe whatever you want to believe.'
+                                    position='bottom left'
+                                    size='mini'
+                                    inverted
+                                    />
+                                </Grid.Row>
+                                <Grid.Row>
+                                    <Popup
+                                    trigger={<Button color='purple' content='Argument Quality' />}
+                                    content='Expresses a well-grounded and justifiable argument that warrants claims with evidence.'
+                                    position='bottom left'
+                                    size='mini'
+                                    inverted
+                                    />
+                                </Grid.Row>
+                                </Grid>
+                            </Popup>
+                        
+                        </Comment.Action>
+                        <Comment.Action><Button icon= "reply" content='Reply' size = 'mini'/></Comment.Action>
+                    </Comment.Actions>
+                </Comment.Content>
+            </Comment>
+        </Comment.Group>
+      </Container>
     );
 };
 

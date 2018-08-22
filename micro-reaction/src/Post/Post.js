@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Comment, Form, Header, Icon, Popup, Grid, Container, Dropdown, Label } from 'semantic-ui-react'
+import { Button, Comment, Form, Header, Icon, Popup, Grid, Container, Dropdown, Label, Statistic} from 'semantic-ui-react'
 
 
 const metrics = [
@@ -7,31 +7,40 @@ const metrics = [
         name: 'Fairness',
         description: 'Reflects values about balanced representation of issues.',
         color: 'red',
+        count: 0,
     },
     {
         name: 'Novelty',
         description: 'Offers unique or novel insights, ideas, opinions or stories.',
         color: 'blue',
+        count: 0,
     },
     {
         name: 'Personal Experience',
         description:'Contains the writers personal observations or historical perspectives.',
         color: 'yellow',
-
+        count: 0,
     },
     {
         name: 'Argument Quality',
         description: 'Expresses a well-grounded and justifiable argument that warrants claims with evidence.',
         color: 'green',
+        count: 0,
     },
     {
         name: 'Readability',
         description: 'Well articulated and written in terms of style, clarity, and adherence to standard grammar. ',
         color: 'purple',
+        count: 0,
     }
 ]
 
 const Post = (props) => {
+    
+    changeCount =(metricName)=> {
+        
+    };
+    
     return (
         <Container>
             
@@ -51,68 +60,25 @@ Doing away with clean air and water...fine. Cutting a trillion dollars out of me
                     </Comment.Text>
                     <Comment.Actions>
                         <Comment.Action> 
-                            {/* <Popup trigger={<Button icon= "thumbs up" content='Like' size = 'mini'/>} on='click'>
-                                <Grid devided columns='equal'  >
-                                    <Grid.Row>
-                                        <Popup
-                                        trigger={<Button color='blue' content='Fairness'  />}
-                                        content='Reflects values about balanced representation of issues.'
-                                        position='bottom left'
-                                        size='mini'
-                                        inverted
-                                        />
-                                    </Grid.Row>
-                                    <Grid.Row>
-                                        <Popup
-                                        trigger={<Button color='red' content='Novelty'  />}
-                                        content='Offers unique or novel insights, ideas, opinions or stories.'
-                                        position='bottom left'
-                                        size='mini'
-                                        inverted
-                                        />
-                                    </Grid.Row>
-                                    <Grid.Row>
-                                        <Popup
-                                        trigger={<Button color='yellow' content='Personal Experience'  />}
-                                        content='Contains the writers personal observations or historical perspectives.'
-                                        position='bottom left'
-                                        size='mini'
-                                        inverted
-                                        />
-                                    </Grid.Row>
-                                    <Grid.Row>
-                                        <Popup
-                                        trigger={<Button color='green' content='Readability' />}
-                                        content='Well articulated and written in terms of style, clarity, and adherence to standard grammar. '
-                                        position='bottom left'
-                                        size='mini'
-                                        inverted
-                                        />
-                                    </Grid.Row>
-                                    <Grid.Row>
-                                        <Popup
-                                        trigger={<Button color='purple' content='Argument Quality' />}
-                                        content='Expresses a well-grounded and justifiable argument that warrants claims with evidence.'
-                                        position='bottom left'
-                                        size='mini'
-                                        inverted
-                                        />
-                                    </Grid.Row>
-                                </Grid>
-                            </Popup> */}
                             {metrics.map(metric => (
-                                <Popup
-                                    key={metric.name}
-                                    trigger={<Label circular color={metric.color} size='mini'/>}
-                                    header={metric.name}
-                                    content={metric.description}
-                                    size = 'tiny'
-                                />
+                                <Statistic color={metric.color} size='mini'>
+                                
+                                    <Statistic.Value>
+                                        <Popup 
+                                            key={metric.name}
+                                            trigger={<Label circular color={metric.color} size='mini'/>}
+                                            header={metric.name}
+                                            content={metric.description}
+                                            size = 'tiny'
+                                            click = {() => props.incCount(metric.name)}
+                                        />
+                                        {metric.count}
+                                    </Statistic.Value>  <br />
+                                </Statistic>
+                                
                             ))}
                         
                         </Comment.Action>
-                        <Comment.Action><Button icon= "reply" content='Reply' size = 'mini'/></Comment.Action>
-
                     </Comment.Actions>
                 </Comment.Content>
             </Comment>

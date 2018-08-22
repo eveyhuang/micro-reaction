@@ -6,6 +6,10 @@ import { Button, Comment, Form, Header, Label, List } from 'semantic-ui-react'
 
 class App extends Component {
   
+
+  incCount(){
+    djfdksjfksjdf
+  }
   render() {
     return (
       <div className="App">
@@ -38,6 +42,9 @@ class App extends Component {
           </List.Item>
         </List>
  */}
+  {posts.map(post => (
+    <Post data={post} incCount={this.incCount}/>
+  ))}
         <Post/>
       </div>
     );

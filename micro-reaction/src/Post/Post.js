@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Comment, Form, Header, Icon, Popup, Grid, Container, Dropdown, Label, Statistic} from 'semantic-ui-react'
+import { Button, Comment, Icon, Popup, Grid, Container, Label, Statistic} from 'semantic-ui-react'
 
 
 const Post = (props) => {
@@ -19,18 +19,16 @@ const Post = (props) => {
                     </Comment.Metadata>
                     <Comment.Text> {props.data.text}</Comment.Text>
                      <Comment.Actions>
-                        <Comment.Action> 
+                        <Comment.Action > 
                             {props.data.metrics.map(metric => (
                                 <Statistic color={metric.color} size='mini'>
-                                
                                     <Statistic.Value>
-                                        <Popup 
+                                        <Popup  
                                             key={metric.name}
-                                            trigger={<Label circular color={metric.color} size='mini'/>}
+                                            trigger={<Label onClick = {() => props.handleInc(props.data.id, metric.name)} circular color={metric.color} size='mini'/>}
                                             header={metric.name}
                                             content={metric.description}
                                             size = 'tiny'
-                                            click = {() => props.incCount(metric.name)}
                                         />
                                         {metric.count}
                                     </Statistic.Value>  <br />

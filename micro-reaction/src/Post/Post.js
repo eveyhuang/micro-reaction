@@ -1,5 +1,35 @@
 import React from 'react';
-import { Button, Comment, Form, Header, Icon, Popup, Grid, Container } from 'semantic-ui-react'
+import { Button, Comment, Form, Header, Icon, Popup, Grid, Container, Dropdown, Label } from 'semantic-ui-react'
+
+
+const metrics = [
+    {
+        name: 'Fairness',
+        description: 'Reflects values about balanced representation of issues.',
+        color: 'red',
+    },
+    {
+        name: 'Novelty',
+        description: 'Offers unique or novel insights, ideas, opinions or stories.',
+        color: 'blue',
+    },
+    {
+        name: 'Personal Experience',
+        description:'Contains the writers personal observations or historical perspectives.',
+        color: 'yellow',
+
+    },
+    {
+        name: 'Argument Quality',
+        description: 'Expresses a well-grounded and justifiable argument that warrants claims with evidence.',
+        color: 'green',
+    },
+    {
+        name: 'Readability',
+        description: 'Well articulated and written in terms of style, clarity, and adherence to standard grammar. ',
+        color: 'purple',
+    }
+]
 
 const Post = (props) => {
     return (
@@ -21,58 +51,68 @@ Doing away with clean air and water...fine. Cutting a trillion dollars out of me
                     </Comment.Text>
                     <Comment.Actions>
                         <Comment.Action> 
-                            <Popup trigger={<Button icon= "thumbs up" content='Like' size = 'mini'/>} on='click'>
+                            {/* <Popup trigger={<Button icon= "thumbs up" content='Like' size = 'mini'/>} on='click'>
                                 <Grid devided columns='equal'  >
-                                <Grid.Row>
-                                    <Popup
-                                    trigger={<Button color='blue' content='Fairness'  />}
-                                    content='The story ends. You wake up in your bed and believe whatever you want to believe.'
-                                    position='bottom left'
-                                    size='mini'
-                                    inverted
-                                    />
-                                </Grid.Row>
-                                <Grid.Row>
-                                    <Popup
-                                    trigger={<Button color='red' content='Novelty'  />}
-                                    content='Stay in Wonderland, and I show you how deep the rabbit hole goes.'
-                                    position='bottom left'
-                                    size='mini'
-                                    inverted
-                                    />
-                                </Grid.Row>
-                                <Grid.Row>
-                                    <Popup
-                                    trigger={<Button color='yellow' content='Personal Experience'  />}
-                                    content='The story ends. You wake up in your bed and believe whatever you want to believe.'
-                                    position='bottom left'
-                                    size='mini'
-                                    inverted
-                                    />
-                                </Grid.Row>
-                                <Grid.Row>
-                                    <Popup
-                                    trigger={<Button color='green' content='Readability' />}
-                                    content='The story ends. You wake up in your bed and believe whatever you want to believe.'
-                                    position='bottom left'
-                                    size='mini'
-                                    inverted
-                                    />
-                                </Grid.Row>
-                                <Grid.Row>
-                                    <Popup
-                                    trigger={<Button color='purple' content='Argument Quality' />}
-                                    content='Expresses a well-grounded and justifiable argument that warrants claims with evidence.'
-                                    position='bottom left'
-                                    size='mini'
-                                    inverted
-                                    />
-                                </Grid.Row>
+                                    <Grid.Row>
+                                        <Popup
+                                        trigger={<Button color='blue' content='Fairness'  />}
+                                        content='Reflects values about balanced representation of issues.'
+                                        position='bottom left'
+                                        size='mini'
+                                        inverted
+                                        />
+                                    </Grid.Row>
+                                    <Grid.Row>
+                                        <Popup
+                                        trigger={<Button color='red' content='Novelty'  />}
+                                        content='Offers unique or novel insights, ideas, opinions or stories.'
+                                        position='bottom left'
+                                        size='mini'
+                                        inverted
+                                        />
+                                    </Grid.Row>
+                                    <Grid.Row>
+                                        <Popup
+                                        trigger={<Button color='yellow' content='Personal Experience'  />}
+                                        content='Contains the writers personal observations or historical perspectives.'
+                                        position='bottom left'
+                                        size='mini'
+                                        inverted
+                                        />
+                                    </Grid.Row>
+                                    <Grid.Row>
+                                        <Popup
+                                        trigger={<Button color='green' content='Readability' />}
+                                        content='Well articulated and written in terms of style, clarity, and adherence to standard grammar. '
+                                        position='bottom left'
+                                        size='mini'
+                                        inverted
+                                        />
+                                    </Grid.Row>
+                                    <Grid.Row>
+                                        <Popup
+                                        trigger={<Button color='purple' content='Argument Quality' />}
+                                        content='Expresses a well-grounded and justifiable argument that warrants claims with evidence.'
+                                        position='bottom left'
+                                        size='mini'
+                                        inverted
+                                        />
+                                    </Grid.Row>
                                 </Grid>
-                            </Popup>
+                            </Popup> */}
+                            {metrics.map(metric => (
+                                <Popup
+                                    key={metric.name}
+                                    trigger={<Label circular color={metric.color} size='mini'/>}
+                                    header={metric.name}
+                                    content={metric.description}
+                                    size = 'tiny'
+                                />
+                            ))}
                         
                         </Comment.Action>
                         <Comment.Action><Button icon= "reply" content='Reply' size = 'mini'/></Comment.Action>
+
                     </Comment.Actions>
                 </Comment.Content>
             </Comment>

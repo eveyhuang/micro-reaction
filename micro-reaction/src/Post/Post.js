@@ -13,24 +13,22 @@ const Post = (props) => {
                 <Comment.Avatar as='a' src={props.data.avatar} />
                 <Comment.Content>
 
-                    <Comment.Author>{props.data.author}</Comment.Author>
-                    <Comment.Metadata>
-                    <span>{props.data.date}</span>
-                    </Comment.Metadata>
-                    <Comment.Text> {props.data.text}</Comment.Text>
+                    <Comment.Author>{props.data.userDisplayName}</Comment.Author>
+
+                    <Comment.Text> {props.data.commentBody}</Comment.Text>
                      <Comment.Actions>
                         <Comment.Action > 
-                            {props.data.metrics.map(metric => (
-                                <Statistic color={metric.color} size='mini'>
+                            {props.data.metric.map(met=> (
+                                <Statistic color={met.color} size='mini'>
                                     <Statistic.Value>
                                         <Popup  
-                                            key={metric.name}
-                                            trigger={<Label onClick = {() => props.handleInc(props.data.id, metric.name)} circular color={metric.color} size='mini'/>}
-                                            header={metric.name}
-                                            content={metric.description}
+                                            key={met.name}
+                                            trigger={<Label onClick = {() => props.handleInc(props.data.commentID, met.name)} circular color={met.color} size='mini'/>}
+                                            header={met.name}
+                                            content={met.description}
                                             size = 'tiny'
                                         />
-                                        {metric.count}
+                                        {met.count}
                                     </Statistic.Value>  <br />
                                 </Statistic>
                                 

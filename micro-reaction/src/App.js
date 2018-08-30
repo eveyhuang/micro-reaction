@@ -75,13 +75,13 @@ class App extends Component {
 
     this.setState((prevState) => {
       return {
-        posts : prevState.posts.map(post => {
-          if(post.id !== id){
+        comments : prevState.comments.map(post => {
+          if(post.commentID !== id){
             return post
           }else{
             return {
               ...post,
-              metrics: post.metrics.map(metric => {
+              metric: post.metric.map(metric => {
                 if(metric.name !== metricName){
                   return metric;
                 }else{
@@ -96,6 +96,7 @@ class App extends Component {
         })
       }
     })
+    
   }
 
   componentWillMount(){

@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import Post from './Post/Post';
+import fire from './fire';
+import Article from './Article/Article';
 import './App.css';
-import { Button, Comment, Form, Header, Label, List } from 'semantic-ui-react';
+import { Grid, Segment, Header } from 'semantic-ui-react';
 import { cloneDeep } from 'lodash';
 var _ = require('lodash');
 
@@ -90,15 +92,27 @@ class App extends Component {
     return (
       <div className="App">
 
-         <br />
+{/*          <br />
         <Header as='h3' dividing>
                     Comments
         </Header>
-        <br />
+        <br /> */}
+        <Grid stackable container columns={2} divided>
+          <Grid.Column>
+          <Segment> <Article/>></Segment>
+        </Grid.Column>
+        <Grid.Column>
+            <Header as='h3' dividing>
+                        Comments
+            </Header>
+          {this.state.posts.map(post => (
+              <Segment><Post data={post} handleInc={(id, metricName)=>this.incCount(id, metricName)}/></Segment>
+          ))}
+      </Grid.Column>
+        
+        </Grid>
 
-      {this.state.posts.map(post => (
-        <Post data={post} handleInc={(id, metricName)=>this.incCount(id, metricName)}/>
-      ))}
+     
         
       </div>
     );

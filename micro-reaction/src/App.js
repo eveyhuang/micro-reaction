@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Post from './Post/Post';
+import PostwithReply from './PostwithReply/PostwithReply';
 import firebase from 'firebase';
 import Article from './Article/Article';
 import './App.css';
@@ -99,24 +100,38 @@ class App extends Component {
 
   render() {
     //TODO: Deal with reply hiearchy
-    // console.log(this.state.comments)
-    // console.log(this.state.comments[0])
-    // console.log(typeof(this.state.comments[0]))
+  
     return (
       <div className="App">
 
-        <Grid stackable container columns={2} divided>
-          <Grid.Column>
-          <Segment> <Article/>></Segment>
-        </Grid.Column>
-        <Grid.Column>
+        <Grid stackable container divided >
+          <Grid.Row   >
+            <Segment> <Article/></Segment>
+          </Grid.Row>
+        <Grid.Row >
             <Header as='h3' dividing>
                         Comments
             </Header>
-          {this.state.comments.map(post => (
-              <Segment><Post data={post} handleInc={(id, metricName)=>this.incCount(id, metricName)}/></Segment>
-          ))}
-      </Grid.Column>
+          {this.state.comments.map(post => {
+              
+              if (post.inReplyTo !== 0){
+                
+              } else {
+                if (Object.keys(post.response).length==1){
+                  return <Segment vertical ><Post data={post} handleInc={(id, metricName)=>this.incCount(id, metricName)}/></Segment> 
+                } else {
+                  var responses=[]
+                  post.response.map(id=>{
+                    if (id == -1){ 
+                    }else {
+                      responses.push(this.state.comments[id])
+                    }
+                  })
+                  return <Segment vertical><PostwithReply data={post} responses={responses} handleInc={(id, metricName)=>this.incCount(id, metricName)}/></Segment> 
+                }
+              } 
+          })}
+      </Grid.Row>
         
         </Grid>
         

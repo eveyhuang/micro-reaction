@@ -10,7 +10,7 @@ const Post = (props) => {
             <Comment.Group threaded>
                 
             <Comment>
-                <Comment.Avatar as='a' src={props.data.avatar} />
+                {/* <Comment.Avatar as='a' src={props.data.picURL} /> */}
                 <Comment.Content>
 
                     <Comment.Author>{props.data.userDisplayName}</Comment.Author>

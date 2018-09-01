@@ -15,7 +15,7 @@ const Post = (props) => {
 
                     <Comment.Author>{props.data.userDisplayName}</Comment.Author>
 
-                    <Comment.Text> {props.data.commentBody}</Comment.Text>
+                    <Comment.Text> {props.data.commentBody.replace(/<\s*\/?\s*br\s*.*?>/g, " \n ")}</Comment.Text>
                      <Comment.Actions>
                         <Comment.Action > 
                             {props.data.metric.map(met=> (
@@ -23,7 +23,7 @@ const Post = (props) => {
                                     <Statistic.Value>
                                         <Popup  
                                             key={met.name}
-                                            trigger={<Label onClick = {() => props.handleInc(props.data.commentID, met.name)} circular color={met.color} size='mini'/>}
+                                            trigger={<Label onClick = {() => props.handleInc(props.data.id, met.name)} circular color={met.color} size='mini'/>}
                                             header={met.name}
                                             content={met.description}
                                             size = 'tiny'

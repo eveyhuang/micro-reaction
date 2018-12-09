@@ -7,6 +7,7 @@ import './App.css';
 import { Grid, Segment, Header } from 'semantic-ui-react';
 import { cloneDeep } from 'lodash';
 import update from 'immutability-helper';
+import PostwithUpvotes from './PostwithUpvotes/PostwithUpvotes';
 var _ = require('lodash');
 
  const config= {
@@ -21,37 +22,29 @@ var _ = require('lodash');
 class App extends Component {
   
   state ={
-      comments: []
-  }
-  
-  incCount2(id, metricName){
-
-    this.setState((prevState) => {
-      console.log(prevState.comments[id])
-      return {
-        comments: {
-          ...prevState.comments,
-          [id]:{
-            ...prevState.comments[id],
-            metric: prevState.comments[id].metric.map(metric => {
-              if(metric.name !== metricName){
-                return metric;
-              }else{
-                return {
-                  ...metric,
-                  count: metric.count+1
-                }
-            }
-          })
-          
+      showTask : false,
+      comments : [
+        {
+          "id":0,
+          "user": "Evey",
+          "content": "hello",
+          "upvotes": 5,
+          "downvotes":0,
+          "categories": []
+        },
+        {
+          "id":1,
+          "user": "Yoonseo",
+          "content": "Hello Hello Hello",
+          "upvotes": 2,
+          "downvotes":0,
+          "categories": []
         }
-      }
-      }
-    },
-    function() { console.log("setState completed", this.state.comments) })
-    
+      ]
   }
   
+  
+/*   
 
   incCount(id, metricName){
     this.setState((prevState) => {
@@ -77,44 +70,64 @@ class App extends Component {
          }) 
         }
       })
-  }
+  } */
 
+  incCount(id){
+    this.showModal()
+    this.setState((prevState) => {
+      return {
+        comments : prevState.comments.map(post => {
+           if(post.id !== id){
+             return post
+           }else{
+             return {
+               ...post,
+               upvotes: post.upvotes+1
+             }
+           }
+         }) 
+        }
+      })
+  }
   componentWillMount(){
     
-    if (!firebase.apps.length) {
+   /*  if (!firebase.apps.length) {
       firebase.initializeApp(config);
-    }
+    } */
 
     
   }
 
   componentDidMount(){
     
-    firebase.database().ref('/comments').on('value',snapshot => {
+    /* firebase.database().ref('/comments').on('value',snapshot => {
       this.setState({
         comments: snapshot.val()
       });
-    })
+    }) */
   }
 
+  showModal=()=>{
+    this.setState(
+      {showTask:true}
+    );
+  }
 
   render() {
-    //TODO: Deal with reply hiearchy
+   
   
     return (
       <div className="App">
 
-        <Grid stackable container divided >
-          <Grid.Row   >
-            <Segment> <Article/></Segment>
-          </Grid.Row>
-        <Grid.Row >
+        
+  
+       
             <Header as='h3' dividing>
                         Comments
             </Header>
           {this.state.comments.map(post => {
               
-              if (post.inReplyTo !== 0){
+             /*  if (post.inReplyTo !== 0){
                 
               } else {
                 if (Object.keys(post.response).length==1){
@@ -129,11 +142,11 @@ class App extends Component {
                   })
                   return <Segment vertical><PostwithReply data={post} responses={responses} handleInc={(id, metricName)=>this.incCount(id, metricName)}/></Segment> 
                 }
-              } 
+              }  */
+              return <Segment vertical ><PostwithUpvotes data={post} handleInc={(id)=>this.incCount(id)}/></Segment>
           })}
-      </Grid.Row>
-        
-        </Grid>
+    
+
         
       </div>
     );

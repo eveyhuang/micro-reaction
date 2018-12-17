@@ -8,6 +8,8 @@ import { Grid, Segment, Header } from 'semantic-ui-react';
 import { cloneDeep } from 'lodash';
 import update from 'immutability-helper';
 import PostwithUpvotes from './PostwithUpvotes/PostwithUpvotes';
+import Modal from './Modal/Modal';
+
 var _ = require('lodash');
 
  const config= {
@@ -22,7 +24,8 @@ var _ = require('lodash');
 class App extends Component {
   
   state ={
-      showTask : false,
+      showTask : false, 
+      showComId: 0,
       comments : [
         {
           "id":0,
@@ -40,40 +43,14 @@ class App extends Component {
           "downvotes":0,
           "categories": []
         }
-      ]
+      ],
+      selectedCom:[]
   }
   
-  
-/*   
-
-  incCount(id, metricName){
-    this.setState((prevState) => {
-      return {
-        comments : prevState.comments.map(post => {
-           if(post.id !== id){
-             return post
-           }else{
-             return {
-               ...post,
-               metric: post.metric.map(metric => {
-                 if(metric.name !== metricName){
-                   return metric;
-                 }else{
-                   return {
-                     ...metric,
-                     count: metric.count+1
-                   }
-                 }
-               })
-             }
-           }
-         }) 
-        }
-      })
-  } */
 
   incCount(id){
-    this.showModal()
+    this.selectComment(id)
+    this.showModal(id)
     this.setState((prevState) => {
       return {
         comments : prevState.comments.map(post => {
@@ -89,13 +66,20 @@ class App extends Component {
         }
       })
   }
+
+  selectComment(id){
+    this.state.comments.map(com => {
+      if (com.id == id) {
+        this.setState({selectedCom:com})
+      }
+    })
+  }
+
   componentWillMount(){
     
    /*  if (!firebase.apps.length) {
       firebase.initializeApp(config);
     } */
-
-    
   }
 
   componentDidMount(){
@@ -107,24 +91,28 @@ class App extends Component {
     }) */
   }
 
-  showModal=()=>{
-    this.setState(
-      {showTask:true}
-    );
+  showModal = (id) =>{
+    this.setState({ 
+      showTask : true,
+      showComId : id
+    });
   }
+
+  hideModal = () => {
+    this.setState({ showTask : false });
+  };
 
   render() {
    
   
     return (
       <div className="App">
-
-        
-  
-       
             <Header as='h3' dividing>
                         Comments
             </Header>
+            <Modal show={this.state.showTask} handleClose={this.hideModal} post={this.state.selectedCom}>
+            </Modal>
+            
           {this.state.comments.map(post => {
               
              /*  if (post.inReplyTo !== 0){

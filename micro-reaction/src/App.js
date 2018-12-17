@@ -44,7 +44,12 @@ class App extends Component {
           "categories": []
         }
       ],
-      selectedCom:[]
+      selectedCom:[],
+      categories: [
+        {key: 'A', text: 'A', value: 'a'},
+        {key: 'B', text: 'B', value: 'b'},
+        {key: 'C', text: 'C', value: 'c'},
+      ],
   }
   
 
@@ -103,34 +108,16 @@ class App extends Component {
   };
 
   render() {
-   
-  
+
+
     return (
       <div className="App">
             <Header as='h3' dividing>
                         Comments
             </Header>
-            <Modal show={this.state.showTask} handleClose={this.hideModal} post={this.state.selectedCom}>
-            </Modal>
+            <Modal show={this.state.showTask} handleClose={this.hideModal} post={this.state.selectedCom} categ={this.state.categories}></Modal>
             
           {this.state.comments.map(post => {
-              
-             /*  if (post.inReplyTo !== 0){
-                
-              } else {
-                if (Object.keys(post.response).length==1){
-                  return <Segment vertical ><Post data={post} handleInc={(id, metricName)=>this.incCount(id, metricName)}/></Segment> 
-                } else {
-                  var responses=[]
-                  post.response.map(id=>{
-                    if (id == -1){ 
-                    }else {
-                      responses.push(this.state.comments[id])
-                    }
-                  })
-                  return <Segment vertical><PostwithReply data={post} responses={responses} handleInc={(id, metricName)=>this.incCount(id, metricName)}/></Segment> 
-                }
-              }  */
               return <Segment vertical ><PostwithUpvotes data={post} handleInc={(id)=>this.incCount(id)}/></Segment>
           })}
     

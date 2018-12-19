@@ -30,28 +30,45 @@ class App extends Component {
         {
           "id":0,
           "user": "Evey",
-          "content": "hello",
+          "title": "Just saying hi!",
+          "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
           "upvotes": 5,
-          "downvotes":0,
           "categories": []
         },
         {
           "id":1,
           "user": "Yoonseo",
-          "content": "Hello Hello Hello",
+          "title": "Nice being here!",
+          "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
           "upvotes": 2,
-          "downvotes":0,
           "categories": []
         }
       ],
       selectedCom:[],
-      categories: [
+      categOptions: [
         {key: 'A', text: 'A', value: 'a'},
         {key: 'B', text: 'B', value: 'b'},
         {key: 'C', text: 'C', value: 'c'},
       ],
   }
   
+  categorize = (comid,categ)=> {
+    this.setState((prevState) => {
+      return {
+        comments: prevState.comments.map(post=> {
+          if (post.id !== comid){
+            return post
+          } else {
+            console.log(comid, categ)
+            return {
+              ...post,
+              categories:categ
+            }
+          }
+        })
+      }
+    })
+  }
 
   incCount(id){
     this.selectComment(id)
@@ -115,10 +132,13 @@ class App extends Component {
             <Header as='h3' dividing>
                         Comments
             </Header>
-            <Modal show={this.state.showTask} handleClose={this.hideModal} post={this.state.selectedCom} categ={this.state.categories}></Modal>
+            {/* <Modal show={this.state.showTask} handleSubmit={this.categorize} handleClose={this.hideModal} post={this.state.selectedCom} categ={this.state.categories}></Modal> */}
             
           {this.state.comments.map(post => {
-              return <Segment vertical ><PostwithUpvotes data={post} handleInc={(id)=>this.incCount(id)}/></Segment>
+              return <Segment vertical >
+              <Modal show={this.state.showTask} handleSubmit={this.categorize} handleClose={this.hideModal} post={this.state.selectedCom} categ={this.state.categOptions}></Modal>
+              <PostwithUpvotes data={post} handleInc={(id)=>this.incCount(id)}/>
+              </Segment>
           })}
     
 

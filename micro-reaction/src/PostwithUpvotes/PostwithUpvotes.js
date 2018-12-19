@@ -1,5 +1,5 @@
 import React from 'react';
-import { Comment, Icon, Statistic, Grid, List } from 'semantic-ui-react'
+import { Comment, Icon, Statistic, Grid, List, Header } from 'semantic-ui-react'
 
 const PostwithUpvotes = (props) => {
 
@@ -24,7 +24,9 @@ const PostwithUpvotes = (props) => {
                 </Grid.Column>
                 <Grid.Column width={14}>
                     <Comment>
+                        
                         <Comment.Content>
+                            <Header as='h3' dividing>{props.data.title}</Header>
                             <Comment.Author>{props.data.user}</Comment.Author>
                             <Comment.Text>
                             {props.data.content}
@@ -33,9 +35,9 @@ const PostwithUpvotes = (props) => {
                         </Comment.Content>
                     </Comment>
                 </Grid.Column>
-        
+                <p>{props.data.categories}</p>
         </Grid>
-  
+    
     );
 };
 

@@ -1,18 +1,42 @@
 import React from 'react';
-import { Button, Dropdown } from 'semantic-ui-react'
+import { Button, Dropdown, Container, Header, Message } from 'semantic-ui-react'
+
+let selectedCategory=[]
 
 
 const Modal = ({ handleSubmit, handleClose, show, post, categ }) => {
     
     const showHideClassName = show ? "modal display-block" : "modal display-none";
     
+    const setCategories = (event, {value})=>{
+      selectedCategory=value;
+    }
+
+    const submitCateg =()=>{
+      handleSubmit(post.id, selectedCategory)
+      handleClose()
+      selectedCategory=[];
+    }
+
+    
+
     return (
       <div className={showHideClassName}>
         <section className="modal-main">
-          <p> {post.content} </p>
-          <Dropdown placeholder='Categories' fluid multiple selection options={categ} />
-          <Button onClick={handleSubmit}>Submit</Button>
+        <Container text>
+        <Header size='medium'>Would you help to categorize this post?</Header>
+          <Message  >
+            <Message.Header> {post.title} </Message.Header>
+            <p> {post.user}</p>
+            <p> {post.content} </p>
+          </Message>
+          
+          
+          <Dropdown placeholder='Categories' fluid multiple selection closeOnChange options={categ} onChange = {setCategories} />
+          <Button onClick={submitCateg}>Submit</Button>
           <Button onClick={handleClose}>Close</Button>
+        </Container>
+         
         </section>
       </div>
     );

@@ -8,16 +8,11 @@ let selectedCategory=[]
 
 const Modal = ({ handleSubmit, handleClose, show, post, categ }) => {
 
-    state={
-      displayVal:post.categories
-    }
-
     const showHideClassName = show ? "modal display-block" : "modal display-none";
 
     const setCategories = (event, {value})=>{
       console.log(value);
       selectedCategory=value;
-      this.setState({displayVal:value})
     }
 
     const submitCateg=()=>{
@@ -41,7 +36,7 @@ const Modal = ({ handleSubmit, handleClose, show, post, categ }) => {
           </Message>
           
           
-          <Dropdown placeholder='Categories' fluid multiple selection closeOnChange options={categ} value={this.state.displayVal} onChange = {setCategories} />
+          <Dropdown placeholder='Categories' fluid multiple selection closeOnChange options={categ} onChange = {setCategories} />
           <Button onClick={submitCateg}>Submit</Button>
           <Button onClick={handleClose}>Close</Button>
         </Container>

@@ -6,7 +6,7 @@ let selectedCategory=[]
 
 
 
-const Modal = ({ handleSubmit, handleClose, show, post, categ }) => {
+const Modal = ({ handleSubmit, handleClose, handleContinue, show, post, categ }) => {
 
     const showHideClassName = show ? "modal display-block" : "modal display-none";
 
@@ -37,7 +37,8 @@ const Modal = ({ handleSubmit, handleClose, show, post, categ }) => {
           
           
           <Dropdown placeholder='Categories' fluid multiple selection closeOnChange options={categ} onChange = {setCategories} />
-          <Button onClick={submitCateg}>Submit</Button>
+          <Button onClick={submitCateg}>Submit and Exit</Button>
+          <Button onClick={handleContinue}>Submit and Continue</Button>
           <Button onClick={handleClose}>Close</Button>
         </Container>
          

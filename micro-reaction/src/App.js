@@ -97,6 +97,26 @@ class App extends Component {
     })
   }
 
+  handleContinue =()=>{
+
+    var nextPostID = this.selectOtherPost(this.state.showComId);
+    console.log("ID of the next Post to Show: ", nextPostID)
+    this.selectComment(nextPostID)
+    this.setState({ 
+      showComId : nextPostID
+    });
+  }
+
+  selectOtherPost(curID){
+    var nextID;
+    this.state.comments.map(post => {
+      if (post.id !== curID) {
+        nextID = post.id
+      }
+    })
+    return nextID;
+  }
+
   componentWillMount(){
     
    /*  if (!firebase.apps.length) {
@@ -136,7 +156,7 @@ class App extends Component {
             
           {this.state.comments.map(post => {
               return <Segment vertical >
-              <Modal show={this.state.showTask} handleSubmit={this.categorize} handleClose={this.hideModal} post={this.state.selectedCom} categ={this.state.categOptions}></Modal>
+              <Modal show={this.state.showTask} handleSubmit={this.categorize} handleClose={this.hideModal} handleContinue={this.handleContinue} post={this.state.selectedCom} categ={this.state.categOptions}></Modal>
               <PostwithUpvotes data={post} handleInc={(id)=>this.incCount(id)}/>
               </Segment>
           })}

@@ -22,6 +22,12 @@ const Modal = ({ handleSubmit, handleClose, handleContinue, show, post, categ })
       selectedCategory=[];
     }
 
+    const continueTask=()=>{
+      handleContinue()
+      handleSubmit(post.id, selectedCategory)
+      selectedCategory=[];
+    }
+
     
 
     return (
@@ -38,7 +44,7 @@ const Modal = ({ handleSubmit, handleClose, handleContinue, show, post, categ })
           
           <Dropdown placeholder='Categories' fluid multiple selection closeOnChange options={categ} onChange = {setCategories} />
           <Button onClick={submitCateg}>Submit and Exit</Button>
-          <Button onClick={handleContinue}>Submit and Continue</Button>
+          <Button onClick={continueTask}>Submit and Continue</Button>
           <Button onClick={handleClose}>Close</Button>
         </Container>
          

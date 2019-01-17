@@ -9,6 +9,8 @@ import { cloneDeep } from 'lodash';
 import update from 'immutability-helper';
 import PostwithUpvotes from './PostwithUpvotes/PostwithUpvotes';
 import Modal from './Modal/Modal';
+import {observer} from 'mobx-react';
+import Counter from './Counter';
 
 var _ = require('lodash');
 
@@ -21,6 +23,7 @@ var _ = require('lodash');
   messagingSenderId: "868707662659"
 }
 
+@observer
 class App extends Component {
   
   state ={
@@ -176,6 +179,7 @@ class App extends Component {
 
     return (
       <div className="App">
+      <Counter />
             <Header as='h3' dividing>
                         Posts
             </Header>

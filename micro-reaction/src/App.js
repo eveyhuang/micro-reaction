@@ -9,7 +9,6 @@ import { cloneDeep } from "lodash";
 import update from "immutability-helper";
 import PostwithUpvotes from "./PostwithUpvotes/PostwithUpvotes";
 import Modal from "./Modal/Modal";
-import { observer } from "mobx-react";
 import Counter from "./Counter";
 import LoginBox from "./Login/LoginBox";
 import RegisterBox from "./Login/RegisterBox";
@@ -104,8 +103,8 @@ class App extends Component {
     const user = await fb.getUserInfo();
     if (user) {
       this.setState({ user, isLoggedIn: true, isTrying: false }, function() {
-        console.log("user", user, this.state.user);
-        console.log("AUTO LOGGED IN!!!");
+        // console.log("user", user, this.state.user);
+        // console.log("AUTO LOGGED IN!!!");
       });
     } else {
       this.setState({ isTrying: false });
@@ -231,11 +230,11 @@ class App extends Component {
     console.log("failed to logout");
   };
 
-  registerLoginTryingTrue = () => {
+  loginTryingTrue = () => {
     this.setState({ isTrying: true });
   };
 
-  registerLoginTryingFalse = () => {
+  loginTryingFalse = () => {
     this.setState({ isTrying: false });
   };
 
@@ -300,13 +299,17 @@ class App extends Component {
           </div>
           <div className="box-container">
             {this.state.isLoginOpen && (
-              <LoginBox handleLogin={this.handleLogin} />
+              <LoginBox
+                handleLogin={this.handleLogin}
+                loginTryingTrue={this.loginTryingTrue}
+                loginTryingFalse={this.loginTryingFalse}
+              />
             )}
             {this.state.isRegisterOpen && (
               <RegisterBox
                 handleLogin={this.handleLogin}
-                registerLoginTryingTrue={this.registerLoginTryingTrue}
-                registerLoginTryingFalse={this.registerLoginTryingFalse}
+                loginTryingTrue={this.loginTryingTrue}
+                loginTryingFalse={this.loginTryingFalse}
               />
             )}
           </div>

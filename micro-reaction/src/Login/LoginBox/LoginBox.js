@@ -11,6 +11,7 @@ export default class LoginBox extends Component {
 
   login = async handleLogin => {
     this.setState({ isClickable: false });
+    this.props.loginTryingTrue();
     try {
       const { email, password } = this.state;
       // const { error } =
@@ -23,9 +24,12 @@ export default class LoginBox extends Component {
         handleLogin();
       });
       this.setState({ isClickable: true });
+      this.props.loginTryingFalse();
+      return;
     } catch (e) {
       console.log(e);
       this.setState({ isClickable: true });
+      this.props.loginTryingFalse();
       return;
     }
   };

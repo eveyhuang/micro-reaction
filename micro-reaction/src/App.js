@@ -15,6 +15,7 @@ import RegisterBox from "./Login/RegisterBox";
 import Loading from "./Login/loading";
 import DataLoading from "./DataLoading";
 import fb from "./utils/firebaseWrapper";
+import { observer, inject } from "mobx-react";
 
 var _ = require("lodash");
 
@@ -27,6 +28,9 @@ const config = {
   messagingSenderId: "868707662659"
 };
 
+@inject("posts")
+@inject("users")
+@observer
 class App extends Component {
   state = {
     user: fb.getUser(),
@@ -111,6 +115,13 @@ class App extends Component {
       this.setState({ user, isLoggedIn: true, isTrying: false }, function() {
         // console.log("user", user, this.state.user);
         // console.log("AUTO LOGGED IN!!!");
+        const userStore = this.props.users;
+        userStore.initUserInfo(
+          this.state.user.userId,
+          this.state.user.createdAt,
+          this.state.user.email,
+          this.state.user.name
+        );
       });
     } else {
       this.setState({ isTrying: false });

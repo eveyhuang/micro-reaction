@@ -1,8 +1,11 @@
 import React, { Component } from "react";
 import fb from "../../utils/firebaseWrapper";
+import { observer, inject } from "mobx-react";
 // import "./LoginBox.css";
 
-export default class RegisterBox extends Component {
+@inject("users")
+@observer
+class RegisterBox extends Component {
   state = {
     username: "",
     email: "",
@@ -26,6 +29,14 @@ export default class RegisterBox extends Component {
       });
       this.setState({ isClickable: true });
       this.props.loginTryingFalse();
+      const currentUserInfo = fb.getUserInfo();
+      const userStore = this.props.users;
+      userStore.initUserInfo(
+        currentUserInfo.userId,
+        currentUserInfo.createdAt,
+        currentUserInfo.email,
+        currentUserInfo.name
+      );
       return;
       // await fb.login(email, password);
     } catch (e) {
@@ -37,7 +48,7 @@ export default class RegisterBox extends Component {
   };
 
   handleButtonClick = (e, handleLogin) => {
-    console.log(this.state.username, this.state.email, this.state.password);
+    // console.log(this.state.username, this.state.email, this.state.password);
     e.preventDefault();
     this.signup(handleLogin);
     // this.props.handleLogin();
@@ -101,3 +112,5 @@ export default class RegisterBox extends Component {
     );
   }
 }
+
+export default RegisterBox;

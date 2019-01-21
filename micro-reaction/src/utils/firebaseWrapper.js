@@ -4,6 +4,7 @@
 //   FIREBASE_API_KEY,
 //   FIREBASE_SENDER_ID
 // } from "../configs/firebaseConfigs";
+import { observer, inject } from "mobx-react";
 
 export const FIREBASE_APP_NAME = "micro-reaction-1e530";
 export const FIREBASE_API_KEY = "AIzaSyBStrPkEOxIu4KoulLiKERZY0-YmwE_iOo";
@@ -42,6 +43,7 @@ auth.onAuthStateChanged(user => {
 
 // // 'api' functions (e.g. api.logout())
 // // For all functions, if they fail to run, return 'null'
+
 export default {
   signup: async function(name, email, password) {
     // INPUT
@@ -150,7 +152,9 @@ export default {
       }
       return {
         userId: user.uid,
-        name: user.name
+        name: user.name,
+        email: user.email,
+        createdAt: user.createdAt
       };
     } catch (e) {
       console.log(e.toString());
@@ -171,7 +175,9 @@ export default {
       arrived = true;
       return {
         userId: userInfo.userId,
-        name: userInfo.name
+        name: userInfo.name,
+        email: userInfo.email,
+        createdAt: userInfo.createdAt
       };
     } catch (e) {
       console.log(e.toString());

@@ -1,8 +1,11 @@
 import React, { Component } from "react";
 import fb from "../../utils/firebaseWrapper";
+import { observer, inject } from "mobx-react";
 // import "./LoginBox.css";
 
-export default class LoginBox extends Component {
+@inject("users")
+@observer
+class LoginBox extends Component {
   state = {
     email: "",
     password: "",
@@ -25,6 +28,14 @@ export default class LoginBox extends Component {
       });
       this.setState({ isClickable: true });
       this.props.loginTryingFalse();
+      const currentUserInfo = fb.getUserInfo();
+      const userStore = this.props.users;
+      userStore.initUserInfo(
+        currentUserInfo.userId,
+        currentUserInfo.createdAt,
+        currentUserInfo.email,
+        currentUserInfo.name
+      );
       return;
     } catch (e) {
       console.log(e);
@@ -35,7 +46,7 @@ export default class LoginBox extends Component {
   };
 
   handleButtonClick = (e, handleLogin) => {
-    console.log(this.state.email, this.state.password);
+    // console.log(this.state.email, this.state.password);
     e.preventDefault();
     this.login(handleLogin);
     // this.props.handleLogin();
@@ -89,6 +100,7 @@ export default class LoginBox extends Component {
   }
 }
 
+export default LoginBox;
 // import React, { Component } from "react";
 // import fb from "../utils/firebaseWrapper";
 // import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";

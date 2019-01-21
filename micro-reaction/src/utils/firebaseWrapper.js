@@ -34,7 +34,7 @@ auth.onAuthStateChanged(user => {
   if (user) {
     arrived = true;
     userObject = user;
-    console.log("USER", user.uid);
+    // console.log("USER", user.uid);
   }
 });
 
@@ -209,5 +209,132 @@ export default {
         count++;
       }, 10);
     });
+  },
+  getAllPosts: async function() {
+    //   await db
+    //   .collection("posts")
+    //   .doc("0")
+    //   .set({
+    //     pId: 0,
+    //     author: "LaysClassic1oz",
+    //     title: "First Hand Account Of The Day After Hurrican Sandy",
+    //     content:
+    //       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+    //     upvotes: 20,
+    //     createdAt: new Date()
+    //   });
+    // await db
+    //   .collection("posts")
+    //   .doc("1")
+    //   .set({
+    //     pId: 1,
+    //     author: "rauce12",
+    //     title: "7 places to get help with Sandy loans in New Jersey",
+    //     content:
+    //       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+    //     upvotes: 16,
+    //     createdAt: new Date()
+    //   });
+    // await db
+    //   .collection("posts")
+    //   .doc("2")
+    //   .set({
+    //     pId: 2,
+    //     author: "goodnik",
+    //     title: "Leave No Pet Behind! Pet Evacuation Laws in NYC",
+    //     content:
+    //       " Be sure to keep your pet's necessities ready in a to-go bag should you need to evacuate on short notice. Best to include: (at least) a couple days of food veterinary (vaccination) records (put in Ziploc bag to ensure they stay dry) any vital medications (7 days worth is ideal) ID tags. For cat owners: You may want to limit your pet's access to hideaways so that you can easily grab them and load them into a carrier in the event of an evacuation.",
+    //     upvotes: 8,
+    //     createdAt: new Date()
+    //   });
+    // await db
+    //   .collection("posts")
+    //   .doc("3")
+    //   .set({
+    //     pId: 3,
+    //     author: "deleted",
+    //     title: "A safety note when dealing with flooded streets...",
+    //     content:
+    //       "From a New Orleanian who is used to flooding in urban areas: STAY THE FUCK OFF THE FLOODED STREETS!!!! Why? Because manhole covers get unseated and leave open holes that if you fall in, you won't be coming out of. Think about it as the strongest riptide possible. You can't swim out of it. You can't escape once you're in. You'll die a painful death drowning and scared. Unless you can be 100% sure of where you're walking, don't risk it. Every time it floods in New Orleans, there's always a death or two (at least) that happens this way and it's entirely avoidable. Take care of yourselves and be safe. Just because the rain has stopped doesn't mean that flood waters are safe to wade in.",
+    //     upvotes: 6,
+    //     createdAt: new Date()
+    //   });
+    // await db
+    //   .collection("posts")
+    //   .doc("4")
+    //   .set({
+    //     pId: 4,
+    //     author: "tomswartz07",
+    //     title: "Tip: Charge your computers and devices now",
+    //     content:
+    //       "Tip: Charge your computers and devices now. Even if internet is down, you can use USB ports to charge your phones if the power goes out!",
+    //     upvotes: 5,
+    //     createdAt: new Date()
+    //   });
+
+    try {
+      var allPostIds = [];
+      const posts = await db.collection("posts").get();
+      posts.forEach(chat => {
+        allPostIds.push(chat.id);
+      });
+      let allPosts = await Promise.all(
+        allPostIds.map(async postId => {
+          // console.log("READ post");
+          const postInfoDoc = await db
+            .collection("posts")
+            .doc(postId)
+            .get();
+          const postInfo = postInfoDoc.data();
+          if (!postInfo) {
+            return {};
+          }
+          //   {
+          //     id: 4,
+          //     user: "u/tomswartz07",
+          //     title: "Tip: Charge your computers and devices now",
+          //     content:
+          //       "Tip: Charge your computers and devices now. Even if internet is down, you can use USB ports to charge your phones if the power goes out!",
+          //     upvotes: 5,
+          //     categories: []
+          //   }
+          return {
+            id: postInfo.pId,
+            postId: postId,
+            user: postInfo.author,
+            title: postInfo.title,
+            content: postInfo.content,
+            upvotes: postInfo.upvotes,
+            createdAt: postInfo.createdAt
+          };
+        })
+      );
+      // allPosts = allPosts.filter(post => post !== null && post.id);
+      return allPosts;
+    } catch (e) {
+      console.log(e.toString());
+      return [];
+    }
+  },
+  indexOfNewPost: async function() {
+    try {
+      var allPostIds = [];
+      const posts = await db.collection("posts").get();
+      posts.forEach(chat => {
+        allPostIds.push(chat.id);
+      });
+      return allPostIds.length;
+    } catch (e) {
+      console.log(e.toString());
+      return;
+    }
   }
+  // numOfPosts : async function() {
+  //   try {
+
+  //   } catch (e) {
+  //     console.log(e.toString());
+  //     return;
+  //   }
+  // }
 };

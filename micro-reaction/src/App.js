@@ -13,6 +13,7 @@ import Counter from "./Counter";
 import LoginBox from "./Login/LoginBox";
 import RegisterBox from "./Login/RegisterBox";
 import Loading from "./Login/loading";
+import DataLoading from "./DataLoading";
 import fb from "./utils/firebaseWrapper";
 
 var _ = require("lodash");
@@ -33,55 +34,57 @@ class App extends Component {
     isLoggedIn: false,
     isLoginOpen: true,
     isRegisterOpen: false,
+    isCommentsLoaded: false,
     showTask: false,
     showComId: 0,
-    comments: [
-      {
-        id: 0,
-        user: "u/LaysClassic1oz",
-        title: "First Hand Account Of The Day After Hurrican Sandy",
-        content:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-        upvotes: 20,
-        categories: []
-      },
-      {
-        id: 1,
-        user: "u/rauce12",
-        title: "7 places to get help with Sandy loans in New Jersey",
-        content:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-        upvotes: 16,
-        categories: []
-      },
-      {
-        id: 2,
-        user: "u/goodnik",
-        title: "Leave No Pet Behind! Pet Evacuation Laws in NYC",
-        content:
-          " Be sure to keep your pet's necessities ready in a to-go bag should you need to evacuate on short notice. Best to include: (at least) a couple days of food veterinary (vaccination) records (put in Ziploc bag to ensure they stay dry) any vital medications (7 days worth is ideal) ID tags. For cat owners: You may want to limit your pet's access to hideaways so that you can easily grab them and load them into a carrier in the event of an evacuation.",
-        upvotes: 8,
-        categories: []
-      },
-      {
-        id: 3,
-        user: "u/deleted",
-        title: "A safety note when dealing with flooded streets...",
-        content:
-          "From a New Orleanian who is used to flooding in urban areas: STAY THE FUCK OFF THE FLOODED STREETS!!!! Why? Because manhole covers get unseated and leave open holes that if you fall in, you won't be coming out of. Think about it as the strongest riptide possible. You can't swim out of it. You can't escape once you're in. You'll die a painful death drowning and scared. Unless you can be 100% sure of where you're walking, don't risk it. Every time it floods in New Orleans, there's always a death or two (at least) that happens this way and it's entirely avoidable. Take care of yourselves and be safe. Just because the rain has stopped doesn't mean that flood waters are safe to wade in.",
-        upvotes: 6,
-        categories: []
-      },
-      {
-        id: 4,
-        user: "u/tomswartz07",
-        title: "Tip: Charge your computers and devices now",
-        content:
-          "Tip: Charge your computers and devices now. Even if internet is down, you can use USB ports to charge your phones if the power goes out!",
-        upvotes: 5,
-        categories: []
-      }
-    ],
+    comments: [],
+    // comments: [
+    //   {
+    //     id: 0,
+    //     user: "u/LaysClassic1oz",
+    //     title: "First Hand Account Of The Day After Hurrican Sandy",
+    //     content:
+    //       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+    //     upvotes: 20,
+    //     categories: []
+    //   },
+    //   {
+    //     id: 1,
+    //     user: "u/rauce12",
+    //     title: "7 places to get help with Sandy loans in New Jersey",
+    //     content:
+    //       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+    //     upvotes: 16,
+    //     categories: []
+    //   },
+    //   {
+    //     id: 2,
+    //     user: "u/goodnik",
+    //     title: "Leave No Pet Behind! Pet Evacuation Laws in NYC",
+    //     content:
+    //       " Be sure to keep your pet's necessities ready in a to-go bag should you need to evacuate on short notice. Best to include: (at least) a couple days of food veterinary (vaccination) records (put in Ziploc bag to ensure they stay dry) any vital medications (7 days worth is ideal) ID tags. For cat owners: You may want to limit your pet's access to hideaways so that you can easily grab them and load them into a carrier in the event of an evacuation.",
+    //     upvotes: 8,
+    //     categories: []
+    //   },
+    //   {
+    //     id: 3,
+    //     user: "u/deleted",
+    //     title: "A safety note when dealing with flooded streets...",
+    //     content:
+    //       "From a New Orleanian who is used to flooding in urban areas: STAY THE FUCK OFF THE FLOODED STREETS!!!! Why? Because manhole covers get unseated and leave open holes that if you fall in, you won't be coming out of. Think about it as the strongest riptide possible. You can't swim out of it. You can't escape once you're in. You'll die a painful death drowning and scared. Unless you can be 100% sure of where you're walking, don't risk it. Every time it floods in New Orleans, there's always a death or two (at least) that happens this way and it's entirely avoidable. Take care of yourselves and be safe. Just because the rain has stopped doesn't mean that flood waters are safe to wade in.",
+    //     upvotes: 6,
+    //     categories: []
+    //   },
+    //   {
+    //     id: 4,
+    //     user: "u/tomswartz07",
+    //     title: "Tip: Charge your computers and devices now",
+    //     content:
+    //       "Tip: Charge your computers and devices now. Even if internet is down, you can use USB ports to charge your phones if the power goes out!",
+    //     upvotes: 5,
+    //     categories: []
+    //   }
+    // ],
     selectedCom: [],
     categOptions: [
       { key: "A", text: "A", value: "a" },
@@ -93,6 +96,9 @@ class App extends Component {
 
   componentWillMount() {
     this.autoLogin();
+    fb.getAllPosts().then(data => {
+      this.setState({ comments: data, isCommentsLoaded: true });
+    });
   }
 
   componentDidMount() {
@@ -252,24 +258,28 @@ class App extends Component {
         </div>
         {/* <Modal show={this.state.showTask} handleSubmit={this.categorize} handleClose={this.hideModal} post={this.state.selectedCom} categ={this.state.categories}></Modal> */}
 
-        {this.state.comments.map(post => {
-          return (
-            <Segment vertical>
-              <Modal
-                show={this.state.showTask}
-                handleSubmit={this.categorize}
-                handleClose={this.hideModal}
-                handleContinue={this.handleContinue}
-                post={this.state.selectedCom}
-                categ={this.state.categOptions}
-              />
-              <PostwithUpvotes
-                data={post}
-                handleInc={id => this.incCount(id)}
-              />
-            </Segment>
-          );
-        })}
+        {this.state.isCommentsLoaded ? (
+          this.state.comments.map(post => {
+            return (
+              <Segment vertical>
+                <Modal
+                  show={this.state.showTask}
+                  handleSubmit={this.categorize}
+                  handleClose={this.hideModal}
+                  handleContinue={this.handleContinue}
+                  post={this.state.selectedCom}
+                  categ={this.state.categOptions}
+                />
+                <PostwithUpvotes
+                  data={post}
+                  handleInc={id => this.incCount(id)}
+                />
+              </Segment>
+            );
+          })
+        ) : (
+          <DataLoading />
+        )}
       </div>
     );
 

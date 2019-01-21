@@ -12,6 +12,7 @@ export default class RegisterBox extends Component {
 
   signup = async handleLogin => {
     this.setState({ isClickable: false });
+    this.props.registerLoginTryingTrue();
     try {
       const { username, email, password } = this.state;
       // const { error } =
@@ -24,10 +25,13 @@ export default class RegisterBox extends Component {
         handleLogin();
       });
       this.setState({ isClickable: true });
+      this.props.registerLoginTryingFalse();
+      return;
       // await fb.login(email, password);
     } catch (e) {
       console.log(e);
       this.setState({ isClickable: true });
+      this.props.registerLoginTryingFalse();
       return;
     }
   };

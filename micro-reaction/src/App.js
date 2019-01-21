@@ -13,6 +13,7 @@ import { observer } from "mobx-react";
 import Counter from "./Counter";
 import LoginBox from "./Login/LoginBox";
 import RegisterBox from "./Login/RegisterBox";
+import Loading from "./Login/loading";
 import fb from "./utils/firebaseWrapper";
 
 var _ = require("lodash");
@@ -29,6 +30,7 @@ const config = {
 class App extends Component {
   state = {
     user: fb.getUser(),
+    isTrying: true,
     isLoggedIn: false,
     isLoginOpen: true,
     isRegisterOpen: false,
@@ -101,11 +103,12 @@ class App extends Component {
   autoLogin = async function() {
     const user = await fb.getUserInfo();
     if (user) {
-      this.setState({ user, isLoggedIn: true }, function() {
+      this.setState({ user, isLoggedIn: true, isTrying: false }, function() {
         console.log("user", user, this.state.user);
         console.log("AUTO LOGGED IN!!!");
       });
     } else {
+      this.setState({ isTrying: false });
     }
   };
 
@@ -228,6 +231,14 @@ class App extends Component {
     console.log("failed to logout");
   };
 
+  registerLoginTryingTrue = () => {
+    this.setState({ isTrying: true });
+  };
+
+  registerLoginTryingFalse = () => {
+    this.setState({ isTrying: false });
+  };
+
   render() {
     const mainPostsComponent = (
       <div>
@@ -292,18 +303,24 @@ class App extends Component {
               <LoginBox handleLogin={this.handleLogin} />
             )}
             {this.state.isRegisterOpen && (
-              <RegisterBox handleLogin={this.handleLogin} />
+              <RegisterBox
+                handleLogin={this.handleLogin}
+                registerLoginTryingTrue={this.registerLoginTryingTrue}
+                registerLoginTryingFalse={this.registerLoginTryingFalse}
+              />
             )}
           </div>
         </div>
       </div>
     );
 
+    const mainPage = this.state.isLoggedIn ? mainPostsComponent : loginPage;
+
     return (
-      <div>
+      <div className="App-container">
         <div className="App">
           {/*<Counter />*/}
-          {this.state.isLoggedIn ? mainPostsComponent : loginPage}
+          {this.state.isTrying ? <Loading /> : mainPage}
         </div>
       </div>
     );

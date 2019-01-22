@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { Button, Dropdown, Container, Header, Message } from 'semantic-ui-react'
+import fb from "../utils/firebaseWrapper";
 
 let selectedCategory=[]
 
@@ -18,7 +19,7 @@ const Modal = ({ handleSubmit, handleClose, handleContinue, show, post, categ })
     const submitCateg=()=>{
       handleSubmit(post.id, selectedCategory)
       handleClose()
-     
+      
       selectedCategory=[];
     }
 

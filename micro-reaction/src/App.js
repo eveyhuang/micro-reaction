@@ -109,6 +109,14 @@ class App extends Component {
     this.getUser();
   }
 
+  updatePostsList = async () => {
+    this.setState({ isCommentsLoaded: false }, async function() {
+      await fb.getAllPosts().then(data => {
+        this.setState({ comments: data, isCommentsLoaded: true });
+      });
+    });
+  };
+
   autoLogin = async function() {
     const user = await fb.getUserInfo();
     if (user) {
@@ -157,20 +165,51 @@ class App extends Component {
   incCount(id) {
     this.selectComment(id);
     this.showModal(id);
-    this.setState(prevState => {
-      return {
-        comments: prevState.comments.map(post => {
-          if (post.id !== id) {
-            return post;
-          } else {
-            return {
-              ...post,
-              upvotes: post.upvotes + 1
-            };
-          }
-        })
-      };
-    });
+    this.setState(
+      prevState => {
+        return {
+          comments: prevState.comments.map(post => {
+            if (post.id !== id) {
+              return post;
+            } else {
+              return {
+                ...post,
+                upvotes: post.upvotes + 1
+              };
+            }
+          })
+        };
+      },
+      async function() {
+        await fb.voteOnThisPost(id, true);
+        // await fb.newTaskThread(id, "upvote");
+      }
+    );
+  }
+
+  decCount(id) {
+    this.selectComment(id);
+    this.showModal(id);
+    this.setState(
+      prevState => {
+        return {
+          comments: prevState.comments.map(post => {
+            if (post.id !== id) {
+              return post;
+            } else {
+              return {
+                ...post,
+                upvotes: post.upvotes - 1
+              };
+            }
+          })
+        };
+      },
+      async function() {
+        await fb.voteOnThisPost(id, false);
+        // await fb.newTaskThread(id, "downvote");
+      }
+    );
   }
 
   selectComment(id) {
@@ -284,6 +323,7 @@ class App extends Component {
                 <PostwithUpvotes
                   data={post}
                   handleInc={id => this.incCount(id)}
+                  handleDec={id => this.decCount(id)}
                 />
               </Segment>
             );

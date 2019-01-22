@@ -269,13 +269,13 @@ export default {
     //   .collection("posts")
     //   .doc("4")
     //   .set({
-    //     pId: 4,
-    //     author: "tomswartz07",
-    //     title: "Tip: Charge your computers and devices now",
-    //     content:
-    //       "Tip: Charge your computers and devices now. Even if internet is down, you can use USB ports to charge your phones if the power goes out!",
-    //     upvotes: 5,
-    //     createdAt: new Date()
+    // pId: 4,
+    // author: "tomswartz07",
+    // title: "Tip: Charge your computers and devices now",
+    // content:
+    //   "Tip: Charge your computers and devices now. Even if internet is down, you can use USB ports to charge your phones if the power goes out!",
+    // upvotes: 5,
+    // createdAt: new Date()
     //   });
 
     try {
@@ -334,13 +334,51 @@ export default {
       console.log(e.toString());
       return;
     }
+  },
+  voteOnThisPost: async function(id, isUpvote) {
+    try {
+      var allPostIds = [];
+      const posts = await db.collection("posts").get();
+      posts.forEach(chat => {
+        allPostIds.push(chat.id);
+      });
+      await allPostIds.forEach(async postId => {
+        // console.log("READ post",postId);
+        if (postId == id) {
+          const postInfoDoc = await db
+            .collection("posts")
+            .doc(postId)
+            .get();
+          const postInfo = postInfoDoc.data();
+          if (!postInfo) {
+            return { error: `fail to search the post with this id: ${id}` };
+          }
+          await db
+            .collection("posts")
+            .doc(postId)
+            .set({
+              pId: postInfo.pId,
+              author: postInfo.author,
+              title: postInfo.title,
+              content: postInfo.content,
+              upvotes: isUpvote ? postInfo.upvotes + 1 : postInfo.upvotes - 1,
+              createdAt: postInfo.createdAt 
+            });
+          return;
+        }
+      });
+      // allPosts = allPosts.filter(post => post !== null && post.id);
+    } catch (e) {
+      console.log(e.toString());
+      return;
+    }
   }
   // numOfPosts : async function() {
   //   try {
 
   //   } catch (e) {
-  //     console.log(e.toString());
-  //     return;
+  // console.log(e.toString());
+  // return;
   //   }
   // }
 };

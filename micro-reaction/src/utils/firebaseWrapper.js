@@ -68,7 +68,8 @@ export default {
               userId: uid,
               email: email,
               name: name,
-              createdAt: new Date()
+              createdAt: new Date(),
+              thread: []
             });
           arrived = true;
           // console.log("uid:", uid);
@@ -382,9 +383,10 @@ export default {
       threads.forEach(elem => {
         allThreadIds.push(elem.id);
       });
+      const dateForKey = new Date();
       await db
         .collection("threads")
-        .doc(allThreadIds.length.toString())
+        .doc(dateForKey.toString())
         .set({
           userId: userInfo.userId,
           userName: userInfo.name,
@@ -393,11 +395,12 @@ export default {
               postId: postId,
               taskCateg: "initial voting",
               userAns: userAns,
-              doneAt: new Date()
+              doneAt: dateForKey
             }
           ],
-          createdAt: new Date()
+          createdAt: dateForKey
         });
+      await this.addCurrentThreadToThisUser(dateForKey);
     } catch (e) {
       console.log(e.toString());
       return;
@@ -416,14 +419,14 @@ export default {
             allThreadIds.push(elem.id);
           });
         });
-      const lastThreadId = allThreadIds.length - 1;
+      const lastThreadId = allThreadIds[allThreadIds.length - 1];
       const lastThread = await db
         .collection("threads")
         .doc(lastThreadId.toString())
         .get();
       const lastThreadData = lastThread.data();
       db.collection("threads")
-        .doc(lastThread.id)
+        .doc(lastThreadId)
         .set({
           ...lastThreadData,
           chain: lastThreadData.chain.concat([
@@ -434,6 +437,30 @@ export default {
               doneAt: new Date()
             }
           ])
+        });
+    } catch (e) {
+      console.log(e.toString());
+      return;
+    }
+  },
+  addCurrentThreadToThisUser: async function(threadId) {
+    try {
+      const user = await this.isUserLoggedIn();
+      if (!user) {
+        return null;
+      }
+      const userDoc = await db
+        .collection("users")
+        .doc(user.userId)
+        .get();
+      const userInfo = userDoc.data();
+      arrived = true;
+      await db
+        .collection("users")
+        .doc(user.userId)
+        .set({
+          ...userInfo,
+          thread: userInfo.thread.concat([threadId])
         });
     } catch (e) {
       console.log(e.toString());

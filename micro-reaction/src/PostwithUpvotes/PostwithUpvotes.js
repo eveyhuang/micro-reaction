@@ -17,7 +17,7 @@ const PostwithUpvotes = (props) => {
                             </Statistic>
                         </List.Item>
                         <List.Item>
-                            <Icon name='angle down' size='large' />
+                            <Icon name='angle down' size='large' onClick = {() => props.handleDec(props.data.id)} />
                         </List.Item>
                     </List>
                     

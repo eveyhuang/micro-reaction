@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { Button, Dropdown, Container, Header, Message } from 'semantic-ui-react'
+import fb from "../utils/firebaseWrapper";
 
 let selectedCategory=[]
 
@@ -13,16 +14,22 @@ const Modal = ({ handleSubmit, handleClose, handleContinue, show, post, categ })
     const setCategories = (event, {value})=>{
       console.log(value);
       selectedCategory=value;
+      
     }
 
-    const submitCateg=()=>{
+    const addThisTaskOnThread = async (postId, userAnser, taskCateg)=> {
+      await fb.addThisTaskOnThread(postId,userAnser, taskCateg)
+    }
+
+    const submitCateg= async ()=>{
+      await addThisTaskOnThread(post.id, selectedCategory, "categorization")
       handleSubmit(post.id, selectedCategory)
       handleClose()
-     
       selectedCategory=[];
     }
 
-    const continueTask=()=>{
+    const continueTask= async ()=>{
+      await addThisTaskOnThread(post.id, selectedCategory, "categorization")
       handleContinue()
       handleSubmit(post.id, selectedCategory)
       selectedCategory=[];
@@ -37,7 +44,7 @@ const Modal = ({ handleSubmit, handleClose, handleContinue, show, post, categ })
         <Header size='medium'>Would you help to categorize this post?</Header>
           <Message  >
             <Message.Header> {post.title} </Message.Header>
-            <p> {post.user}</p>
+            <p> {post.author}</p>
             <p> {post.content} </p>
           </Message>
           

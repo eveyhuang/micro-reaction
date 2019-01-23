@@ -72,6 +72,9 @@ class App extends Component {
 
   componentDidMount() {
     this.getUser();
+    fb.isAdmin().then(data => {
+      this.setState({ isAdmin: data });
+    });
   }
 
   updatePostsList = async () => {
@@ -269,6 +272,7 @@ class App extends Component {
           </Header>
           <div className="right">
             <button onClick={this.handleLogOut}>Log out</button>
+            {this.state.isAdmin ? <button>YOU ARE A ADMIN!!!</button> : null}
           </div>
         </div>
         {/* <Modal show={this.state.showTask} handleSubmit={this.categorize} handleClose={this.hideModal} post={this.state.selectedCom} categ={this.state.categories}></Modal> */}

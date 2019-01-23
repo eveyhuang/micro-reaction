@@ -162,6 +162,24 @@ export default {
       return null;
     }
   },
+  isAdmin: async function() {
+    try {
+      const user = await this.isUserLoggedIn();
+      if (!user) {
+        return null;
+      }
+      const userDoc = await db
+        .collection("users")
+        .doc(user.userId)
+        .get();
+      const userInfo = userDoc.data();
+      arrived = true;
+      return userInfo.isAdmin
+    } catch (e) {
+      console.log(e.toString());
+      return;
+    }
+  },
   getUserInfo: async function() {
     try {
       const user = await this.isUserLoggedIn();

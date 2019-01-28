@@ -18,6 +18,7 @@ import fb from "./utils/firebaseWrapper";
 import { observer, inject } from "mobx-react";
 import HeaderComp from "./Header";
 import HeaderNav from "./HeaderNav";
+import Thread from "./Thread";
 
 var _ = require("lodash");
 
@@ -282,39 +283,44 @@ class App extends Component {
   };
 
   render() {
-    const mainPostsComponent = (
+    const postList = (
       <div>
-        <div className="header_container">
-          <div className="left" />
-          <Header as="h3" dividing>
-            Posts
-          </Header>
-          <div className="right">
-            {this.state.isAdmin ? <button>YOU ARE A ADMIN!!!</button> : null}
-          </div>
-        </div>
-        {/* <Modal show={this.state.showTask} handleSubmit={this.categorize} handleClose={this.hideModal} post={this.state.selectedCom} categ={this.state.categories}></Modal> */}
+        {this.state.comments.map(post => {
+          return (
+            <Segment vertical>
+              <Modal
+                show={this.state.showTask}
+                handleSubmit={this.categorize}
+                handleClose={this.hideModal}
+                handleContinue={this.handleContinue}
+                post={this.state.selectedCom}
+                categ={this.state.categOptions}
+              />
+              <PostwithUpvotes
+                data={post}
+                handleInc={id => this.incCount(id)}
+                handleDec={id => this.decCount(id)}
+              />
+            </Segment>
+          );
+        })}
+      </div>
+    );
 
+    const mainComponent = (
+      <div>
         {this.state.isCommentsLoaded ? (
-          this.state.comments.map(post => {
-            return (
-              <Segment vertical>
-                <Modal
-                  show={this.state.showTask}
-                  handleSubmit={this.categorize}
-                  handleClose={this.hideModal}
-                  handleContinue={this.handleContinue}
-                  post={this.state.selectedCom}
-                  categ={this.state.categOptions}
-                />
-                <PostwithUpvotes
-                  data={post}
-                  handleInc={id => this.incCount(id)}
-                  handleDec={id => this.decCount(id)}
-                />
-              </Segment>
-            );
-          })
+          <div className="main_container">
+            <div className="post_container">
+              <div className="post_list">{postList}</div>
+            </div>
+            {
+              <Thread
+                userName={this.state.user.name}
+                userEmail={this.state.user.email}
+              />
+            }
+          </div>
         ) : (
           <DataLoading />
         )}
@@ -365,29 +371,26 @@ class App extends Component {
       </div>
     );
 
-    const mainPage = this.state.isLoggedIn ? mainPostsComponent : loginPage;
+    const mainPage = this.state.isLoggedIn ? mainComponent : loginPage;
 
     return (
       <div className="App-container">
+        {this.state.isTrying || !this.state.isLoggedIn ? (
+          <HeaderComp middle={"Loggin"} />
+        ) : (
+          <HeaderComp
+            middle={this.returnMiddle(this.state.tab)}
+            left={
+              <HeaderNav tab={this.state.tab} onSelect={this.handleSelectTab} />
+            }
+            right={
+              <div className="logout" onClick={this.handleLogOut}>
+                {"Log out"}
+              </div>
+            }
+          />
+        )}
         <div className="App">
-          {this.state.isTrying || !this.state.isLoggedIn ? (
-            <HeaderComp middle={"Loggin"} />
-          ) : (
-            <HeaderComp
-              middle={this.returnMiddle(this.state.tab)}
-              left={
-                <HeaderNav
-                  tab={this.state.tab}
-                  onSelect={this.handleSelectTab}
-                />
-              }
-              right={
-                <div className="logout" onClick={this.handleLogOut}>
-                  {"Log out"}
-                </div>
-              }
-            />
-          )}
           {/*<Counter />*/}
           {this.state.isTrying ? <Loading /> : mainPage}
         </div>

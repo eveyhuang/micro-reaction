@@ -5,6 +5,50 @@
   height: 100%;
 }
 
+.main_container {
+  width: 100%;
+  height: 100%;
+  background-color: #dae0e6;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: row;
+}
+
+.post_container {
+  width: 75%;
+  height: 100%;
+  margin: 1.5rem;
+}
+
+.post_list {
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border-radius: 1rem;
+}
+
+.task_container {
+  width: 25%;
+  height: 100%;
+  margin-top: 1.5rem;
+  margin-right: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.task_header {
+  padding: 1rem;
+  background-color: #ffffff;
+  margin-bottom: 1rem;
+  border-radius: 1rem;
+}
+
+.task_list {
+  padding: 1.5rem;
+  background-color: #ffffff;
+  margin-bottom: 1.5rem;
+  border-radius: 1rem;
+}
+
 .App-container {
   width: 100%;
   height: 100%;

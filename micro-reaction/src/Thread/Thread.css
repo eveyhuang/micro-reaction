@@ -1,0 +1,22 @@
+.thread-header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: row;
+}
+
+.thread-header_userProfile_img {
+  width: 4rem;
+  height: 4rem;
+  margin-right: 1.5rem;
+}
+
+.thread-header_userInfo_userName {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.thread-header_userInfo_userEmail {
+    font-weight: bold;
+  }

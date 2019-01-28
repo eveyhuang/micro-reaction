@@ -18,5 +18,9 @@
 }
 
 .thread-header_userInfo_userEmail {
-    font-weight: bold;
-  }
+  font-weight: bold;
+}
+
+.thread-contents_dropdown {
+  margin-bottom: 1rem;
+}

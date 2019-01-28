@@ -19,6 +19,7 @@ import { observer, inject } from "mobx-react";
 import HeaderComp from "./Header";
 import HeaderNav from "./HeaderNav";
 import Thread from "./Thread";
+import classNames from "classnames";
 
 var _ = require("lodash");
 
@@ -157,8 +158,8 @@ class App extends Component {
         };
       },
       async function() {
-        await fb.voteOnThisPost(id, true);
-        await fb.newTaskThread(id, "upvote");
+        // await fb.voteOnThisPost(id, true);
+        // await fb.newTaskThread(id, "upvote");
       }
     );
   }
@@ -182,8 +183,8 @@ class App extends Component {
         };
       },
       async function() {
-        await fb.voteOnThisPost(id, false);
-        await fb.newTaskThread(id, "downvote");
+        // await fb.voteOnThisPost(id, false);
+        // await fb.newTaskThread(id, "downvote");
       }
     );
   }
@@ -238,8 +239,13 @@ class App extends Component {
     });
   };
 
-  hideModal = () => {
-    this.setState({ showTask: false });
+  hideTask = () => {
+    this.setState({
+      showTask: false,
+      selectedCom: [],
+      showComId: 0,
+      postSeen: []
+    });
   };
 
   handleLogin = () => {
@@ -287,21 +293,27 @@ class App extends Component {
       <div>
         {this.state.comments.map(post => {
           return (
-            <Segment vertical>
-              <Modal
+            <div
+              className={classNames({
+                post_selected: post.title == this.state.selectedCom.title
+              })}
+            >
+              <Segment vertical>
+                {/*<Modal
                 show={this.state.showTask}
                 handleSubmit={this.categorize}
-                handleClose={this.hideModal}
+                handleClose={this.hideTask}
                 handleContinue={this.handleContinue}
                 post={this.state.selectedCom}
                 categ={this.state.categOptions}
-              />
-              <PostwithUpvotes
-                data={post}
-                handleInc={id => this.incCount(id)}
-                handleDec={id => this.decCount(id)}
-              />
-            </Segment>
+              />*/}
+                <PostwithUpvotes
+                  data={post}
+                  handleInc={id => this.incCount(id)}
+                  handleDec={id => this.decCount(id)}
+                />
+              </Segment>
+            </div>
           );
         })}
       </div>
@@ -318,6 +330,12 @@ class App extends Component {
               <Thread
                 userName={this.state.user.name}
                 userEmail={this.state.user.email}
+                showTask={this.state.showTask}
+                handleSubmit={this.categorize}
+                handleClose={this.hideTask}
+                handleContinue={this.handleContinue}
+                post={this.state.selectedCom}
+                categ={this.state.categOptions}
               />
             }
           </div>

@@ -1,5 +1,15 @@
 import React, { Component } from "react";
+import fb from "../utils/firebaseWrapper";
+import {
+  Button,
+  Dropdown,
+  Container,
+  Header,
+  Message
+} from "semantic-ui-react";
 import "./Thread.css";
+
+let selectedCategory = [];
 
 class Thread extends Component {
   state = {
@@ -7,7 +17,46 @@ class Thread extends Component {
     userEmail: this.props.userEmail
   };
 
+  setCategories = (event, { value }) => {
+    console.log(value);
+    selectedCategory = value;
+  };
+
+  addThisTaskOnThread = async (postId, userAnser, taskCateg) => {
+    // await fb.addThisTaskOnThread(postId, userAnser, taskCateg);
+  };
+
+  submitCateg = async () => {
+    await this.addThisTaskOnThread(
+      this.props.post.id,
+      selectedCategory,
+      "categorization"
+    );
+    this.props.handleSubmit(this.props.post.id, selectedCategory);
+    this.props.handleClose();
+    selectedCategory = [];
+  };
+
+  continueTask = async () => {
+    await this.addThisTaskOnThread(
+      this.props.post.id,
+      selectedCategory,
+      "categorization"
+    );
+    this.props.handleContinue();
+    this.props.handleSubmit(this.props.post.id, selectedCategory);
+    selectedCategory = [];
+  };
+
   render() {
+    const {
+      showTask,
+      handleSubmit,
+      handleClose,
+      handleContinue,
+      post,
+      categ
+    } = this.props;
     const threadHeader = (
       <div className="thread-header">
         <div className="thread-header_userProfile">
@@ -29,13 +78,39 @@ class Thread extends Component {
     );
 
     const threadContents = (
-      <div className="thread-contents">"threadContents"</div>
+      <div className="thread-contents">
+        <Header size="medium">Would you help to categorize this post?</Header>
+
+        <p> {post.title} </p>
+
+        {/*  <div className="thread-contents_task_post">
+          <p> {post.title} </p>
+          <p> {post.author}</p>
+          <p> {post.content} </p>
+        </div>*/}
+        <Dropdown
+          className="thread-contents_dropdown"
+          placeholder="Categories"
+          fluid
+          multiple
+          selection
+          closeOnChange
+          options={categ}
+          onChange={this.setCategories}
+        />
+        <Button onClick={this.submitCateg}>Submit and Exit</Button>
+        <Button onClick={this.continueTask}>Submit and Continue</Button>
+        <Button onClick={handleClose}>Close</Button>
+      </div>
     );
+
+    const threadHistory = <div>threadHistory</div>;
 
     return (
       <div className="task_container">
         <div className="task_header">{threadHeader}</div>
-        <div className="task_list">{threadContents}</div>
+        {showTask ? <div className="task_list">{threadContents}</div> : null}
+        <div className="task_history">{threadHistory}</div>
       </div>
     );
   }

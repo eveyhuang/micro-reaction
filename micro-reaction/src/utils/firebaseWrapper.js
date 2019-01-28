@@ -174,7 +174,7 @@ export default {
         .get();
       const userInfo = userDoc.data();
       arrived = true;
-      return userInfo.isAdmin
+      return userInfo.isAdmin;
     } catch (e) {
       console.log(e.toString());
       return;

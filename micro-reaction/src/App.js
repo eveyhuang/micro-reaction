@@ -16,6 +16,8 @@ import Loading from "./Login/loading";
 import DataLoading from "./DataLoading";
 import fb from "./utils/firebaseWrapper";
 import { observer, inject } from "mobx-react";
+import HeaderComp from "./Header";
+import HeaderNav from "./HeaderNav";
 
 var _ = require("lodash");
 
@@ -33,6 +35,7 @@ const config = {
 @observer
 class App extends Component {
   state = {
+    tab: "home",
     user: fb.getUser(),
     isTrying: true,
     isLoggedIn: false,
@@ -61,6 +64,10 @@ class App extends Component {
       { key: "C", text: "C", value: "c" }
     ],
     postSeen: []
+  };
+
+  handleSelectTab = tab => {
+    this.setState({ tab });
   };
 
   componentWillMount() {
@@ -262,6 +269,18 @@ class App extends Component {
     this.setState({ isTrying: false });
   };
 
+  returnMiddle = middleText => {
+    let middle;
+    if (middleText == "home") {
+      middle = "Home";
+    } else if (middleText == "notification") {
+      middle = "Notification";
+    } else {
+      middle = "Message";
+    }
+    return middle;
+  };
+
   render() {
     const mainPostsComponent = (
       <div>
@@ -352,6 +371,19 @@ class App extends Component {
     return (
       <div className="App-container">
         <div className="App">
+          {this.state.isTrying || !this.state.isLoggedIn ? (
+            <HeaderComp middle={"Loggin"} />
+          ) : (
+            <HeaderComp
+              middle={this.returnMiddle(this.state.tab)}
+              right={
+                <HeaderNav
+                  tab={this.state.tab}
+                  onSelect={this.handleSelectTab}
+                />
+              }
+            />
+          )}
           {/*<Counter />*/}
           {this.state.isTrying ? <Loading /> : mainPage}
         </div>

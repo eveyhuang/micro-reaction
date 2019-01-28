@@ -20,6 +20,7 @@ import HeaderComp from "./Header";
 import HeaderNav from "./HeaderNav";
 import Thread from "./Thread";
 import classNames from "classnames";
+import { ScrollElement, ScrollView } from "./Scroller";
 
 var _ = require("lodash");
 
@@ -289,19 +290,25 @@ class App extends Component {
     return middle;
   };
 
+  scrollTo = name => {
+    this._scroller.scrollTo(name);
+  };
+
   render() {
     const postList = (
       <div>
-        {this.state.comments.map(post => {
-          return (
-            <div
-              key={post.id}
-              className={classNames({
-                post_selected: post.id == this.state.selectedCom.id
-              })}
-            >
-              <Segment vertical>
-                {/*<Modal
+        <ScrollView ref={scroller => (this._scroller = scroller)}>
+          <div>
+            {this.state.comments.map(post => {
+              return (
+                <ScrollElement key={post.id} name={post.id}>
+                  <div
+                    className={classNames({
+                      post_selected: post.id == this.state.selectedCom.id
+                    })}
+                  >
+                    <Segment vertical>
+                      {/*<Modal
                 show={this.state.showTask}
                 handleSubmit={this.categorize}
                 handleClose={this.hideTask}
@@ -309,15 +316,18 @@ class App extends Component {
                 post={this.state.selectedCom}
                 categ={this.state.categOptions}
               />*/}
-                <PostwithUpvotes
-                  data={post}
-                  handleInc={id => this.incCount(id)}
-                  handleDec={id => this.decCount(id)}
-                />
-              </Segment>
-            </div>
-          );
-        })}
+                      <PostwithUpvotes
+                        data={post}
+                        handleInc={id => this.incCount(id)}
+                        handleDec={id => this.decCount(id)}
+                      />
+                    </Segment>
+                  </div>
+                </ScrollElement>
+              );
+            })}
+          </div>
+        </ScrollView>
       </div>
     );
 
@@ -340,6 +350,7 @@ class App extends Component {
           </div>
           {
             <Thread
+              scrollTo={this.scrollTo}
               userName={this.state.user.name}
               userEmail={this.state.user.email}
               showTask={this.state.showTask}

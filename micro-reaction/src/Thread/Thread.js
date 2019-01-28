@@ -35,6 +35,7 @@ class Thread extends Component {
     this.props.handleSubmit(this.props.post.id, selectedCategory);
     this.props.handleClose();
     selectedCategory = [];
+    this.props.scrollTo(this.props.post.id);
   };
 
   continueTask = async () => {
@@ -46,10 +47,12 @@ class Thread extends Component {
     this.props.handleContinue();
     this.props.handleSubmit(this.props.post.id, selectedCategory);
     selectedCategory = [];
+    this.props.scrollTo(this.props.post.id);
   };
 
   render() {
     const {
+      scrollTo,
       showTask,
       handleSubmit,
       handleClose,

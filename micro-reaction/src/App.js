@@ -4,7 +4,7 @@ import PostwithReply from "./PostwithReply/PostwithReply";
 import firebase from "firebase";
 import Article from "./Article/Article";
 import "./App.css";
-import { Grid, Segment, Header } from "semantic-ui-react";
+import { Grid, Segment, Header, Rail, Sticky } from "semantic-ui-react";
 import { cloneDeep } from "lodash";
 import update from "immutability-helper";
 import PostwithUpvotes from "./PostwithUpvotes/PostwithUpvotes";
@@ -249,6 +249,7 @@ class App extends Component {
   };
 
   handleLogin = () => {
+    this.getUser();
     this.setState({ isLoggedIn: true });
   };
 
@@ -294,8 +295,9 @@ class App extends Component {
         {this.state.comments.map(post => {
           return (
             <div
+              key={post.id}
               className={classNames({
-                post_selected: post.title == this.state.selectedCom.title
+                post_selected: post.id == this.state.selectedCom.id
               })}
             >
               <Segment vertical>
@@ -320,28 +322,35 @@ class App extends Component {
     );
 
     const mainComponent = (
-      <div>
-        {this.state.isCommentsLoaded ? (
-          <div className="main_container">
-            <div className="post_container">
+      <div
+        className="mainComponent_wrapper"
+        style={
+          this.state.isCommentsLoaded ? null : { width: "100%", height: "100%" }
+        }
+      >
+        <div className="main_container">
+          <div className="post_container">
+            {this.state.isCommentsLoaded ? (
               <div className="post_list">{postList}</div>
-            </div>
-            {
-              <Thread
-                userName={this.state.user.name}
-                userEmail={this.state.user.email}
-                showTask={this.state.showTask}
-                handleSubmit={this.categorize}
-                handleClose={this.hideTask}
-                handleContinue={this.handleContinue}
-                post={this.state.selectedCom}
-                categ={this.state.categOptions}
-              />
-            }
+            ) : (
+              <div className="post_list">
+                <DataLoading />
+              </div>
+            )}
           </div>
-        ) : (
-          <DataLoading />
-        )}
+          {
+            <Thread
+              userName={this.state.user.name}
+              userEmail={this.state.user.email}
+              showTask={this.state.showTask}
+              handleSubmit={this.categorize}
+              handleClose={this.hideTask}
+              handleContinue={this.handleContinue}
+              post={this.state.selectedCom}
+              categ={this.state.categOptions}
+            />
+          }
+        </div>
       </div>
     );
 
@@ -394,7 +403,7 @@ class App extends Component {
     return (
       <div className="App-container">
         {this.state.isTrying || !this.state.isLoggedIn ? (
-          <HeaderComp middle={"Loggin"} />
+          <HeaderComp middle={"Welcome to Kemi"} />
         ) : (
           <HeaderComp
             middle={this.returnMiddle(this.state.tab)}

@@ -236,11 +236,11 @@ export default {
     });
   },
   getAllPosts: async function() {
-    //   await db
+    // await db
     //   .collection("posts")
-    //   .doc("0")
+    //   .doc("5")
     //   .set({
-    //     pId: 0,
+    //     pId: 5,
     //     user: "LaysClassic1oz",
     //     title: "First Hand Account Of The Day After Hurrican Sandy",
     //     content:
@@ -250,9 +250,9 @@ export default {
     //   });
     // await db
     //   .collection("posts")
-    //   .doc("1")
+    //   .doc("6")
     //   .set({
-    //     pId: 1,
+    //     pId: 6,
     //     user: "rauce12",
     //     title: "7 places to get help with Sandy loans in New Jersey",
     //     content:
@@ -262,9 +262,9 @@ export default {
     //   });
     // await db
     //   .collection("posts")
-    //   .doc("2")
+    //   .doc("7")
     //   .set({
-    //     pId: 2,
+    //     pId: 7,
     //     user: "goodnik",
     //     title: "Leave No Pet Behind! Pet Evacuation Laws in NYC",
     //     content:
@@ -274,9 +274,9 @@ export default {
     //   });
     // await db
     //   .collection("posts")
-    //   .doc("3")
+    //   .doc("8")
     //   .set({
-    //     pId: 3,
+    //     pId: 8,
     //     user: "deleted",
     //     title: "A safety note when dealing with flooded streets...",
     //     content:
@@ -286,15 +286,15 @@ export default {
     //   });
     // await db
     //   .collection("posts")
-    //   .doc("4")
+    //   .doc("9")
     //   .set({
-    // pId: 4,
-    // user: "tomswartz07",
-    // title: "Tip: Charge your computers and devices now",
-    // content:
-    //   "Tip: Charge your computers and devices now. Even if internet is down, you can use USB ports to charge your phones if the power goes out!",
-    // upvotes: 5,
-    // createdAt: new Date()
+    //     pId: 9,
+    //     user: "tomswartz07",
+    //     title: "Tip: Charge your computers and devices now",
+    //     content:
+    //       "Tip: Charge your computers and devices now. Even if internet is down, you can use USB ports to charge your phones if the power goes out!",
+    //     upvotes: 5,
+    //     createdAt: new Date()
     //   });
 
     try {

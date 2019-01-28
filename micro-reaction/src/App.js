@@ -349,17 +349,19 @@ class App extends Component {
             )}
           </div>
           {
-            <Thread
-              scrollTo={this.scrollTo}
-              userName={this.state.user.name}
-              userEmail={this.state.user.email}
-              showTask={this.state.showTask}
-              handleSubmit={this.categorize}
-              handleClose={this.hideTask}
-              handleContinue={this.handleContinue}
-              post={this.state.selectedCom}
-              categ={this.state.categOptions}
-            />
+            <div className="sticky_thread">
+              <Thread
+                scrollTo={this.scrollTo}
+                userName={this.state.user.name}
+                userEmail={this.state.user.email}
+                showTask={this.state.showTask}
+                handleSubmit={this.categorize}
+                handleClose={this.hideTask}
+                handleContinue={this.handleContinue}
+                post={this.state.selectedCom}
+                categ={this.state.categOptions}
+              />
+            </div>
           }
         </div>
       </div>

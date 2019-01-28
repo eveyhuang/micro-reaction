@@ -19,7 +19,7 @@
 .HeaderNav .HeaderNavItem.active {
   font-weight: 500;
   color: white;
-  border-bottom: 4px solid #417cef;
+  border-bottom: 4px solid #1a62aa;
 }
 .HeaderNav .HeaderNavItem .icon {
   font-size: 1.5rem;

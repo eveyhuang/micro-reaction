@@ -22,6 +22,22 @@
   color: white;
 }
 
+.logout {
+  display: flex;
+  height: 100%;
+  cursor: pointer;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  align-items: center;
+  line-height: 1rem;
+  font-size: 1rem;
+  color: white;
+}
+
+.logout:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
 .App-title {
   font-size: 1.5em;
 }

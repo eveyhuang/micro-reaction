@@ -290,7 +290,6 @@ class App extends Component {
             Posts
           </Header>
           <div className="right">
-            <button onClick={this.handleLogOut}>Log out</button>
             {this.state.isAdmin ? <button>YOU ARE A ADMIN!!!</button> : null}
           </div>
         </div>
@@ -376,11 +375,16 @@ class App extends Component {
           ) : (
             <HeaderComp
               middle={this.returnMiddle(this.state.tab)}
-              right={
+              left={
                 <HeaderNav
                   tab={this.state.tab}
                   onSelect={this.handleSelectTab}
                 />
+              }
+              right={
+                <div className="logout" onClick={this.handleLogOut}>
+                  {"Log out"}
+                </div>
               }
             />
           )}

@@ -69,6 +69,13 @@ class Thread extends Component {
     });
   };
 
+  resetHistoryOfThisUser = async () => {
+    this.setState({ userThread: [], isThreadLoaded: false }, async function() {
+      await fb.resetHistoryOfThisUser();
+      this.handleClose();
+    });
+  };
+
   handleClose = () => {
     this.props.handleClose();
     this.getAllThreadsOfThisUser();
@@ -165,6 +172,13 @@ class Thread extends Component {
           ) : (
             <DataLoading width={"4rem"} height={"4rem"} />
           )}
+          {this.state.userThread.length > 0 ? (
+            <div className="reset_button">
+              <Button onClick={this.resetHistoryOfThisUser}>RESET</Button>
+            </div>
+          ) : this.state.isThreadLoaded ? (
+            <p className="empty_history">(No history)</p>
+          ) : null}
         </div>
       </div>
     );

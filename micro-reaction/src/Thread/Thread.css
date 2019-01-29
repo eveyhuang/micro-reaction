@@ -41,11 +41,25 @@
 .task_list {
   padding: 1.5rem;
   background-color: #ffffff;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   border-radius: 1rem;
   border-style: solid;
   border-width: 5px;
   border-color: #417cef;
+  animation: fade 1000ms infinite;
+  -webkit-animation: fade 1000ms infinite;
+}
+
+.task_list:hover {
+  padding: 1.5rem;
+  background-color: #ffffff;
+  margin-bottom: 1rem;
+  border-radius: 1rem;
+  border-style: solid;
+  border-width: 5px;
+  border-color: #417cef;
+  animation: none;
+  -webkit-animation: none;
 }
 
 .task_history {
@@ -53,4 +67,28 @@
   background-color: #ffffff;
   margin-bottom: 1.5rem;
   border-radius: 1rem;
+}
+
+@keyframes fade {
+  from {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes fade {
+  from {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  to {
+    opacity: 1;
+  }
 }

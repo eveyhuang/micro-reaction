@@ -82,10 +82,15 @@ class Thread extends Component {
 
     const threadContents = (
       <div className="thread-contents">
-        <Header size="medium">Would you help to categorize this post?</Header>
-
-        <p> {post.title} </p>
-
+        <div
+          onClick={() => {
+            scrollTo(post.id);
+          }}
+          style={{ cursor: "pointer" }}
+        >
+          <Header size="medium">Would you help to categorize this post?</Header>
+          <p> {post.title} </p>
+        </div>
         {/*  <div className="thread-contents_task_post">
           <p> {post.title} </p>
           <p> {post.author}</p>
@@ -112,7 +117,13 @@ class Thread extends Component {
     return (
       <div className="task_container">
         <div className="task_header">{threadHeader}</div>
-        {showTask ? <div className="task_list">{threadContents}</div> : null}
+        <div className="task_list">
+          {showTask ? (
+            threadContents
+          ) : (
+            <Header size="medium">Vote for contribution</Header>
+          )}
+        </div>
         <div className="task_history">{threadHistory}</div>
       </div>
     );

@@ -208,14 +208,20 @@ class App extends Component {
     }));
   };
 
+  getRandomInt(max) {
+    return Math.floor(Math.random() * Math.floor(max));
+  }
+
   selectOtherPost(curID) {
     var nextID;
     let postSeen = this.state.postSeen;
-    this.state.comments.map(post => {
-      if (post.id !== curID && !postSeen.includes(post.id)) {
-        nextID = post.id;
-      }
-    });
+    // this.state.comments.map(post => {
+    //   if (post.id !== curID && !postSeen.includes(post.id)) {
+    //     nextID = post.id;
+    //   }
+    // });
+    let posibleId = this.getRandomInt(this.state.comments.length);
+    nextID = posibleId;
     return nextID;
   }
 
@@ -291,7 +297,17 @@ class App extends Component {
   };
 
   scrollTo = name => {
-    this._scroller.scrollTo(name);
+    var elOffset = this._scroller.offsetTop;
+    var elHeight = this._scroller.clientHeight;
+    var windowHeight = window.height;
+    var offset;
+    if (elHeight < windowHeight) {
+      offset = elOffset - (windowHeight / 2 - elHeight / 2);
+    } else {
+      offset = elOffset;
+    }
+    console.log("window:", windowHeight, offset, elHeight, elOffset);
+    this._scroller.scrollTo(name, offset);
   };
 
   render() {

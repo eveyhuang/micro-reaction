@@ -424,6 +424,43 @@ export default {
       return;
     }
   },
+  voteDuringThread: async function(id, isUpvote) {
+    try {
+      // console.log("inherit props:",postId, userAns, taskCateg)
+      var allThreadIds = [];
+      // const threads =
+      await db
+        .collection("threads")
+        .get()
+        .then(threads => {
+          threads.forEach(elem => {
+            allThreadIds.push(elem.id);
+          });
+        });
+      const lastThreadId = allThreadIds[allThreadIds.length - 1];
+      const lastThread = await db
+        .collection("threads")
+        .doc(lastThreadId.toString())
+        .get();
+      const lastThreadData = lastThread.data();
+      db.collection("threads")
+        .doc(lastThreadId)
+        .set({
+          ...lastThreadData,
+          chain: lastThreadData.chain.concat([
+            {
+              postId: id,
+              taskCateg: "voteDuringThread",
+              userAns: isUpvote ? "upvote" : "downvote",
+              doneAt: new Date()
+            }
+          ])
+        });
+    } catch (e) {
+      console.log(e.toString());
+      return;
+    }
+  },
   addThisTaskOnThread: async function(postId, userAns, taskCateg) {
     try {
       // console.log("inherit props:",postId, userAns, taskCateg)

@@ -45,6 +45,7 @@ class App extends Component {
     isLoginOpen: true,
     isRegisterOpen: false,
     isCommentsLoaded: false,
+    isThreading: false,
     showTask: false,
     showComId: 0,
     comments: [],
@@ -140,6 +141,14 @@ class App extends Component {
     });
   };
 
+  // setOnThreading = () => {
+  //   this.setState({ isThreading: true });
+  // };
+
+  setOffThreading = () => {
+    this.setState({ isThreading: false });
+  };
+
   incCount(id) {
     this.selectComment(id);
     this.showModal(id);
@@ -159,8 +168,11 @@ class App extends Component {
         };
       },
       async function() {
-        // await fb.voteOnThisPost(id, true);
-        // await fb.newTaskThread(id, "upvote");
+        await fb.voteOnThisPost(id, true);
+        this.state.isThreading
+          ? await fb.voteDuringThread(id, true)
+          : await fb.newTaskThread(id, "upvote");
+        this.setState({ isThreading: true });
       }
     );
   }
@@ -184,8 +196,11 @@ class App extends Component {
         };
       },
       async function() {
-        // await fb.voteOnThisPost(id, false);
-        // await fb.newTaskThread(id, "downvote");
+        await fb.voteOnThisPost(id, false);
+        this.state.isThreading
+          ? await fb.voteDuringThread(id, false)
+          : await fb.newTaskThread(id, "downvote");
+        this.setState({ isThreading: true });
       }
     );
   }
@@ -251,7 +266,8 @@ class App extends Component {
       showTask: false,
       selectedCom: [],
       showComId: 0,
-      postSeen: []
+      postSeen: [],
+      isThreading: false
     });
   };
 
@@ -367,6 +383,7 @@ class App extends Component {
           {
             <div className="sticky_thread">
               <Thread
+                setOffThreading={this.setOffThreading}
                 scrollTo={this.scrollTo}
                 userName={this.state.user.name}
                 userEmail={this.state.user.email}

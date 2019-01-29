@@ -23,10 +23,11 @@ class Thread extends Component {
   };
 
   addThisTaskOnThread = async (postId, userAnser, taskCateg) => {
-    // await fb.addThisTaskOnThread(postId, userAnser, taskCateg);
+    await fb.addThisTaskOnThread(postId, userAnser, taskCateg);
   };
 
   submitCateg = async () => {
+    this.props.setOffThreading();
     await this.addThisTaskOnThread(
       this.props.post.id,
       selectedCategory,
@@ -52,6 +53,7 @@ class Thread extends Component {
 
   render() {
     const {
+      setOffThreading,
       scrollTo,
       showTask,
       handleSubmit,

@@ -68,7 +68,8 @@ export default {
               userId: uid,
               email: email,
               name: name,
-              createdAt: new Date()
+              createdAt: new Date(),
+              thread: []
             });
           arrived = true;
           // console.log("uid:", uid);
@@ -161,6 +162,24 @@ export default {
       return null;
     }
   },
+  isAdmin: async function() {
+    try {
+      const user = await this.isUserLoggedIn();
+      if (!user) {
+        return null;
+      }
+      const userDoc = await db
+        .collection("users")
+        .doc(user.userId)
+        .get();
+      const userInfo = userDoc.data();
+      arrived = true;
+      return userInfo.isAdmin;
+    } catch (e) {
+      console.log(e.toString());
+      return;
+    }
+  },
   getUserInfo: async function() {
     try {
       const user = await this.isUserLoggedIn();
@@ -217,11 +236,11 @@ export default {
     });
   },
   getAllPosts: async function() {
-    //   await db
+    // await db
     //   .collection("posts")
-    //   .doc("0")
+    //   .doc("5")
     //   .set({
-    //     pId: 0,
+    //     pId: 5,
     //     user: "LaysClassic1oz",
     //     title: "First Hand Account Of The Day After Hurrican Sandy",
     //     content:
@@ -231,9 +250,9 @@ export default {
     //   });
     // await db
     //   .collection("posts")
-    //   .doc("1")
+    //   .doc("6")
     //   .set({
-    //     pId: 1,
+    //     pId: 6,
     //     user: "rauce12",
     //     title: "7 places to get help with Sandy loans in New Jersey",
     //     content:
@@ -243,9 +262,9 @@ export default {
     //   });
     // await db
     //   .collection("posts")
-    //   .doc("2")
+    //   .doc("7")
     //   .set({
-    //     pId: 2,
+    //     pId: 7,
     //     user: "goodnik",
     //     title: "Leave No Pet Behind! Pet Evacuation Laws in NYC",
     //     content:
@@ -255,9 +274,9 @@ export default {
     //   });
     // await db
     //   .collection("posts")
-    //   .doc("3")
+    //   .doc("8")
     //   .set({
-    //     pId: 3,
+    //     pId: 8,
     //     user: "deleted",
     //     title: "A safety note when dealing with flooded streets...",
     //     content:
@@ -267,15 +286,15 @@ export default {
     //   });
     // await db
     //   .collection("posts")
-    //   .doc("4")
+    //   .doc("9")
     //   .set({
-    // pId: 4,
-    // user: "tomswartz07",
-    // title: "Tip: Charge your computers and devices now",
-    // content:
-    //   "Tip: Charge your computers and devices now. Even if internet is down, you can use USB ports to charge your phones if the power goes out!",
-    // upvotes: 5,
-    // createdAt: new Date()
+    //     pId: 9,
+    //     user: "tomswartz07",
+    //     title: "Tip: Charge your computers and devices now",
+    //     content:
+    //       "Tip: Charge your computers and devices now. Even if internet is down, you can use USB ports to charge your phones if the power goes out!",
+    //     upvotes: 5,
+    //     createdAt: new Date()
     //   });
 
     try {
@@ -382,9 +401,10 @@ export default {
       threads.forEach(elem => {
         allThreadIds.push(elem.id);
       });
+      const dateForKey = new Date();
       await db
         .collection("threads")
-        .doc(allThreadIds.length.toString())
+        .doc(dateForKey.toString())
         .set({
           userId: userInfo.userId,
           userName: userInfo.name,
@@ -393,10 +413,48 @@ export default {
               postId: postId,
               taskCateg: "initial voting",
               userAns: userAns,
-              doneAt: new Date()
+              doneAt: dateForKey
             }
           ],
-          createdAt: new Date()
+          createdAt: dateForKey
+        });
+      await this.addCurrentThreadToThisUser(dateForKey);
+    } catch (e) {
+      console.log(e.toString());
+      return;
+    }
+  },
+  voteDuringThread: async function(id, isUpvote) {
+    try {
+      // console.log("inherit props:",postId, userAns, taskCateg)
+      var allThreadIds = [];
+      // const threads =
+      await db
+        .collection("threads")
+        .get()
+        .then(threads => {
+          threads.forEach(elem => {
+            allThreadIds.push(elem.id);
+          });
+        });
+      const lastThreadId = allThreadIds[allThreadIds.length - 1];
+      const lastThread = await db
+        .collection("threads")
+        .doc(lastThreadId.toString())
+        .get();
+      const lastThreadData = lastThread.data();
+      db.collection("threads")
+        .doc(lastThreadId)
+        .set({
+          ...lastThreadData,
+          chain: lastThreadData.chain.concat([
+            {
+              postId: id,
+              taskCateg: "voteDuringThread",
+              userAns: isUpvote ? "upvote" : "downvote",
+              doneAt: new Date()
+            }
+          ])
         });
     } catch (e) {
       console.log(e.toString());
@@ -416,14 +474,14 @@ export default {
             allThreadIds.push(elem.id);
           });
         });
-      const lastThreadId = allThreadIds.length - 1;
+      const lastThreadId = allThreadIds[allThreadIds.length - 1];
       const lastThread = await db
         .collection("threads")
         .doc(lastThreadId.toString())
         .get();
       const lastThreadData = lastThread.data();
       db.collection("threads")
-        .doc(lastThread.id)
+        .doc(lastThreadId)
         .set({
           ...lastThreadData,
           chain: lastThreadData.chain.concat([
@@ -435,6 +493,62 @@ export default {
             }
           ])
         });
+    } catch (e) {
+      console.log(e.toString());
+      return;
+    }
+  },
+  addCurrentThreadToThisUser: async function(threadId) {
+    try {
+      const user = await this.isUserLoggedIn();
+      if (!user) {
+        return null;
+      }
+      const userDoc = await db
+        .collection("users")
+        .doc(user.userId)
+        .get();
+      const userInfo = userDoc.data();
+      arrived = true;
+      await db
+        .collection("users")
+        .doc(user.userId)
+        .set({
+          ...userInfo,
+          thread: userInfo.thread.concat([threadId])
+        });
+    } catch (e) {
+      console.log(e.toString());
+      return;
+    }
+  },
+  getAllThreadsOfThisUser: async function() {
+    try {
+      let threadsOfThesUser = [];
+      const user = await this.isUserLoggedIn();
+      if (!user) {
+        return null;
+      }
+      const userDoc = await db
+        .collection("users")
+        .doc(user.userId)
+        .get();
+      const userInfo = userDoc.data();
+      arrived = true;
+      ///
+      const userThread = userInfo.thread
+      const allThreads = await db.collection("threads").get();
+      userThread.forEach(uThread => {
+        allThreads.forEach(elem => {
+          if (uThread.toDate().toString() == elem.id.toString()) {
+            threadsOfThesUser.push({
+              threadId: uThread,
+              thread: elem.data().chain
+            })
+          }
+        });
+      })
+      return threadsOfThesUser
     } catch (e) {
       console.log(e.toString());
       return;

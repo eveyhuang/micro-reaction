@@ -1,0 +1,28 @@
+.Header {
+  z-index: 1;
+  background: #417cef;
+  height: 4rem;
+  display: flex;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  position: fixed;
+  width: 100%;
+  top: 0;
+}
+.Header .side {
+  width: 300px;
+  display: flex;
+  align-items: center;
+}
+.Header .side.right {
+  justify-content: flex-end;
+}
+.Header .middle {
+  flex: 1;
+  font-weight: 600;
+  color: white;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

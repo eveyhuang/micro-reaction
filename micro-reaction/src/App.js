@@ -4,7 +4,7 @@ import PostwithReply from "./PostwithReply/PostwithReply";
 import firebase from "firebase";
 import Article from "./Article/Article";
 import "./App.css";
-import { Grid, Segment, Header } from "semantic-ui-react";
+import { Grid, Segment, Header, Rail, Sticky } from "semantic-ui-react";
 import { cloneDeep } from "lodash";
 import update from "immutability-helper";
 import PostwithUpvotes from "./PostwithUpvotes/PostwithUpvotes";
@@ -16,6 +16,16 @@ import Loading from "./Login/loading";
 import DataLoading from "./DataLoading";
 import fb from "./utils/firebaseWrapper";
 import { observer, inject } from "mobx-react";
+import HeaderComp from "./Header";
+import HeaderNav from "./HeaderNav";
+import Thread from "./Thread";
+import classNames from "classnames";
+import { ScrollElement, ScrollView } from "./Scroller";
+
+import enLocale from "date-fns/locale/en";
+import differenceInDays from "date-fns/difference_in_days";
+import distanceInWords from "date-fns/distance_in_words";
+import format from "date-fns/format";
 
 var _ = require("lodash");
 
@@ -33,12 +43,14 @@ const config = {
 @observer
 class App extends Component {
   state = {
+    tab: "home",
     user: fb.getUser(),
     isTrying: true,
     isLoggedIn: false,
     isLoginOpen: true,
     isRegisterOpen: false,
     isCommentsLoaded: false,
+    isThreading: false,
     showTask: false,
     showComId: 0,
     comments: [],
@@ -63,6 +75,24 @@ class App extends Component {
     postSeen: []
   };
 
+  getFormattedDate = d => {
+    const now = new Date();
+    const date = new Date(d);
+
+    // Less then 1 min
+    if (now - date < 60 * 1000) return "Just now";
+    // Less then 10 days
+    if (differenceInDays(now, date) < 10) {
+      return distanceInWords(now, date, { locale: enLocale, addSuffix: true });
+    }
+    // otherwise YYYY-MM-DD
+    return format(date, "YYYY-MM-DD");
+  };
+
+  handleSelectTab = tab => {
+    this.setState({ tab });
+  };
+
   componentWillMount() {
     this.autoLogin();
     fb.getAllPosts().then(data => {
@@ -72,6 +102,9 @@ class App extends Component {
 
   componentDidMount() {
     this.getUser();
+    fb.isAdmin().then(data => {
+      this.setState({ isAdmin: data });
+    });
   }
 
   updatePostsList = async () => {
@@ -127,6 +160,14 @@ class App extends Component {
     });
   };
 
+  // setOnThreading = () => {
+  //   this.setState({ isThreading: true });
+  // };
+
+  setOffThreading = () => {
+    this.setState({ isThreading: false });
+  };
+
   incCount(id) {
     this.selectComment(id);
     this.showModal(id);
@@ -147,7 +188,10 @@ class App extends Component {
       },
       async function() {
         await fb.voteOnThisPost(id, true);
-        await fb.newTaskThread(id, "upvote");
+        this.state.isThreading
+          ? await fb.voteDuringThread(id, true)
+          : await fb.newTaskThread(id, "upvote");
+        this.setState({ isThreading: true });
       }
     );
   }
@@ -172,7 +216,10 @@ class App extends Component {
       },
       async function() {
         await fb.voteOnThisPost(id, false);
-        await fb.newTaskThread(id, "downvote");
+        this.state.isThreading
+          ? await fb.voteDuringThread(id, false)
+          : await fb.newTaskThread(id, "downvote");
+        this.setState({ isThreading: true });
       }
     );
   }
@@ -195,14 +242,20 @@ class App extends Component {
     }));
   };
 
+  getRandomInt(max) {
+    return Math.floor(Math.random() * Math.floor(max));
+  }
+
   selectOtherPost(curID) {
     var nextID;
     let postSeen = this.state.postSeen;
-    this.state.comments.map(post => {
-      if (post.id !== curID && !postSeen.includes(post.id)) {
-        nextID = post.id;
-      }
-    });
+    // this.state.comments.map(post => {
+    //   if (post.id !== curID && !postSeen.includes(post.id)) {
+    //     nextID = post.id;
+    //   }
+    // });
+    let posibleId = this.getRandomInt(this.state.comments.length);
+    nextID = posibleId;
     return nextID;
   }
 
@@ -227,11 +280,18 @@ class App extends Component {
     });
   };
 
-  hideModal = () => {
-    this.setState({ showTask: false });
+  hideTask = () => {
+    this.setState({
+      showTask: false,
+      selectedCom: [],
+      showComId: 0,
+      postSeen: [],
+      isThreading: false
+    });
   };
 
   handleLogin = () => {
+    this.getUser();
     this.setState({ isLoggedIn: true });
   };
 
@@ -259,43 +319,106 @@ class App extends Component {
     this.setState({ isTrying: false });
   };
 
-  render() {
-    const mainPostsComponent = (
-      <div>
-        <div className="header_container">
-          <div className="left" />
-          <Header as="h3" dividing>
-            Posts
-          </Header>
-          <div className="right">
-            <button onClick={this.handleLogOut}>Log out</button>
-          </div>
-        </div>
-        {/* <Modal show={this.state.showTask} handleSubmit={this.categorize} handleClose={this.hideModal} post={this.state.selectedCom} categ={this.state.categories}></Modal> */}
+  returnMiddle = middleText => {
+    let middle;
+    if (middleText == "home") {
+      middle = "Home";
+    } else if (middleText == "notification") {
+      middle = "Notification";
+    } else {
+      middle = "Message";
+    }
+    return middle;
+  };
 
-        {this.state.isCommentsLoaded ? (
-          this.state.comments.map(post => {
-            return (
-              <Segment vertical>
-                <Modal
-                  show={this.state.showTask}
-                  handleSubmit={this.categorize}
-                  handleClose={this.hideModal}
-                  handleContinue={this.handleContinue}
-                  post={this.state.selectedCom}
-                  categ={this.state.categOptions}
-                />
-                <PostwithUpvotes
-                  data={post}
-                  handleInc={id => this.incCount(id)}
-                  handleDec={id => this.decCount(id)}
-                />
-              </Segment>
-            );
-          })
-        ) : (
-          <DataLoading />
-        )}
+  scrollTo = name => {
+    var elOffset = this._scroller.offsetTop;
+    var elHeight = this._scroller.clientHeight;
+    var windowHeight = window.height;
+    var offset;
+    if (elHeight < windowHeight) {
+      offset = elOffset - (windowHeight / 2 - elHeight / 2);
+    } else {
+      offset = elOffset;
+    }
+    console.log("window:", windowHeight, offset, elHeight, elOffset);
+    this._scroller.scrollTo(name, offset);
+  };
+
+  render() {
+    const postList = (
+      <div>
+        <ScrollView ref={scroller => (this._scroller = scroller)}>
+          <div>
+            {this.state.comments.map(post => {
+              return (
+                <ScrollElement key={post.id} name={post.id}>
+                  <div
+                    className={classNames({
+                      post_selected: post.id == this.state.selectedCom.id
+                    })}
+                  >
+                    <Segment vertical>
+                      {/*<Modal
+                show={this.state.showTask}
+                handleSubmit={this.categorize}
+                handleClose={this.hideTask}
+                handleContinue={this.handleContinue}
+                post={this.state.selectedCom}
+                categ={this.state.categOptions}
+              />*/}
+                      <PostwithUpvotes
+                        data={post}
+                        getFormattedDate={this.getFormattedDate}
+                        handleInc={id => this.incCount(id)}
+                        handleDec={id => this.decCount(id)}
+                      />
+                    </Segment>
+                  </div>
+                </ScrollElement>
+              );
+            })}
+          </div>
+        </ScrollView>
+      </div>
+    );
+
+    const mainComponent = (
+      <div
+        className="mainComponent_wrapper"
+        style={
+          this.state.isCommentsLoaded ? null : { width: "100%", height: "100%" }
+        }
+      >
+        <div className="main_container">
+          <div className="post_container">
+            {this.state.isCommentsLoaded ? (
+              <div className="post_list">{postList}</div>
+            ) : (
+              <div className="post_list">
+                <DataLoading />
+              </div>
+            )}
+          </div>
+          {
+            <div className="sticky_thread">
+              <Thread
+                getFormattedDate={this.getFormattedDate}
+                setOffThreading={this.setOffThreading}
+                scrollTo={this.scrollTo}
+                userName={this.state.user.name}
+                userEmail={this.state.user.email}
+                userId={this.state.user.userId}
+                showTask={this.state.showTask}
+                handleSubmit={this.categorize}
+                handleClose={this.hideTask}
+                handleContinue={this.handleContinue}
+                post={this.state.selectedCom}
+                categ={this.state.categOptions}
+              />
+            </div>
+          }
+        </div>
       </div>
     );
 
@@ -343,10 +466,25 @@ class App extends Component {
       </div>
     );
 
-    const mainPage = this.state.isLoggedIn ? mainPostsComponent : loginPage;
+    const mainPage = this.state.isLoggedIn ? mainComponent : loginPage;
 
     return (
       <div className="App-container">
+        {this.state.isTrying || !this.state.isLoggedIn ? (
+          <HeaderComp middle={"Welcome to Kemi"} />
+        ) : (
+          <HeaderComp
+            middle={this.returnMiddle(this.state.tab)}
+            left={
+              <HeaderNav tab={this.state.tab} onSelect={this.handleSelectTab} />
+            }
+            right={
+              <div className="logout" onClick={this.handleLogOut}>
+                {"Log out"}
+              </div>
+            }
+          />
+        )}
         <div className="App">
           {/*<Counter />*/}
           {this.state.isTrying ? <Loading /> : mainPage}

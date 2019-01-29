@@ -1,0 +1,14 @@
+.this_thread_wrapper {
+  padding: 0.5rem;
+  background-color: #bdd2fc;
+  margin-bottom: 1rem;
+  border-radius: 1rem;
+}
+
+.this_thread_wrapper:hover {
+  background-color: #98b9fc;
+}
+
+.this_thread_title {
+  cursor: pointer;
+}

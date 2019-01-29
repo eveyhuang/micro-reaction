@@ -22,6 +22,11 @@ import Thread from "./Thread";
 import classNames from "classnames";
 import { ScrollElement, ScrollView } from "./Scroller";
 
+import enLocale from "date-fns/locale/en";
+import differenceInDays from "date-fns/difference_in_days";
+import distanceInWords from "date-fns/distance_in_words";
+import format from "date-fns/format";
+
 var _ = require("lodash");
 
 const config = {
@@ -68,6 +73,20 @@ class App extends Component {
       { key: "C", text: "C", value: "c" }
     ],
     postSeen: []
+  };
+
+  getFormattedDate = d => {
+    const now = new Date();
+    const date = new Date(d);
+
+    // Less then 1 min
+    if (now - date < 60 * 1000) return "Just now";
+    // Less then 10 days
+    if (differenceInDays(now, date) < 10) {
+      return distanceInWords(now, date, { locale: enLocale, addSuffix: true });
+    }
+    // otherwise YYYY-MM-DD
+    return format(date, "YYYY-MM-DD");
   };
 
   handleSelectTab = tab => {
@@ -350,6 +369,7 @@ class App extends Component {
               />*/}
                       <PostwithUpvotes
                         data={post}
+                        getFormattedDate={this.getFormattedDate}
                         handleInc={id => this.incCount(id)}
                         handleDec={id => this.decCount(id)}
                       />
@@ -383,10 +403,12 @@ class App extends Component {
           {
             <div className="sticky_thread">
               <Thread
+                getFormattedDate={this.getFormattedDate}
                 setOffThreading={this.setOffThreading}
                 scrollTo={this.scrollTo}
                 userName={this.state.user.name}
                 userEmail={this.state.user.email}
+                userId={this.state.user.userId}
                 showTask={this.state.showTask}
                 handleSubmit={this.categorize}
                 handleClose={this.hideTask}

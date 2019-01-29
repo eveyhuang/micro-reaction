@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import DataLoading from "../DataLoading";
+import ThreadHistoryItem from "./ThreadHistoryItem";
 import fb from "../utils/firebaseWrapper";
 import {
   Button,
@@ -14,8 +16,15 @@ let selectedCategory = [];
 class Thread extends Component {
   state = {
     userName: this.props.userName,
-    userEmail: this.props.userEmail
+    userEmail: this.props.userEmail,
+    userId: this.props.userId,
+    userThread: [],
+    isThreadLoaded: false
   };
+
+  componentWillMount() {
+    this.getAllThreadsOfThisUser();
+  }
 
   setCategories = (event, { value }) => {
     console.log(value);
@@ -37,6 +46,7 @@ class Thread extends Component {
     this.props.handleClose();
     selectedCategory = [];
     this.props.scrollTo(this.props.post.id);
+    this.getAllThreadsOfThisUser();
   };
 
   continueTask = async () => {
@@ -49,10 +59,24 @@ class Thread extends Component {
     this.props.handleSubmit(this.props.post.id, selectedCategory);
     selectedCategory = [];
     this.props.scrollTo(this.props.post.id);
+    this.getAllThreadsOfThisUser();
+  };
+
+  getAllThreadsOfThisUser = async () => {
+    await fb.getAllThreadsOfThisUser(this.state.userId).then(threads => {
+      console.log("getAllThreadsOfThisUser :", threads);
+      return this.setState({ userThread: threads, isThreadLoaded: true });
+    });
+  };
+
+  handleClose = () => {
+    this.props.handleClose();
+    this.getAllThreadsOfThisUser();
   };
 
   render() {
     const {
+      getFormattedDate,
       setOffThreading,
       scrollTo,
       showTask,
@@ -110,11 +134,9 @@ class Thread extends Component {
         />
         <Button onClick={this.submitCateg}>Submit and Exit</Button>
         <Button onClick={this.continueTask}>Submit and Continue</Button>
-        <Button onClick={handleClose}>Close</Button>
+        <Button onClick={this.handleClose}>Close</Button>
       </div>
     );
-
-    const threadHistory = <div>threadHistory</div>;
 
     return (
       <div className="task_container">
@@ -123,10 +145,27 @@ class Thread extends Component {
           {showTask ? (
             threadContents
           ) : (
-            <Header size="medium">Vote for contribution</Header>
+            <Header size="medium">Vote for contribution!</Header>
           )}
         </div>
-        <div className="task_history">{threadHistory}</div>
+        <div className="task_history">
+          <Header size="medium">History of my contributions</Header>
+          {this.state.isThreadLoaded ? (
+            this.state.userThread.map((uThread, index) => {
+              return (
+                <div key={index}>
+                  <ThreadHistoryItem
+                    uThread={uThread}
+                    index={index}
+                    getFormattedDate={getFormattedDate}
+                  />
+                </div>
+              );
+            })
+          ) : (
+            <DataLoading width={"4rem"} height={"4rem"} />
+          )}
+        </div>
       </div>
     );
   }

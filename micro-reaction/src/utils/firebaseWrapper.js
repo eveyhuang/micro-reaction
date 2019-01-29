@@ -521,6 +521,38 @@ export default {
       console.log(e.toString());
       return;
     }
+  },
+  getAllThreadsOfThisUser: async function() {
+    try {
+      let threadsOfThesUser = [];
+      const user = await this.isUserLoggedIn();
+      if (!user) {
+        return null;
+      }
+      const userDoc = await db
+        .collection("users")
+        .doc(user.userId)
+        .get();
+      const userInfo = userDoc.data();
+      arrived = true;
+      ///
+      const userThread = userInfo.thread
+      const allThreads = await db.collection("threads").get();
+      userThread.forEach(uThread => {
+        allThreads.forEach(elem => {
+          if (uThread.toDate().toString() == elem.id.toString()) {
+            threadsOfThesUser.push({
+              threadId: uThread,
+              thread: elem.data().chain
+            })
+          }
+        });
+      })
+      return threadsOfThesUser
+    } catch (e) {
+      console.log(e.toString());
+      return;
+    }
   }
   // numOfPosts : async function() {
   //   try {

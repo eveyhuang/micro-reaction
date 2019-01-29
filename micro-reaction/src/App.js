@@ -4,7 +4,14 @@ import PostwithReply from "./PostwithReply/PostwithReply";
 import firebase from "firebase";
 import Article from "./Article/Article";
 import "./App.css";
-import { Grid, Segment, Header, Rail, Sticky } from "semantic-ui-react";
+import {
+  Grid,
+  Segment,
+  Header,
+  Rail,
+  Sticky,
+  Dropdown
+} from "semantic-ui-react";
 import { cloneDeep } from "lodash";
 import update from "immutability-helper";
 import PostwithUpvotes from "./PostwithUpvotes/PostwithUpvotes";
@@ -26,6 +33,7 @@ import enLocale from "date-fns/locale/en";
 import differenceInDays from "date-fns/difference_in_days";
 import distanceInWords from "date-fns/distance_in_words";
 import format from "date-fns/format";
+import { isThursday } from "date-fns";
 
 var _ = require("lodash");
 
@@ -54,6 +62,11 @@ class App extends Component {
     showTask: false,
     showComId: 0,
     comments: [],
+    orderingMode: "Popular",
+    orderingOptions: [
+      { key: "Popular", text: "Popular", value: "Popular" },
+      { key: "Random", text: "Random", value: "Random" }
+    ],
     // comments: [
     //   {
     //     id: postInfo.pId,
@@ -331,26 +344,67 @@ class App extends Component {
     return middle;
   };
 
-  scrollTo = name => {
-    var elOffset = this._scroller.offsetTop;
-    var elHeight = this._scroller.clientHeight;
-    var windowHeight = window.height;
-    var offset;
-    if (elHeight < windowHeight) {
-      offset = elOffset - (windowHeight / 2 - elHeight / 2);
-    } else {
-      offset = elOffset;
+  handleOrderingDrowdown = (event, { value }) => {
+    this.setState({ orderingMode: value });
+  };
+
+  shuffle = array => {
+    let currentIndex = array.length,
+      temporaryValue,
+      randomIndex;
+    while (0 !== currentIndex) {
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
     }
-    console.log("window:", windowHeight, offset, elHeight, elOffset);
-    this._scroller.scrollTo(name, offset);
+    return array;
+  };
+
+  orderingBasedOnSelectedMode = () => {
+    let resultList = [];
+    if (this.state.orderingMode == "Popular") {
+      resultList = this.state.comments.sort(function(a, b) {
+        return b.upvotes - a.upvotes;
+      });
+      return resultList;
+    }
+    // if (this.state.orederingMode == "Random") {
+    //   resultList = this.shuffle(this.state.comments);
+    //   this.setState({ comments: resultList });
+    //   return resultList;
+    // }
+  };
+
+  scrollTo = name => {
+    // var elOffset = this._scroller.offsetTop;
+    // var elHeight = this._scroller.clientHeight;
+    // var windowHeight = window.height;
+    // var offset;
+    // if (elHeight < windowHeight) {
+    //   offset = elOffset - (windowHeight / 2 - elHeight / 2);
+    // } else {
+    //   offset = elOffset;
+    // }
+    // console.log("window:", windowHeight, offset, elHeight, elOffset);
+    this._scroller.scrollTo(name);
   };
 
   render() {
+    console.log("comments:", this.state.comments, typeof this.state.comments);
     const postList = (
       <div>
+        <div className="post_header">
+          <Dropdown
+            defaultValue="Popular"
+            onChange={this.handleOrderingDrowdown}
+            options={this.state.orderingOptions}
+          />
+        </div>
         <ScrollView ref={scroller => (this._scroller = scroller)}>
           <div>
-            {this.state.comments.map(post => {
+            {this.orderingBasedOnSelectedMode(this.state.comments).map(post => {
               return (
                 <ScrollElement key={post.id} name={post.id}>
                   <div
@@ -359,14 +413,6 @@ class App extends Component {
                     })}
                   >
                     <Segment vertical>
-                      {/*<Modal
-                show={this.state.showTask}
-                handleSubmit={this.categorize}
-                handleClose={this.hideTask}
-                handleContinue={this.handleContinue}
-                post={this.state.selectedCom}
-                categ={this.state.categOptions}
-              />*/}
                       <PostwithUpvotes
                         data={post}
                         getFormattedDate={this.getFormattedDate}

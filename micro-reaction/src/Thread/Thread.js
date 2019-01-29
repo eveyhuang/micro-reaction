@@ -19,7 +19,7 @@ class Thread extends Component {
     userEmail: this.props.userEmail,
     userId: this.props.userId,
     userThread: [],
-    isThreadLoaded: false
+    isThreadLoaded: false,
   };
 
   componentWillMount() {
@@ -64,7 +64,6 @@ class Thread extends Component {
 
   getAllThreadsOfThisUser = async () => {
     await fb.getAllThreadsOfThisUser(this.state.userId).then(threads => {
-      console.log("getAllThreadsOfThisUser :", threads);
       return this.setState({ userThread: threads, isThreadLoaded: true });
     });
   };

@@ -401,6 +401,7 @@ class App extends Component {
       });
       return resultList;
     }
+    return this.state.comments
     // if (this.state.orederingMode == "Random") {
     //   resultList = this.shuffle(this.state.comments);
     //   this.setState({ comments: resultList });

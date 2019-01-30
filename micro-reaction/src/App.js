@@ -183,6 +183,7 @@ class App extends Component {
   };
 
   incCount(id) {
+    const prevComId = this.state.selectedCom.id;
     this.selectComment(id);
     this.showModal(id);
     this.setState(
@@ -202,7 +203,7 @@ class App extends Component {
       },
       async function() {
         await fb.voteOnThisPost(id, true);
-        this.state.isThreading
+        this.state.isThreading && prevComId == id
           ? await fb.voteDuringThread(id, true)
           : await fb.newTaskThread(id, "upvote");
         this.setState({ isThreading: true });
@@ -211,6 +212,7 @@ class App extends Component {
   }
 
   decCount(id) {
+    const prevComId = this.state.selectedCom.id;
     this.selectComment(id);
     this.showModal(id);
     this.setState(
@@ -230,7 +232,7 @@ class App extends Component {
       },
       async function() {
         await fb.voteOnThisPost(id, false);
-        this.state.isThreading
+        this.state.isThreading && prevComId == id
           ? await fb.voteDuringThread(id, false)
           : await fb.newTaskThread(id, "downvote");
         this.setState({ isThreading: true });
@@ -307,7 +309,6 @@ class App extends Component {
   handleLogin = () => {
     this.setState({ isLoggedIn: true }, function() {
       fb.getUserInfo().then(value => {
-        console.log("handleLogin:::::::::::userInfo:",value)
         this.setState({ user: value });
       });
     });
@@ -397,7 +398,11 @@ class App extends Component {
   };
 
   render() {
-    console.log("comments:", this.state.comments, typeof this.state.comments);
+    console.log(
+      "selectedCom:",
+      this.state.selectedCom.id,
+      this.state.selectedCom
+    );
     const postList = (
       <div>
         <div className="post_header">

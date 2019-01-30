@@ -7,7 +7,8 @@ import {
   Dropdown,
   Container,
   Header,
-  Message
+  Message,
+  Icon
 } from "semantic-ui-react";
 import "./Thread.css";
 
@@ -114,14 +115,25 @@ class Thread extends Component {
 
     const threadContents = (
       <div className="thread-contents">
-        <div
-          onClick={() => {
-            scrollTo(post.id);
-          }}
-          style={{ cursor: "pointer" }}
-        >
-          <Header size="medium">Would you help to categorize this post?</Header>
-          <p> {post.title} </p>
+        <div>
+          <div className="thread-contents_cancel_button_box">
+            <div className="thread-contents_cancel_button">
+              <Icon name="close" size="large" onClick={this.handleClose} />
+            </div>
+          </div>
+          <div
+            className="thread-contents_task_wrapper"
+            onClick={() => {
+              scrollTo(post.id);
+            }}
+          >
+            <p className="thread-contents_task_question">
+              Would you help to categorize this post?
+            </p>
+            <p className="thread-contents_task_question_post_title">
+              {`Title: ${post.title}`}
+            </p>
+          </div>
         </div>
         {/*  <div className="thread-contents_task_post">
           <p> {post.title} </p>
@@ -138,9 +150,9 @@ class Thread extends Component {
           options={categ}
           onChange={this.setCategories}
         />
-        <Button onClick={this.submitCateg}>Submit and Exit</Button>
-        <Button onClick={this.continueTask}>Submit and Continue</Button>
-        <Button onClick={this.handleClose}>Close</Button>
+        <Button onClick={this.submitCateg}>Submit & Exit</Button>
+        <Button onClick={this.continueTask}>Submit & Continue</Button>
+        {/*<Button onClick={this.handleClose}>Close</Button>*/}
       </div>
     );
 

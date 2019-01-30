@@ -25,6 +25,37 @@
   margin-bottom: 1rem;
 }
 
+.thread-contents_cancel_button_box {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-direction: row;
+}
+
+.thread-contents_cancel_button {
+  opacity: 0.5;
+}
+
+.thread-contents_cancel_button:hover {
+  cursor: pointer;
+  opacity: 1;
+}
+
+.thread-contents_task_question {
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.thread-contents_task_wrapper {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.thread-contents_task_question_post_title {
+  cursor: pointer;
+}
+
 .task_container {
   margin-top: 1.5rem;
   margin-right: 1.5rem;
@@ -69,6 +100,27 @@
   border-radius: 1rem;
 }
 
+.task_history :not(:last-child) {
+  margin-bottom: 1rem;
+}
+
+.task_history_box {
+  /* background-color: #fab6b6; */
+  /* border-radius: 1rem; */
+  /* border-color: #417cef;
+  border-style: solid;
+  border-width: 2px;
+  border-radius: 1rem; */
+  padding: 0.5rem;
+  max-height: 10rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.task_history_box :not(:last-child) {
+  margin-bottom: 0.5rem;
+}
+
 @keyframes fade {
   from {
     opacity: 1;
@@ -91,4 +143,24 @@
   to {
     opacity: 1;
   }
+}
+
+.reset_button {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+}
+
+.empty_history {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+
+  font-size: 1rem;
+  font-weight: bold;
+  opacity: 0.5;
 }

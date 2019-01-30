@@ -536,7 +536,7 @@ export default {
       const userInfo = userDoc.data();
       arrived = true;
       ///
-      const userThread = userInfo.thread
+      const userThread = userInfo.thread;
       const allThreads = await db.collection("threads").get();
       userThread.forEach(uThread => {
         allThreads.forEach(elem => {
@@ -544,11 +544,47 @@ export default {
             threadsOfThesUser.push({
               threadId: uThread,
               thread: elem.data().chain
-            })
+            });
           }
         });
-      })
-      return threadsOfThesUser
+      });
+      return threadsOfThesUser;
+    } catch (e) {
+      console.log(e.toString());
+      return;
+    }
+  },
+  resetHistoryOfThisUser: async function() {
+    try {
+      const user = await this.isUserLoggedIn();
+      if (!user) {
+        return null;
+      }
+      const userDoc = await db
+        .collection("users")
+        .doc(user.userId)
+        .get();
+      const userInfo = userDoc.data();
+      arrived = true;
+      ///
+      const userThread = userInfo.thread;
+      const allThreads = await db.collection("threads").get();
+      userThread.forEach(uThread => {
+        allThreads.forEach(elem => {
+          if (uThread.toDate().toString() == elem.id.toString()) {
+            db.collection("threads")
+              .doc(elem.id)
+              .delete();
+          }
+        });
+      });
+      await db
+        .collection("users")
+        .doc(user.userId)
+        .set({
+          ...userInfo,
+          thread: []
+        });
     } catch (e) {
       console.log(e.toString());
       return;

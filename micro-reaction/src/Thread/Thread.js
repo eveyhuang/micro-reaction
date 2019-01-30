@@ -7,7 +7,8 @@ import {
   Dropdown,
   Container,
   Header,
-  Message
+  Message,
+  Icon
 } from "semantic-ui-react";
 import "./Thread.css";
 
@@ -15,9 +16,6 @@ let selectedCategory = [];
 
 class Thread extends Component {
   state = {
-    userName: this.props.userName,
-    userEmail: this.props.userEmail,
-    userId: this.props.userId,
     userThread: [],
     isThreadLoaded: false
   };
@@ -26,8 +24,16 @@ class Thread extends Component {
     this.getAllThreadsOfThisUser();
   }
 
+  componentWillReceiveProps = nextProps => {
+    this.setState({
+      userThread: nextProps.userThread ? nextProps.userThread : [],
+      isThreadLoaded: nextProps.isThreadLoaded
+        ? nextProps.isThreadLoaded
+        : false
+    });
+  };
+
   setCategories = (event, { value }) => {
-    console.log(value);
     selectedCategory = value;
   };
 
@@ -63,9 +69,17 @@ class Thread extends Component {
   };
 
   getAllThreadsOfThisUser = async () => {
-    await fb.getAllThreadsOfThisUser(this.state.userId).then(threads => {
-      console.log("getAllThreadsOfThisUser :", threads);
-      return this.setState({ userThread: threads, isThreadLoaded: true });
+    // await fb.getAllThreadsOfThisUser(this.state.userId).then(threads => {
+    //   return this.setState({ userThread: threads, isThreadLoaded: true });
+    // });
+    this.props.getAllThreadsOfThisUser();
+  };
+
+  resetHistoryOfThisUser = async () => {
+    this.props.resetHistoryOfThisUser();
+    this.setState({ userThread: [], isThreadLoaded: false }, async function() {
+      await fb.resetHistoryOfThisUser();
+      this.handleClose();
     });
   };
 
@@ -86,6 +100,7 @@ class Thread extends Component {
       post,
       categ
     } = this.props;
+
     const threadHeader = (
       <div className="thread-header">
         <div className="thread-header_userProfile">
@@ -95,27 +110,42 @@ class Thread extends Component {
             alt="user profile"
           />
         </div>
-        <div className="thread-header_userInfo">
-          <div className="thread-header_userInfo_userName">
-            {this.state.userName}
+        {this.props.user.name ? (
+          <div className="thread-header_userInfo">
+            <div className="thread-header_userInfo_userName">
+              {this.props.user.name}
+            </div>
+            <div className="thread-header_userInfo_userEmail">
+              {this.props.user.email}
+            </div>
           </div>
-          <div className="thread-header_userInfo_userEmail">
-            {this.state.userEmail}
-          </div>
-        </div>
+        ) : (
+          <DataLoading width={"4rem"} height={"4rem"} />
+        )}
       </div>
     );
 
     const threadContents = (
       <div className="thread-contents">
-        <div
-          onClick={() => {
-            scrollTo(post.id);
-          }}
-          style={{ cursor: "pointer" }}
-        >
-          <Header size="medium">Would you help to categorize this post?</Header>
-          <p> {post.title} </p>
+        <div>
+          <div className="thread-contents_cancel_button_box">
+            <div className="thread-contents_cancel_button">
+              <Icon name="close" size="large" onClick={this.handleClose} />
+            </div>
+          </div>
+          <div
+            className="thread-contents_task_wrapper"
+            onClick={() => {
+              scrollTo(post.id);
+            }}
+          >
+            <p className="thread-contents_task_question">
+              Would you help to categorize this post?
+            </p>
+            <p className="thread-contents_task_question_post_title">
+              {`Title: ${post.title}`}
+            </p>
+          </div>
         </div>
         {/*  <div className="thread-contents_task_post">
           <p> {post.title} </p>
@@ -132,9 +162,9 @@ class Thread extends Component {
           options={categ}
           onChange={this.setCategories}
         />
-        <Button onClick={this.submitCateg}>Submit and Exit</Button>
-        <Button onClick={this.continueTask}>Submit and Continue</Button>
-        <Button onClick={this.handleClose}>Close</Button>
+        <Button onClick={this.submitCateg}>Submit & Exit</Button>
+        <Button onClick={this.continueTask}>Submit & Continue</Button>
+        {/*<Button onClick={this.handleClose}>Close</Button>*/}
       </div>
     );
 
@@ -151,20 +181,32 @@ class Thread extends Component {
         <div className="task_history">
           <Header size="medium">History of my contributions</Header>
           {this.state.isThreadLoaded ? (
-            this.state.userThread.map((uThread, index) => {
-              return (
-                <div key={index}>
-                  <ThreadHistoryItem
-                    uThread={uThread}
-                    index={index}
-                    getFormattedDate={getFormattedDate}
-                  />
-                </div>
-              );
-            })
+            this.state.userThread.length > 0 ? (
+              <div className="task_history_box">
+                {this.state.userThread.map((uThread, index) => {
+                  return (
+                    <div key={index}>
+                      <ThreadHistoryItem
+                        uThread={uThread}
+                        index={index}
+                        getFormattedDate={getFormattedDate}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="empty_history">(No history)</p>
+            )
           ) : (
             <DataLoading width={"4rem"} height={"4rem"} />
           )}
+
+          {this.state.userThread.length > 0 ? (
+            <div className="reset_button">
+              <Button onClick={this.resetHistoryOfThisUser}>RESET</Button>
+            </div>
+          ) : null}
         </div>
       </div>
     );

@@ -4,7 +4,14 @@ import PostwithReply from "./PostwithReply/PostwithReply";
 import firebase from "firebase";
 import Article from "./Article/Article";
 import "./App.css";
-import { Grid, Segment, Header, Rail, Sticky } from "semantic-ui-react";
+import {
+  Grid,
+  Segment,
+  Header,
+  Rail,
+  Sticky,
+  Dropdown
+} from "semantic-ui-react";
 import { cloneDeep } from "lodash";
 import update from "immutability-helper";
 import PostwithUpvotes from "./PostwithUpvotes/PostwithUpvotes";
@@ -26,6 +33,7 @@ import enLocale from "date-fns/locale/en";
 import differenceInDays from "date-fns/difference_in_days";
 import distanceInWords from "date-fns/distance_in_words";
 import format from "date-fns/format";
+import { isThursday } from "date-fns";
 
 var _ = require("lodash");
 
@@ -44,7 +52,7 @@ const config = {
 class App extends Component {
   state = {
     tab: "home",
-    user: fb.getUser(),
+    user: fb.getUserInfo(),
     isTrying: true,
     isLoggedIn: false,
     isLoginOpen: true,
@@ -54,6 +62,11 @@ class App extends Component {
     showTask: false,
     showComId: 0,
     comments: [],
+    orderingMode: "Popular",
+    orderingOptions: [
+      { key: "Popular", text: "Popular", value: "Popular" },
+      { key: "Random", text: "Random", value: "Random" }
+    ],
     // comments: [
     //   {
     //     id: postInfo.pId,
@@ -72,7 +85,9 @@ class App extends Component {
       { key: "B", text: "B", value: "b" },
       { key: "C", text: "C", value: "c" }
     ],
-    postSeen: []
+    postSeen: [],
+    userThread: [],
+    isThreadLoaded: false
   };
 
   getFormattedDate = d => {
@@ -94,18 +109,39 @@ class App extends Component {
   };
 
   componentWillMount() {
+    document.removeEventListener("keydown", this.escFunction, false);
     this.autoLogin();
     fb.getAllPosts().then(data => {
       this.setState({ comments: data, isCommentsLoaded: true });
     });
+    this.getAllThreadsOfThisUser();
   }
 
   componentDidMount() {
+    document.addEventListener("keydown", this.escFunction, false);
     this.getUser();
     fb.isAdmin().then(data => {
       this.setState({ isAdmin: data });
     });
   }
+
+  escFunction = event => {
+    if (event.keyCode === 27) {
+      //Esc key
+      this.hideTask();
+      this.getAllThreadsOfThisUser();
+    }
+  };
+
+  getAllThreadsOfThisUser = async () => {
+    await fb.getAllThreadsOfThisUser(this.state.userId).then(threads => {
+      return this.setState({ userThread: threads, isThreadLoaded: true });
+    });
+  };
+
+  resetHistoryOfThisUser = () => {
+    this.setState({ userThread: [], isThreadLoaded: false });
+  };
 
   updatePostsList = async () => {
     this.setState({ isCommentsLoaded: false }, async function() {
@@ -135,6 +171,7 @@ class App extends Component {
   };
 
   getUser = async function() {
+    console.log("getUser!!!");
     const user = this.state.user || (await fb.getUserInfo());
     if (!user) {
       return null;
@@ -149,7 +186,7 @@ class App extends Component {
           if (post.id !== comid) {
             return post;
           } else {
-            console.log(comid, categ);
+            // console.log(comid, categ);
             return {
               ...post,
               categories: categ
@@ -169,6 +206,7 @@ class App extends Component {
   };
 
   incCount(id) {
+    const prevComId = this.state.selectedCom.id;
     this.selectComment(id);
     this.showModal(id);
     this.setState(
@@ -188,15 +226,17 @@ class App extends Component {
       },
       async function() {
         await fb.voteOnThisPost(id, true);
-        this.state.isThreading
+        this.state.isThreading && prevComId == id
           ? await fb.voteDuringThread(id, true)
           : await fb.newTaskThread(id, "upvote");
         this.setState({ isThreading: true });
+        this.getAllThreadsOfThisUser();
       }
     );
   }
 
   decCount(id) {
+    const prevComId = this.state.selectedCom.id;
     this.selectComment(id);
     this.showModal(id);
     this.setState(
@@ -216,10 +256,11 @@ class App extends Component {
       },
       async function() {
         await fb.voteOnThisPost(id, false);
-        this.state.isThreading
+        this.state.isThreading && prevComId == id
           ? await fb.voteDuringThread(id, false)
           : await fb.newTaskThread(id, "downvote");
         this.setState({ isThreading: true });
+        this.getAllThreadsOfThisUser();
       }
     );
   }
@@ -234,7 +275,7 @@ class App extends Component {
 
   handleContinue = () => {
     var nextPostID = this.selectOtherPost(this.state.showComId);
-    console.log("ID of the next Post to Show: ", nextPostID);
+    // console.log("ID of the next Post to Show: ", nextPostID);
     this.selectComment(nextPostID);
     this.setState(prevState => ({
       showComId: nextPostID,
@@ -291,8 +332,11 @@ class App extends Component {
   };
 
   handleLogin = () => {
-    this.getUser();
-    this.setState({ isLoggedIn: true });
+    this.setState({ isLoggedIn: true }, function() {
+      fb.getUserInfo().then(value => {
+        this.setState({ user: value });
+      });
+    });
   };
 
   showLoginBox() {
@@ -331,26 +375,67 @@ class App extends Component {
     return middle;
   };
 
-  scrollTo = name => {
-    var elOffset = this._scroller.offsetTop;
-    var elHeight = this._scroller.clientHeight;
-    var windowHeight = window.height;
-    var offset;
-    if (elHeight < windowHeight) {
-      offset = elOffset - (windowHeight / 2 - elHeight / 2);
-    } else {
-      offset = elOffset;
+  handleOrderingDrowdown = (event, { value }) => {
+    this.setState({ orderingMode: value });
+  };
+
+  shuffle = array => {
+    let currentIndex = array.length,
+      temporaryValue,
+      randomIndex;
+    while (0 !== currentIndex) {
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
     }
-    console.log("window:", windowHeight, offset, elHeight, elOffset);
-    this._scroller.scrollTo(name, offset);
+    return array;
+  };
+
+  orderingBasedOnSelectedMode = () => {
+    let resultList = [];
+    if (this.state.orderingMode == "Popular") {
+      resultList = this.state.comments.sort(function(a, b) {
+        return b.upvotes - a.upvotes;
+      });
+      return resultList;
+    }
+    return this.state.comments
+    // if (this.state.orederingMode == "Random") {
+    //   resultList = this.shuffle(this.state.comments);
+    //   this.setState({ comments: resultList });
+    //   return resultList;
+    // }
+  };
+
+  scrollTo = name => {
+    // var elOffset = this._scroller.offsetTop;
+    // var elHeight = this._scroller.clientHeight;
+    // var windowHeight = window.height;
+    // var offset;
+    // if (elHeight < windowHeight) {
+    //   offset = elOffset - (windowHeight / 2 - elHeight / 2);
+    // } else {
+    //   offset = elOffset;
+    // }
+    // console.log("window:", windowHeight, offset, elHeight, elOffset);
+    this._scroller.scrollTo(name);
   };
 
   render() {
     const postList = (
       <div>
+        <div className="post_header">
+          <Dropdown
+            defaultValue="Popular"
+            onChange={this.handleOrderingDrowdown}
+            options={this.state.orderingOptions}
+          />
+        </div>
         <ScrollView ref={scroller => (this._scroller = scroller)}>
           <div>
-            {this.state.comments.map(post => {
+            {this.orderingBasedOnSelectedMode(this.state.comments).map(post => {
               return (
                 <ScrollElement key={post.id} name={post.id}>
                   <div
@@ -359,14 +444,6 @@ class App extends Component {
                     })}
                   >
                     <Segment vertical>
-                      {/*<Modal
-                show={this.state.showTask}
-                handleSubmit={this.categorize}
-                handleClose={this.hideTask}
-                handleContinue={this.handleContinue}
-                post={this.state.selectedCom}
-                categ={this.state.categOptions}
-              />*/}
                       <PostwithUpvotes
                         data={post}
                         getFormattedDate={this.getFormattedDate}
@@ -403,12 +480,14 @@ class App extends Component {
           {
             <div className="sticky_thread">
               <Thread
+                resetHistoryOfThisUser={this.resetHistoryOfThisUser}
+                userThread={this.state.userThread}
+                isThreadLoaded={this.state.isThreadLoaded}
+                getAllThreadsOfThisUser={this.getAllThreadsOfThisUser}
                 getFormattedDate={this.getFormattedDate}
                 setOffThreading={this.setOffThreading}
                 scrollTo={this.scrollTo}
-                userName={this.state.user.name}
-                userEmail={this.state.user.email}
-                userId={this.state.user.userId}
+                user={this.state.user}
                 showTask={this.state.showTask}
                 handleSubmit={this.categorize}
                 handleClose={this.hideTask}

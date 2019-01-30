@@ -15,9 +15,9 @@ let selectedCategory = [];
 
 class Thread extends Component {
   state = {
-    userName: this.props.userName,
-    userEmail: this.props.userEmail,
-    userId: this.props.userId,
+    userName: this.props.user.name,
+    userEmail: this.props.user.email,
+    userId: this.props.user.userId,
     userThread: [],
     isThreadLoaded: false
   };
@@ -103,10 +103,10 @@ class Thread extends Component {
         </div>
         <div className="thread-header_userInfo">
           <div className="thread-header_userInfo_userName">
-            {this.state.userName}
+            {this.props.user.name}
           </div>
           <div className="thread-header_userInfo_userEmail">
-            {this.state.userEmail}
+            {this.props.user.email}
           </div>
         </div>
       </div>
@@ -156,29 +156,32 @@ class Thread extends Component {
         </div>
         <div className="task_history">
           <Header size="medium">History of my contributions</Header>
-          <div className="task_history_box">
-            {this.state.isThreadLoaded ? (
-              this.state.userThread.map((uThread, index) => {
-                return (
-                  <div key={index}>
-                    <ThreadHistoryItem
-                      uThread={uThread}
-                      index={index}
-                      getFormattedDate={getFormattedDate}
-                    />
-                  </div>
-                );
-              })
+          {this.state.isThreadLoaded ? (
+            this.state.userThread.length > 0 ? (
+              <div className="task_history_box">
+                {this.state.userThread.map((uThread, index) => {
+                  return (
+                    <div key={index}>
+                      <ThreadHistoryItem
+                        uThread={uThread}
+                        index={index}
+                        getFormattedDate={getFormattedDate}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
             ) : (
-              <DataLoading width={"4rem"} height={"4rem"} />
-            )}
-          </div>
+              <p className="empty_history">(No history)</p>
+            )
+          ) : (
+            <DataLoading width={"4rem"} height={"4rem"} />
+          )}
+
           {this.state.userThread.length > 0 ? (
             <div className="reset_button">
               <Button onClick={this.resetHistoryOfThisUser}>RESET</Button>
             </div>
-          ) : this.state.isThreadLoaded ? (
-            <p className="empty_history">(No history)</p>
           ) : null}
         </div>
       </div>

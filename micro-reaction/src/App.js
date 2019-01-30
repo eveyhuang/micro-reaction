@@ -52,7 +52,7 @@ const config = {
 class App extends Component {
   state = {
     tab: "home",
-    user: fb.getUser(),
+    user: fb.getUserInfo(),
     isTrying: true,
     isLoggedIn: false,
     isLoginOpen: true,
@@ -148,6 +148,7 @@ class App extends Component {
   };
 
   getUser = async function() {
+    console.log("getUser!!!");
     const user = this.state.user || (await fb.getUserInfo());
     if (!user) {
       return null;
@@ -304,8 +305,12 @@ class App extends Component {
   };
 
   handleLogin = () => {
-    this.getUser();
-    this.setState({ isLoggedIn: true });
+    this.setState({ isLoggedIn: true }, function() {
+      fb.getUserInfo().then(value => {
+        console.log("handleLogin:::::::::::userInfo:",value)
+        this.setState({ user: value });
+      });
+    });
   };
 
   showLoginBox() {
@@ -452,9 +457,7 @@ class App extends Component {
                 getFormattedDate={this.getFormattedDate}
                 setOffThreading={this.setOffThreading}
                 scrollTo={this.scrollTo}
-                userName={this.state.user.name}
-                userEmail={this.state.user.email}
-                userId={this.state.user.userId}
+                user={this.state.user}
                 showTask={this.state.showTask}
                 handleSubmit={this.categorize}
                 handleClose={this.hideTask}
@@ -513,6 +516,7 @@ class App extends Component {
     );
 
     const mainPage = this.state.isLoggedIn ? mainComponent : loginPage;
+    console.log("userInfo:", this.state.user);
 
     return (
       <div className="App-container">

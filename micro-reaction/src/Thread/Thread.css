@@ -69,6 +69,27 @@
   border-radius: 1rem;
 }
 
+.task_history :not(:last-child) {
+  margin-bottom: 1rem;
+}
+
+.task_history_box{
+  /* background-color: #fab6b6; */
+  /* border-radius: 1rem; */
+  /* border-color: #417cef;
+  border-style: solid;
+  border-width: 2px;
+  border-radius: 1rem; */
+  padding: 0.5rem;
+  max-height: 10rem;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.task_history_box :not(:last-child) {
+  margin-bottom: 0.5rem;
+}
+
 @keyframes fade {
   from {
     opacity: 1;

@@ -19,7 +19,7 @@ class Thread extends Component {
     userEmail: this.props.userEmail,
     userId: this.props.userId,
     userThread: [],
-    isThreadLoaded: false,
+    isThreadLoaded: false
   };
 
   componentWillMount() {
@@ -156,21 +156,23 @@ class Thread extends Component {
         </div>
         <div className="task_history">
           <Header size="medium">History of my contributions</Header>
-          {this.state.isThreadLoaded ? (
-            this.state.userThread.map((uThread, index) => {
-              return (
-                <div key={index}>
-                  <ThreadHistoryItem
-                    uThread={uThread}
-                    index={index}
-                    getFormattedDate={getFormattedDate}
-                  />
-                </div>
-              );
-            })
-          ) : (
-            <DataLoading width={"4rem"} height={"4rem"} />
-          )}
+          <div className="task_history_box">
+            {this.state.isThreadLoaded ? (
+              this.state.userThread.map((uThread, index) => {
+                return (
+                  <div key={index}>
+                    <ThreadHistoryItem
+                      uThread={uThread}
+                      index={index}
+                      getFormattedDate={getFormattedDate}
+                    />
+                  </div>
+                );
+              })
+            ) : (
+              <DataLoading width={"4rem"} height={"4rem"} />
+            )}
+          </div>
           {this.state.userThread.length > 0 ? (
             <div className="reset_button">
               <Button onClick={this.resetHistoryOfThisUser}>RESET</Button>

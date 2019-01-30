@@ -85,7 +85,9 @@ class App extends Component {
       { key: "B", text: "B", value: "b" },
       { key: "C", text: "C", value: "c" }
     ],
-    postSeen: []
+    postSeen: [],
+    userThread: [],
+    isThreadLoaded: false
   };
 
   getFormattedDate = d => {
@@ -107,18 +109,39 @@ class App extends Component {
   };
 
   componentWillMount() {
+    document.removeEventListener("keydown", this.escFunction, false);
     this.autoLogin();
     fb.getAllPosts().then(data => {
       this.setState({ comments: data, isCommentsLoaded: true });
     });
+    this.getAllThreadsOfThisUser();
   }
 
   componentDidMount() {
+    document.addEventListener("keydown", this.escFunction, false);
     this.getUser();
     fb.isAdmin().then(data => {
       this.setState({ isAdmin: data });
     });
   }
+
+  escFunction = event => {
+    if (event.keyCode === 27) {
+      //Esc key
+      this.hideTask();
+      this.getAllThreadsOfThisUser();
+    }
+  };
+
+  getAllThreadsOfThisUser = async () => {
+    await fb.getAllThreadsOfThisUser(this.state.userId).then(threads => {
+      return this.setState({ userThread: threads, isThreadLoaded: true });
+    });
+  };
+
+  resetHistoryOfThisUser = () => {
+    this.setState({ userThread: [], isThreadLoaded: false });
+  };
 
   updatePostsList = async () => {
     this.setState({ isCommentsLoaded: false }, async function() {
@@ -163,7 +186,7 @@ class App extends Component {
           if (post.id !== comid) {
             return post;
           } else {
-            console.log(comid, categ);
+            // console.log(comid, categ);
             return {
               ...post,
               categories: categ
@@ -207,6 +230,7 @@ class App extends Component {
           ? await fb.voteDuringThread(id, true)
           : await fb.newTaskThread(id, "upvote");
         this.setState({ isThreading: true });
+        this.getAllThreadsOfThisUser();
       }
     );
   }
@@ -236,6 +260,7 @@ class App extends Component {
           ? await fb.voteDuringThread(id, false)
           : await fb.newTaskThread(id, "downvote");
         this.setState({ isThreading: true });
+        this.getAllThreadsOfThisUser();
       }
     );
   }
@@ -250,7 +275,7 @@ class App extends Component {
 
   handleContinue = () => {
     var nextPostID = this.selectOtherPost(this.state.showComId);
-    console.log("ID of the next Post to Show: ", nextPostID);
+    // console.log("ID of the next Post to Show: ", nextPostID);
     this.selectComment(nextPostID);
     this.setState(prevState => ({
       showComId: nextPostID,
@@ -398,11 +423,6 @@ class App extends Component {
   };
 
   render() {
-    console.log(
-      "selectedCom:",
-      this.state.selectedCom.id,
-      this.state.selectedCom
-    );
     const postList = (
       <div>
         <div className="post_header">
@@ -459,6 +479,10 @@ class App extends Component {
           {
             <div className="sticky_thread">
               <Thread
+                resetHistoryOfThisUser={this.resetHistoryOfThisUser}
+                userThread={this.state.userThread}
+                isThreadLoaded={this.state.isThreadLoaded}
+                getAllThreadsOfThisUser={this.getAllThreadsOfThisUser}
                 getFormattedDate={this.getFormattedDate}
                 setOffThreading={this.setOffThreading}
                 scrollTo={this.scrollTo}
@@ -521,7 +545,6 @@ class App extends Component {
     );
 
     const mainPage = this.state.isLoggedIn ? mainComponent : loginPage;
-    console.log("userInfo:", this.state.user);
 
     return (
       <div className="App-container">

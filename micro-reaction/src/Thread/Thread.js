@@ -16,9 +16,6 @@ let selectedCategory = [];
 
 class Thread extends Component {
   state = {
-    userName: this.props.user.name,
-    userEmail: this.props.user.email,
-    userId: this.props.user.userId,
     userThread: [],
     isThreadLoaded: false
   };
@@ -27,8 +24,16 @@ class Thread extends Component {
     this.getAllThreadsOfThisUser();
   }
 
+  componentWillReceiveProps = nextProps => {
+    this.setState({
+      userThread: nextProps.userThread ? nextProps.userThread : [],
+      isThreadLoaded: nextProps.isThreadLoaded
+        ? nextProps.isThreadLoaded
+        : false
+    });
+  };
+
   setCategories = (event, { value }) => {
-    console.log(value);
     selectedCategory = value;
   };
 
@@ -64,12 +69,14 @@ class Thread extends Component {
   };
 
   getAllThreadsOfThisUser = async () => {
-    await fb.getAllThreadsOfThisUser(this.state.userId).then(threads => {
-      return this.setState({ userThread: threads, isThreadLoaded: true });
-    });
+    // await fb.getAllThreadsOfThisUser(this.state.userId).then(threads => {
+    //   return this.setState({ userThread: threads, isThreadLoaded: true });
+    // });
+    this.props.getAllThreadsOfThisUser();
   };
 
   resetHistoryOfThisUser = async () => {
+    this.props.resetHistoryOfThisUser();
     this.setState({ userThread: [], isThreadLoaded: false }, async function() {
       await fb.resetHistoryOfThisUser();
       this.handleClose();
@@ -93,6 +100,7 @@ class Thread extends Component {
       post,
       categ
     } = this.props;
+
     const threadHeader = (
       <div className="thread-header">
         <div className="thread-header_userProfile">
@@ -102,14 +110,18 @@ class Thread extends Component {
             alt="user profile"
           />
         </div>
-        <div className="thread-header_userInfo">
-          <div className="thread-header_userInfo_userName">
-            {this.props.user.name}
+        {this.props.user.name ? (
+          <div className="thread-header_userInfo">
+            <div className="thread-header_userInfo_userName">
+              {this.props.user.name}
+            </div>
+            <div className="thread-header_userInfo_userEmail">
+              {this.props.user.email}
+            </div>
           </div>
-          <div className="thread-header_userInfo_userEmail">
-            {this.props.user.email}
-          </div>
-        </div>
+        ) : (
+          <DataLoading width={"4rem"} height={"4rem"} />
+        )}
       </div>
     );
 

@@ -15,7 +15,7 @@ import {
 import { cloneDeep } from "lodash";
 import update from "immutability-helper";
 import PostwithUpvotes from "./PostwithUpvotes/PostwithUpvotes";
-import Modal from "./Modal/Modal";
+import Modal from "./Modal";
 import Counter from "./Counter";
 import LoginBox from "./Login/LoginBox";
 import RegisterBox from "./Login/RegisterBox";
@@ -112,7 +112,10 @@ class App extends Component {
     document.removeEventListener("keydown", this.escFunction, false);
     this.autoLogin();
     fb.getAllPosts().then(data => {
-      this.setState({ comments: data, isCommentsLoaded: true });
+      this.setState({
+        comments: data.filter(value => Object.keys(value).length !== 0),
+        isCommentsLoaded: true
+      });
     });
     this.getAllThreadsOfThisUser();
   }
@@ -144,9 +147,16 @@ class App extends Component {
   };
 
   updatePostsList = async () => {
+    const prevOrderingMode = this.state.orderingMode
+      ? this.state.orderingMode
+      : "Popular";
     this.setState({ isCommentsLoaded: false }, async function() {
       await fb.getAllPosts().then(data => {
-        this.setState({ comments: data, isCommentsLoaded: true });
+        this.setState({
+          comments: data.filter(value => Object.keys(value).length !== 0),
+          isCommentsLoaded: true,
+          orderingMode: prevOrderingMode
+        });
       });
     });
   };
@@ -401,37 +411,50 @@ class App extends Component {
       });
       return resultList;
     }
-    return this.state.comments
-    // if (this.state.orederingMode == "Random") {
-    //   resultList = this.shuffle(this.state.comments);
+    resultList = this.shuffle(this.state.comments); // else this.state.orderingMode == "Random"
+    // console.log("Random!!!:", resultList);
+    return resultList;
+    // if (this.state.orderingMode == "Random") {
+    // resultList = this.shuffle(this.state.comments);
+    // console.log("Random!!!:",resultList)
     //   this.setState({ comments: resultList });
     //   return resultList;
     // }
   };
 
   scrollTo = name => {
-    // var elOffset = this._scroller.offsetTop;
-    // var elHeight = this._scroller.clientHeight;
-    // var windowHeight = window.height;
-    // var offset;
-    // if (elHeight < windowHeight) {
-    //   offset = elOffset - (windowHeight / 2 - elHeight / 2);
-    // } else {
-    //   offset = elOffset;
-    // }
+    var elOffset = this._scroller.offsetTop;
+    var elHeight = this._scroller.clientHeight;
+    var windowHeight = window.height;
+    var offset;
+    if (elHeight < windowHeight) {
+      offset = elOffset - (windowHeight / 2 - elHeight / 2);
+    } else {
+      offset = elOffset;
+    }
     // console.log("window:", windowHeight, offset, elHeight, elOffset);
-    this._scroller.scrollTo(name);
+    this._scroller.scrollTo(name, 100);
+  };
+
+  handleRemovePost = async id => {
+    await fb.removeThisPost(id).then(() => {
+      this.updatePostsList();
+    });
   };
 
   render() {
     const postList = (
       <div>
         <div className="post_header">
-          <Dropdown
-            defaultValue="Popular"
-            onChange={this.handleOrderingDrowdown}
-            options={this.state.orderingOptions}
-          />
+          <div className="post_header_dropdown">
+            <Dropdown
+              fluid
+              selection
+              defaultValue={this.state.orderingMode}
+              onChange={this.handleOrderingDrowdown}
+              options={this.state.orderingOptions}
+            />
+          </div>
         </div>
         <ScrollView ref={scroller => (this._scroller = scroller)}>
           <div>
@@ -446,6 +469,8 @@ class App extends Component {
                     <Segment vertical>
                       <PostwithUpvotes
                         data={post}
+                        handleRemovePost={this.handleRemovePost}
+                        isThisUserAuthor={post.user == this.state.user.name}
                         getFormattedDate={this.getFormattedDate}
                         handleInc={id => this.incCount(id)}
                         handleDec={id => this.decCount(id)}
@@ -480,6 +505,7 @@ class App extends Component {
           {
             <div className="sticky_thread">
               <Thread
+                updatePostsList={this.updatePostsList}
                 resetHistoryOfThisUser={this.resetHistoryOfThisUser}
                 userThread={this.state.userThread}
                 isThreadLoaded={this.state.isThreadLoaded}

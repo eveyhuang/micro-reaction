@@ -346,6 +346,55 @@ export default {
       return;
     }
   },
+  createNewPost: async function(title, body) {
+    try {
+      const indexOfNewPost = await this.indexOfNewPost();
+      const userInfo = await this.getUserInfo();
+      await db
+        .collection("posts")
+        .doc(indexOfNewPost.toString())
+        .set({
+          pId: indexOfNewPost,
+          user: userInfo.name,
+          title: title,
+          content: body,
+          upvotes: 0,
+          createdAt: new Date()
+        });
+    } catch (e) {
+      console.log(e.toString());
+      return;
+    }
+  },
+  removeThisPost: async function(id) {
+    try {
+      var allPostIds = [];
+      const posts = await db.collection("posts").get();
+      posts.forEach(elem => {
+        allPostIds.push(elem.id);
+      });
+      await allPostIds.forEach(async postId => {
+        if (postId == id) {
+          const postInfoDoc = await db
+            .collection("posts")
+            .doc(postId)
+            .get();
+          const postInfo = postInfoDoc.data();
+          if (!postInfo) {
+            return { error: `fail to search the post with this id: ${id}` };
+          }
+          await db
+            .collection("posts")
+            .doc(postId)
+            .delete();
+          return;
+        }
+      });
+    } catch (e) {
+      console.log(e.toString());
+      return;
+    }
+  },
   voteOnThisPost: async function(id, isUpvote) {
     try {
       var allPostIds = [];

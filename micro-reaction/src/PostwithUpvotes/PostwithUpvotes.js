@@ -5,8 +5,10 @@ import {
   Statistic,
   Grid,
   List,
-  Header
+  Header,
+  Button
 } from "semantic-ui-react";
+import "./PostwithUpvotes.css";
 
 const PostwithUpvotes = props => {
   return (
@@ -37,8 +39,23 @@ const PostwithUpvotes = props => {
       <Grid.Column width={14}>
         <Comment>
           <Comment.Content>
-            <Header as="h3" dividing>
+            <Header
+              className="post_title_header"
+              as="h3"
+              dividing
+              style={{ width: "100%" }}
+            >
               {props.data.title}
+              {props.isThisUserAuthor ? (
+                <Button
+                  size="mini"
+                  onClick={() => {
+                    props.handleRemovePost(props.data.id);
+                  }}
+                >
+                  Remove
+                </Button>
+              ) : null}
             </Header>
             <Comment.Text style={{ marginBottom: "0.5rem" }}>
               {props.data.content}

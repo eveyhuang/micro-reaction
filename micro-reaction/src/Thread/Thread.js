@@ -10,6 +10,8 @@ import {
   Message,
   Icon
 } from "semantic-ui-react";
+import Modal from "../Modal";
+import CreatePost from "../CreatePost";
 import "./Thread.css";
 
 let selectedCategory = [];
@@ -17,7 +19,8 @@ let selectedCategory = [];
 class Thread extends Component {
   state = {
     userThread: [],
-    isThreadLoaded: false
+    isThreadLoaded: false,
+    createPost: false
   };
 
   componentWillMount() {
@@ -88,8 +91,24 @@ class Thread extends Component {
     this.getAllThreadsOfThisUser();
   };
 
+  handleToggleCreatePost = () => {
+    this.setState({
+      createPost: !this.state.createPost
+    });
+  };
+
+  handleCreatePost = async (title, body) => {
+    this.setState({
+      createPost: false
+    });
+    await fb.createNewPost(title, body).then(() => {
+      this.props.updatePostsList();
+    });
+  };
+
   render() {
     const {
+      updatePostsList,
       getFormattedDate,
       setOffThreading,
       scrollTo,
@@ -102,26 +121,44 @@ class Thread extends Component {
     } = this.props;
 
     const threadHeader = (
-      <div className="thread-header">
-        <div className="thread-header_userProfile">
-          <img
-            className="thread-header_userProfile_img"
-            src={require("../assets/icons/user.png")}
-            alt="user profile"
-          />
-        </div>
-        {this.props.user.name ? (
-          <div className="thread-header_userInfo">
-            <div className="thread-header_userInfo_userName">
-              {this.props.user.name}
+      <div className="thread-header_container">
+        <div className="thread-header_wrapper">
+          <div className="thread-header_userProfile">
+            <img
+              className="thread-header_userProfile_img"
+              src={require("../assets/icons/user.png")}
+              alt="user profile"
+            />
+          </div>
+          {this.props.user.name ? (
+            <div className="thread-header_userInfo">
+              <div className="thread-header_userInfo_userName">
+                {this.props.user.name}
+              </div>
+              <div className="thread-header_userInfo_userEmail">
+                {this.props.user.email}
+              </div>
             </div>
-            <div className="thread-header_userInfo_userEmail">
-              {this.props.user.email}
+          ) : (
+            <DataLoading width={"4rem"} height={"4rem"} />
+          )}
+        </div>
+        <div className="thread-header_modal_wrapper">
+          <div
+            className="thread-header_create_post_wrapper"
+            onClick={this.handleToggleCreatePost}
+          >
+            <div className="thread-header_create_post_text">
+              <text>CREATE POST</text>
             </div>
           </div>
-        ) : (
-          <DataLoading width={"4rem"} height={"4rem"} />
-        )}
+          {this.state.createPost && (
+            <CreatePost
+              onClose={this.handleToggleCreatePost}
+              onCreate={this.handleCreatePost}
+            />
+          )}
+        </div>
       </div>
     );
 

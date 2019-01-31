@@ -162,8 +162,10 @@ class Thread extends Component {
           options={categ}
           onChange={this.setCategories}
         />
-        <Button onClick={this.submitCateg}>Submit & Exit</Button>
-        <Button onClick={this.continueTask}>Submit & Continue</Button>
+        <div className="thread-contents_button_box">
+          <Button onClick={this.submitCateg}>Submit & Exit</Button>
+          <Button onClick={this.continueTask}>Submit & Continue</Button>
+        </div>
         {/*<Button onClick={this.handleClose}>Close</Button>*/}
       </div>
     );

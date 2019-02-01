@@ -333,6 +333,46 @@ export default {
       return [];
     }
   },
+  getThisPost: async function(id) {
+    try {
+      var allPostIds = [];
+      const posts = await db.collection("posts").get();
+      posts.forEach(elem => {
+        allPostIds.push(elem.id);
+      });
+      let allPosts = await Promise.all(
+        allPostIds.map(async postId => {
+          // console.log("READ post");
+          if (postId == id) {
+            const postInfoDoc = await db
+              .collection("posts")
+              .doc(postId)
+              .get();
+            const postInfo = postInfoDoc.data();
+            if (!postInfo) {
+              return {};
+            }
+            return {
+              id: postInfo.pId,
+              postId: postId,
+              user: postInfo.user,
+              title: postInfo.title,
+              content: postInfo.content,
+              upvotes: postInfo.upvotes,
+              createdAt: postInfo.createdAt,
+              categories: []
+            };
+          }
+          return {};
+        })
+      );
+      // allPosts = allPosts.filter(post => post !== null && post.id);
+      return allPosts.filter(value => Object.keys(value).length !== 0)[0];
+    } catch (e) {
+      console.log(e.stack);
+      return;
+    }
+  },
   indexOfNewPost: async function() {
     try {
       var allPostIds = [];

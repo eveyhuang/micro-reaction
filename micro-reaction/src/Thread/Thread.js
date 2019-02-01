@@ -12,6 +12,7 @@ import {
 } from "semantic-ui-react";
 import Modal from "../Modal";
 import CreatePost from "../CreatePost";
+import classNames from "classnames";
 import "./Thread.css";
 
 let selectedCategory = [];
@@ -108,6 +109,7 @@ class Thread extends Component {
 
   render() {
     const {
+      isPostPage,
       updatePostsList,
       getFormattedDate,
       setOffThreading,
@@ -122,7 +124,9 @@ class Thread extends Component {
 
     const threadHeader = (
       <div className="thread-header_container">
-        <div className="thread-header_wrapper">
+        <div
+          className={`thread-header_wrapper${isPostPage ? "_postpage" : ""}`}
+        >
           <div className="thread-header_userProfile">
             <img
               className="thread-header_userProfile_img"
@@ -143,22 +147,24 @@ class Thread extends Component {
             <DataLoading width={"4rem"} height={"4rem"} />
           )}
         </div>
-        <div className="thread-header_modal_wrapper">
-          <div
-            className="thread-header_create_post_wrapper"
-            onClick={this.handleToggleCreatePost}
-          >
-            <div className="thread-header_create_post_text">
-              <text>CREATE POST</text>
+        {isPostPage ? null : (
+          <div className="thread-header_modal_wrapper">
+            <div
+              className="thread-header_create_post_wrapper"
+              onClick={this.handleToggleCreatePost}
+            >
+              <div className="thread-header_create_post_text">
+                <text>CREATE POST</text>
+              </div>
             </div>
+            {this.state.createPost && (
+              <CreatePost
+                onClose={this.handleToggleCreatePost}
+                onCreate={this.handleCreatePost}
+              />
+            )}
           </div>
-          {this.state.createPost && (
-            <CreatePost
-              onClose={this.handleToggleCreatePost}
-              onCreate={this.handleCreatePost}
-            />
-          )}
-        </div>
+        )}
       </div>
     );
 

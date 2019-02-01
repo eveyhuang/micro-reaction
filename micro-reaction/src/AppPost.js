@@ -1,9 +1,10 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 import Post from "./Post/Post";
 import PostwithReply from "./PostwithReply/PostwithReply";
 import firebase from "firebase";
 import Article from "./Article/Article";
-import "./App.css";
+import "./AppPost.css";
 import {
   Grid,
   Segment,
@@ -37,19 +38,10 @@ import { isThursday } from "date-fns";
 
 var _ = require("lodash");
 
-const config = {
-  apiKey: "AIzaSyA2uYoAHxkdcIO-51GYuJxf6YXeBWcu_Ho",
-  authDomain: "micro-reaction.firebaseapp.com",
-  databaseURL: "https://micro-reaction.firebaseio.com",
-  projectId: "micro-reaction",
-  storageBucket: "micro-reaction.appspot.com",
-  messagingSenderId: "868707662659"
-};
-
 @inject("posts")
 @inject("users")
 @observer
-class App extends Component {
+class AppPost extends Component {
   state = {
     tab: "home",
     user: fb.getUserInfo(),
@@ -467,14 +459,16 @@ class App extends Component {
                     })}
                   >
                     <Segment vertical>
-                      <PostwithUpvotes
-                        data={post}
-                        handleRemovePost={this.handleRemovePost}
-                        isThisUserAuthor={post.user == this.state.user.name}
-                        getFormattedDate={this.getFormattedDate}
-                        handleInc={id => this.incCount(id)}
-                        handleDec={id => this.decCount(id)}
-                      />
+                      <Link to={`/${post.id}/${post.title}`}>
+                        <PostwithUpvotes
+                          data={post}
+                          handleRemovePost={this.handleRemovePost}
+                          isThisUserAuthor={post.user == this.state.user.name}
+                          getFormattedDate={this.getFormattedDate}
+                          handleInc={id => this.incCount(id)}
+                          handleDec={id => this.decCount(id)}
+                        />
+                      </Link>
                     </Segment>
                   </div>
                 </ScrollElement>
@@ -599,4 +593,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default AppPost;

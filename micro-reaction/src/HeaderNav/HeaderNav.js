@@ -1,8 +1,14 @@
 import React from "react";
 import classNames from "classnames";
+import {
+  MdHome as HomeIcon,
+  MdNotifications as NotificationIcon,
+  MdMail as MailIcon
+} from "react-icons/md";
 import "./HeaderNav.css";
 
 const HeaderNavItem = ({ children, selected, tab, iconType, onSelect }) => {
+  const icon = iconType ? React.createElement(iconType) : null;
   return (
     <div
       className={classNames("HeaderNavItem", {
@@ -10,6 +16,7 @@ const HeaderNavItem = ({ children, selected, tab, iconType, onSelect }) => {
       })}
       onClick={() => onSelect(tab)}
     >
+      <div className="icon">{icon}</div>
       <div className="text">{children}</div>
     </div>
   );
@@ -18,13 +25,23 @@ const HeaderNavItem = ({ children, selected, tab, iconType, onSelect }) => {
 const HeaderNav = ({ tab, onSelect }) => {
   return (
     <div className="HeaderNav">
-      <HeaderNavItem tab="home" selected={tab} onSelect={onSelect}>
+      <HeaderNavItem
+        iconType={HomeIcon}
+        tab="home"
+        selected={tab}
+        onSelect={onSelect}
+      >
         Home
       </HeaderNavItem>
-      <HeaderNavItem tab="notification" selected={tab} onSelect={onSelect}>
+      <HeaderNavItem
+        iconType={NotificationIcon}
+        tab="notification"
+        selected={tab}
+        onSelect={onSelect}
+      >
         Notification
       </HeaderNavItem>
-      <HeaderNavItem tab="message" selected={tab} onSelect={onSelect}>
+      <HeaderNavItem iconType={MailIcon} tab="message" selected={tab} onSelect={onSelect}>
         Message
       </HeaderNavItem>
     </div>

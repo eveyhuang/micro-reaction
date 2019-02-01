@@ -218,7 +218,7 @@ class Thread extends Component {
           )}
         </div>
         <div className="task_history">
-          <Header size="medium">History of my contributions</Header>
+          <Header size="medium">History of your contributions</Header>
           {this.state.isThreadLoaded ? (
             this.state.userThread.length > 0 ? (
               <div className="task_history_box">

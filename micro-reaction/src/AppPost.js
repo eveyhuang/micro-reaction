@@ -459,16 +459,14 @@ class AppPost extends Component {
                     })}
                   >
                     <Segment vertical>
-                      <Link to={`/${post.id}/${post.title}`}>
-                        <PostwithUpvotes
-                          data={post}
-                          handleRemovePost={this.handleRemovePost}
-                          isThisUserAuthor={post.user == this.state.user.name}
-                          getFormattedDate={this.getFormattedDate}
-                          handleInc={id => this.incCount(id)}
-                          handleDec={id => this.decCount(id)}
-                        />
-                      </Link>
+                      <PostwithUpvotes
+                        data={post}
+                        handleRemovePost={this.handleRemovePost}
+                        isThisUserAuthor={post.user == this.state.user.name}
+                        getFormattedDate={this.getFormattedDate}
+                        handleInc={id => this.incCount(id)}
+                        handleDec={id => this.decCount(id)}
+                      />
                     </Segment>
                   </div>
                 </ScrollElement>

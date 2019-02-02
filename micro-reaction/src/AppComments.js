@@ -42,6 +42,11 @@ var _ = require("lodash");
 @inject("users")
 @observer
 class AppComments extends Component {
+  constructor(props) {
+    super(props);
+    this.goBack = this.goBack.bind(this);
+  }
+
   state = {
     tab: "",
     user: fb.getUserInfo(),
@@ -448,11 +453,15 @@ class AppComments extends Component {
     });
   };
 
+  goBack() {
+    this.props.history.goBack();
+  }
+
   render() {
     const post = (
       <div>
         <div className="post_header">
-          <div className="post_header_goback">
+          <div className="post_header_goback" onClick={this.goBack}>
             <IoIosArrowRoundBack size="1.5rem" />
             <text className="post_header_goback_text">Back to List</text>
           </div>

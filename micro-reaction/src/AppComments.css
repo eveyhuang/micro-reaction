@@ -19,12 +19,16 @@
   align-items: center;
   flex-direction: row;
 
-  border: 1px solid rgba(34, 36, 38, 0.15);
+  border: 1px solid rgba(81, 81, 82, 0.15);
   border-radius: 0.28571429rem;
-  cursor: pointer;
   word-wrap: break-word;
   line-height: 1em;
   white-space: normal;
+}
+
+.post_header_goback:hover {
+  border: 1px solid rgba(34, 36, 38, 0.3);
+  cursor: pointer;
 }
 
 .post_header_goback_text {

@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import {
   Comment,
   Icon,
@@ -61,7 +62,6 @@ const PostwithUpvotes = props => {
           </Comment.Content>
         </Comment>
       </Grid.Column>
-      <p>{props.data.categories}</p>
     </Grid>
   );
 
@@ -103,7 +103,7 @@ const PostwithUpvotes = props => {
               {props.isThisUserAuthor ? (
                 <Button
                   size="mini"
-                  onClick={(e) => {
+                  onClick={e => {
                     e.stopPropagation();
                     props.handleRemovePost(props.data.id);
                   }}
@@ -112,9 +112,11 @@ const PostwithUpvotes = props => {
                 </Button>
               ) : null}
             </Header>
-            <Comment.Text style={{ marginBottom: "0.5rem" }}>
-              {props.data.content}
-            </Comment.Text>
+            <Link to={`/${props.data.id}/${props.data.title}`}>
+              <Comment.Text style={{ marginBottom: "0.5rem" }}>
+                {props.data.content}
+              </Comment.Text>
+            </Link>
             <Comment.Author>
               <text style={{ fontWeight: "bold" }}>{props.data.user}</text>
               <text style={{ opacity: "0.5" }}>
@@ -126,7 +128,6 @@ const PostwithUpvotes = props => {
           </Comment.Content>
         </Comment>
       </Grid.Column>
-      <p>{props.data.categories}</p>
     </Grid>
   );
 

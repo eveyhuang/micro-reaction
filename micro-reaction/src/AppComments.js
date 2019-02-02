@@ -28,6 +28,7 @@ import HeaderNav from "./HeaderNav";
 import Thread from "./Thread";
 import classNames from "classnames";
 import { ScrollElement, ScrollView } from "./Scroller";
+import { IoIosArrowRoundBack } from "react-icons/io";
 
 import enLocale from "date-fns/locale/en";
 import differenceInDays from "date-fns/difference_in_days";
@@ -98,7 +99,6 @@ class AppComments extends Component {
   };
 
   handleSelectTab = tab => {
-    
     this.setState({ tab });
   };
 
@@ -450,13 +450,21 @@ class AppComments extends Component {
 
   render() {
     const post = (
-      <PostwithUpvotes
-        isPostPage
-        data={this.state.post}
-        getFormattedDate={this.getFormattedDate}
-        handleInc={id => this.incCount(id)}
-        handleDec={id => this.decCount(id)}
-      />
+      <div>
+        <div className="post_header">
+          <div className="post_header_goback">
+            <IoIosArrowRoundBack size="1.5rem" />
+            <text className="post_header_goback_text">Back to List</text>
+          </div>
+        </div>
+        <PostwithUpvotes
+          isPostPage
+          data={this.state.post}
+          getFormattedDate={this.getFormattedDate}
+          handleInc={id => this.incCount(id)}
+          handleDec={id => this.decCount(id)}
+        />
+      </div>
     );
     const commantList = (
       <div>

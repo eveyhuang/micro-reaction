@@ -10,8 +10,25 @@
 }
 
 .post_header_goback {
-  width: 15rem;
-  height: auto;
+  width: 10rem;
+  height: 38px;
+  padding-right: 0.8rem;
+  font-family: Lato, "Helvetica Neue", Arial, Helvetica, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+
+  border: 1px solid rgba(34, 36, 38, 0.15);
+  border-radius: 0.28571429rem;
+  cursor: pointer;
+  word-wrap: break-word;
+  line-height: 1em;
+  white-space: normal;
+}
+
+.post_header_goback_text {
+  margin-left: 0.5rem;
 }
 
 .post_selected {

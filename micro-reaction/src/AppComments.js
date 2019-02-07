@@ -226,63 +226,33 @@ class AppComments extends Component {
     this.setState({ isThreading: false });
   };
 
-  incCount(id) {
-    const prevComId = this.state.selectedCom.id;
-    this.selectComment(id);
-    this.showModal(id);
+  incCountPost(id) {
     this.setState(
-      prevState => {
-        return {
-          comments: prevState.comments.map(post => {
-            if (post.id !== id) {
-              return post;
-            } else {
-              return {
-                ...post,
-                upvotes: post.upvotes + 1
-              };
-            }
-          })
-        };
-      },
       async function() {
         await fb.voteOnThisPost(id, true);
-        this.state.isThreading && prevComId == id
-          ? await fb.voteDuringThread(id, true)
-          : await fb.newTaskThread(id, "upvote");
-        this.setState({ isThreading: true });
-        this.getAllThreadsOfThisUser();
-      }
+      }.then(prevState => {
+        return {
+          post: {
+            ...prevState.post,
+            upvotes: prevState.post.upvotes + 1
+          }
+        };
+      })
     );
   }
 
-  decCount(id) {
-    const prevComId = this.state.selectedCom.id;
-    this.selectComment(id);
-    this.showModal(id);
+  decCountPost(id) {
     this.setState(
-      prevState => {
-        return {
-          comments: prevState.comments.map(post => {
-            if (post.id !== id) {
-              return post;
-            } else {
-              return {
-                ...post,
-                upvotes: post.upvotes - 1
-              };
-            }
-          })
-        };
-      },
       async function() {
         await fb.voteOnThisPost(id, false);
-        this.state.isThreading && prevComId == id
-          ? await fb.voteDuringThread(id, false)
-          : await fb.newTaskThread(id, "downvote");
-        this.setState({ isThreading: true });
-        this.getAllThreadsOfThisUser();
-      }
+      }.then(prevState => {
+        return {
+          post: {
+            ...prevState.post,
+            upvotes: prevState.post.upvotes - 1
+          }
+        };
+      })
     );
   }
 
@@ -470,8 +440,8 @@ class AppComments extends Component {
           isPostPage
           data={this.state.post}
           getFormattedDate={this.getFormattedDate}
-          handleInc={id => this.incCount(id)}
-          handleDec={id => this.decCount(id)}
+          handleInc={id => this.incCountPost(id)}
+          handleDec={id => this.decCountPost(id)}
         />
       </div>
     );

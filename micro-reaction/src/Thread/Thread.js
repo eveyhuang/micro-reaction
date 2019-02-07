@@ -68,7 +68,7 @@ class Thread extends Component {
     this.props.handleContinue();
     this.props.handleSubmit(this.props.post.id, selectedCategory);
     selectedCategory = [];
-    this.props.scrollTo(this.props.post.id);
+    // this.props.scrollTo(this.props.post.id);
     this.getAllThreadsOfThisUser();
   };
 
@@ -187,6 +187,9 @@ class Thread extends Component {
             </p>
             <p className="thread-contents_task_question_post_title">
               {`Title: ${post.title}`}
+            </p>
+            <p className="thread-contents_task_question_notice">
+              Click here to scroll and check!
             </p>
           </div>
         </div>

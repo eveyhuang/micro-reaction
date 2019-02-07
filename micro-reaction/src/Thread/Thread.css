@@ -97,6 +97,13 @@
   cursor: pointer;
 }
 
+.thread-contents_task_question_notice {
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: center;
+}
+
 .thread-contents_task_wrapper {
   margin-top: 1rem;
   margin-bottom: 1rem;

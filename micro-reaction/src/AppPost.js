@@ -459,14 +459,24 @@ class AppPost extends Component {
                     })}
                   >
                     <Segment vertical>
-                      <PostwithUpvotes
-                        data={post}
-                        handleRemovePost={this.handleRemovePost}
-                        isThisUserAuthor={post.user == this.state.user.name}
-                        getFormattedDate={this.getFormattedDate}
-                        handleInc={id => this.incCount(id)}
-                        handleDec={id => this.decCount(id)}
+                      <Modal
+                        show={this.state.showTask}
+                        handleSubmit={this.categorize}
+                        handleClose={this.hideTask}
+                        handleContinue={this.handleContinue}
+                        post={this.state.selectedCom}
+                        categ={this.state.categOptions}
                       />
+                      {this.state.showTask ? null : (
+                        <PostwithUpvotes
+                          data={post}
+                          handleRemovePost={this.handleRemovePost}
+                          isThisUserAuthor={post.user == this.state.user.name}
+                          getFormattedDate={this.getFormattedDate}
+                          handleInc={id => this.incCount(id)}
+                          handleDec={id => this.decCount(id)}
+                        />
+                      )}
                     </Segment>
                   </div>
                 </ScrollElement>
@@ -494,7 +504,7 @@ class AppPost extends Component {
               </div>
             )}
           </div>
-          {
+          {this.state.showTask ? null : (
             <div className="sticky_thread">
               <Thread
                 updatePostsList={this.updatePostsList}
@@ -514,7 +524,7 @@ class AppPost extends Component {
                 categ={this.state.categOptions}
               />
             </div>
-          }
+          )}
         </div>
       </div>
     );

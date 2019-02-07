@@ -1,1 +1,1 @@
-export { default } from "./ModalScrolling";
+export { default } from "./Modal";

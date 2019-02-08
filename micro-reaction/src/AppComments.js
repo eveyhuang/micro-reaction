@@ -137,6 +137,7 @@ class AppComments extends Component {
     fb.isAdmin().then(data => {
       this.setState({ isAdmin: data });
     });
+    window.scrollTo(0, 0);
   }
 
   escFunction = event => {

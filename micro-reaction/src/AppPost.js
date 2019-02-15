@@ -38,6 +38,24 @@ import { isThursday } from "date-fns";
 
 var _ = require("lodash");
 
+const credibilityTasks = [
+  {
+    tId: 0,
+    tQ: "Do you think this headline is clickbait?",
+    aType: ""
+  },
+  {
+    tId: 1,
+    tQ: "Does this post include quotations from outside experts?",
+    aType: ""
+  },
+  {
+    tId: 2,
+    tQ: "How many number of ads there?",
+    aType: ""
+  }
+];
+
 @inject("posts")
 @inject("users")
 @observer
@@ -79,7 +97,8 @@ class AppPost extends Component {
     ],
     postSeen: [],
     userThread: [],
-    isThreadLoaded: false
+    isThreadLoaded: false,
+    currentTaskId: 0
   };
 
   getFormattedDate = d => {
@@ -211,6 +230,7 @@ class AppPost extends Component {
     const prevComId = this.state.selectedCom.id;
     this.selectComment(id);
     this.showModal(id);
+    this.initiateTask();
     this.setState(
       prevState => {
         return {
@@ -241,6 +261,7 @@ class AppPost extends Component {
     const prevComId = this.state.selectedCom.id;
     this.selectComment(id);
     this.showModal(id);
+    this.initiateTask();
     this.setState(
       prevState => {
         return {
@@ -267,6 +288,18 @@ class AppPost extends Component {
     );
   }
 
+  nextTask = () => {
+    this.setState({
+      currentTaskId: this.state.currentTaskId + 1
+    });
+  };
+
+  initiateTask = () => {
+    this.setState({
+      currentTaskId: 0
+    });
+  };
+
   selectComment(id) {
     this.state.comments.map(com => {
       if (com.id == id) {
@@ -276,13 +309,13 @@ class AppPost extends Component {
   }
 
   handleContinue = () => {
-    var nextPostID = this.selectOtherPost(this.state.showComId);
-    // console.log("ID of the next Post to Show: ", nextPostID);
-    this.selectComment(nextPostID);
-    this.setState(prevState => ({
-      showComId: nextPostID,
-      postSeen: [...prevState.postSeen, nextPostID]
-    }));
+    // var nextPostID = this.selectOtherPost(this.state.showComId);
+    // // console.log("ID of the next Post to Show: ", nextPostID);
+    // this.selectComment(nextPostID);
+    // this.setState(prevState => ({
+    //   showComId: nextPostID,
+    //   postSeen: [...prevState.postSeen, nextPostID]
+    // }));
   };
 
   getRandomInt(max) {
@@ -324,6 +357,7 @@ class AppPost extends Component {
   };
 
   hideTask = () => {
+    this.initiateTask();
     this.setState({
       showTask: false,
       selectedCom: [],
@@ -497,6 +531,11 @@ class AppPost extends Component {
           {
             <div className="sticky_thread">
               <Thread
+                nextTask={this.nextTask}
+                tQ={credibilityTasks[this.state.currentTaskId].tQ}
+                isTaskOver={
+                  credibilityTasks.length == this.state.currentTaskId + 1
+                }
                 updatePostsList={this.updatePostsList}
                 resetHistoryOfThisUser={this.resetHistoryOfThisUser}
                 userThread={this.state.userThread}

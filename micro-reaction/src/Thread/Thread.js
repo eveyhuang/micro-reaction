@@ -60,6 +60,7 @@ class Thread extends Component {
   };
 
   continueTask = async () => {
+    this.props.nextTask();
     await this.addThisTaskOnThread(
       this.props.post.id,
       selectedCategory,
@@ -109,6 +110,8 @@ class Thread extends Component {
 
   render() {
     const {
+      tQ,
+      isTaskOver,
       isPostPage,
       updatePostsList,
       getFormattedDate,
@@ -182,14 +185,9 @@ class Thread extends Component {
               scrollTo(post.id);
             }}
           >
-            <p className="thread-contents_task_question">
-              Would you help to categorize this post?
-            </p>
+            <p className="thread-contents_task_question">{`${tQ}`}</p>
             <p className="thread-contents_task_question_post_title">
               {`Title: ${post.title}`}
-            </p>
-            <p className="thread-contents_task_question_notice">
-              Click here to scroll and check!
             </p>
           </div>
         </div>
@@ -200,7 +198,7 @@ class Thread extends Component {
         </div>*/}
         <Dropdown
           className="thread-contents_dropdown"
-          placeholder="Categories"
+          placeholder="Answer"
           fluid
           multiple
           selection
@@ -210,7 +208,9 @@ class Thread extends Component {
         />
         <div className="thread-contents_button_box">
           <Button onClick={this.submitCateg}>Submit & Exit</Button>
-          <Button onClick={this.continueTask}>Submit & Continue</Button>
+          {isTaskOver ? null : (
+            <Button onClick={this.continueTask}>Submit & Continue</Button>
+          )}
         </div>
         {/*<Button onClick={this.handleClose}>Close</Button>*/}
       </div>

@@ -82,6 +82,22 @@ export default class PostWithupvotes extends Component {
                       {openSourceInNewTabButtonName}
                     </Comment.Text>
                   </a>
+                  <div
+                    className="post_source_box_open_it_below"
+                    onClick={() => this.toggleOpenItBelow()}
+                  >
+                    <Comment.Text
+                      style={{
+                        marginBottom: "0.5rem",
+                        fontWeight: "bold",
+                        cursor: "pointer"
+                      }}
+                    >
+                      {this.state.openItBelow
+                        ? "Close Source"
+                        : "Open Source Below"}
+                    </Comment.Text>
+                  </div>
                 </div>
               ) : null}
               <Comment.Author>
@@ -92,6 +108,16 @@ export default class PostWithupvotes extends Component {
                   )}`}
                 </text>
               </Comment.Author>
+              {this.state.openItBelow ? (
+                <Iframe
+                  url={props.data.source}
+                  width="100%"
+                  height="450px"
+                  display="initial"
+                  position="relative"
+                  allowFullScreen
+                />
+              ) : null}
             </Comment.Content>
           </Comment>
         </Grid.Column>

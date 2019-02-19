@@ -236,19 +236,19 @@ export default {
     });
   },
   getAllPosts: async function() {
-    // await db
-    //   .collection("posts")
-    //   .doc("9")
-    //   .set({
-    //     pId: 9,
-    //     user: "KATE DESMOND ",
-    //     title:
-    //       "Putting Kids To Bed Early Improves Mom's Health",
-    //     content:"When I was pregnant with my first child, a friend’s dad told me “congratulations, you’ll never sleep again.” I laughed and naively thought that my kid would be different. Two kids later and sleep ranks up there with potty training as one of the toughest aspects of parenting. Nobody seems to get enough, and the struggle is daily.",
-    //     source: "https://www.simplemost.com/new-study-says-putting-kids-to-bed-earlier-is-better-for-moms-sanity/",
-    //     upvotes: 8,
-    //     createdAt: new Date('2019-01-23')
-    //   });
+    await db
+      .collection("posts")
+      .doc("3")
+      .set({
+        pId: 3,
+        user: "tomswartz07",
+        title:
+          "Hurricane Harvey: Houston's flooding made worse by unchecked urban development and wetland destruction",
+        content:"Since Houston, Texas was founded nearly two centuries ago, Houstonians have been treating its wetlands as stinky, mosquito-infested blots in need of drainage. Even after it became a widely accepted scientific fact that wetlands can soak up large amounts of flood water, the city continued to pave over them. The watershed of the White Oak Bayou river, which includes much of northwest Houston, is a case in point. From 1992 to 2010, this area lost more than 70% of its wetlands, according to research (pdf) by Texas A&M University.",
+        source: "https://qz.com/1064364/hurricane-harvey-houstons-flooding-made-worse-by-unchecked-urban-development-and-wetland-destruction/",
+        upvotes: 131,
+        createdAt: new Date('2019-02-12')
+      });
     // await db
     //   .collection("posts")
     //   .doc("5")

@@ -6,5 +6,10 @@
 }
 
 .post_source_box {
-  width: 6rem;
+  width: 20rem;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
 }

@@ -21,11 +21,17 @@ class Thread extends Component {
   state = {
     userThread: [],
     isThreadLoaded: false,
-    createPost: false
+    createPost: false,
+    isAdmin: false
   };
 
   componentWillMount() {
     this.getAllThreadsOfThisUser();
+    fb.isAdmin().then(value => {
+      this.setState({
+        isAdmin: value
+      });
+    });
   }
 
   componentWillReceiveProps = nextProps => {
@@ -226,36 +232,38 @@ class Thread extends Component {
             <Header size="medium">Vote for contribution!</Header>
           )}
         </div>
-        <div className="task_history">
-          <Header size="medium">History of your contributions</Header>
-          {this.state.isThreadLoaded ? (
-            this.state.userThread.length > 0 ? (
-              <div className="task_history_box">
-                {this.state.userThread.map((uThread, index) => {
-                  return (
-                    <div key={index}>
-                      <ThreadHistoryItem
-                        uThread={uThread}
-                        index={index}
-                        getFormattedDate={getFormattedDate}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
+        {this.state.isAdmin ? (
+          <div className="task_history">
+            <Header size="medium">History of your contributions</Header>
+            {this.state.isThreadLoaded ? (
+              this.state.userThread.length > 0 ? (
+                <div className="task_history_box">
+                  {this.state.userThread.map((uThread, index) => {
+                    return (
+                      <div key={index}>
+                        <ThreadHistoryItem
+                          uThread={uThread}
+                          index={index}
+                          getFormattedDate={getFormattedDate}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="empty_history">(No history)</p>
+              )
             ) : (
-              <p className="empty_history">(No history)</p>
-            )
-          ) : (
-            <DataLoading width={"4rem"} height={"4rem"} />
-          )}
+              <DataLoading width={"4rem"} height={"4rem"} />
+            )}
 
-          {this.state.userThread.length > 0 ? (
-            <div className="reset_button">
-              <Button onClick={this.resetHistoryOfThisUser}>RESET</Button>
-            </div>
-          ) : null}
-        </div>
+            {this.state.userThread.length > 0 ? (
+              <div className="reset_button">
+                <Button onClick={this.resetHistoryOfThisUser}>RESET</Button>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
       </div>
     );
   }

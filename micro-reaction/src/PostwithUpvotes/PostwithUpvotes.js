@@ -51,6 +51,25 @@ const PostwithUpvotes = props => {
             <Comment.Text style={{ marginBottom: "0.5rem" }}>
               {props.data.content}
             </Comment.Text>
+            {props.data.source ? (
+              <div className="post_source_box">
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={`${props.data.source}`}
+                >
+                  <Comment.Text
+                    style={{
+                      marginBottom: "0.5rem",
+                      fontWeight: "bold",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Go To Source
+                  </Comment.Text>
+                </a>
+              </div>
+            ) : null}
             <Comment.Author>
               <text style={{ fontWeight: "bold" }}>{props.data.user}</text>
               <text style={{ opacity: "0.5" }}>
@@ -117,6 +136,25 @@ const PostwithUpvotes = props => {
                 {props.data.content}
               </Comment.Text>
             </Link>
+            {props.data.source ? (
+              <div className="post_source_box">
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={`${props.data.source}`}
+                >
+                  <Comment.Text
+                    style={{
+                      marginBottom: "0.5rem",
+                      fontWeight: "bold",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Go To Source
+                  </Comment.Text>
+                </a>
+              </div>
+            ) : null}
             <Comment.Author>
               <text style={{ fontWeight: "bold" }}>{props.data.user}</text>
               <text style={{ opacity: "0.5" }}>

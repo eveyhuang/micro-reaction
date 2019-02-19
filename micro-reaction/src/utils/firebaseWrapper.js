@@ -238,6 +238,19 @@ export default {
   getAllPosts: async function() {
     // await db
     //   .collection("posts")
+    //   .doc("9")
+    //   .set({
+    //     pId: 9,
+    //     user: "KATE DESMOND ",
+    //     title:
+    //       "Putting Kids To Bed Early Improves Mom's Health",
+    //     content:"When I was pregnant with my first child, a friend’s dad told me “congratulations, you’ll never sleep again.” I laughed and naively thought that my kid would be different. Two kids later and sleep ranks up there with potty training as one of the toughest aspects of parenting. Nobody seems to get enough, and the struggle is daily.",
+    //     source: "https://www.simplemost.com/new-study-says-putting-kids-to-bed-earlier-is-better-for-moms-sanity/",
+    //     upvotes: 8,
+    //     createdAt: new Date('2019-01-23')
+    //   });
+    // await db
+    //   .collection("posts")
     //   .doc("5")
     //   .set({
     //     pId: 5,
@@ -320,6 +333,7 @@ export default {
             user: postInfo.user,
             title: postInfo.title,
             content: postInfo.content,
+            source:postInfo.source,
             upvotes: postInfo.upvotes,
             createdAt: postInfo.createdAt,
             categories: []
@@ -358,6 +372,7 @@ export default {
               user: postInfo.user,
               title: postInfo.title,
               content: postInfo.content,
+              source:postInfo.source,
               upvotes: postInfo.upvotes,
               createdAt: postInfo.createdAt,
               categories: []
@@ -386,7 +401,7 @@ export default {
       return;
     }
   },
-  createNewPost: async function(title, body) {
+  createNewPost: async function(title, body, source) {
     try {
       const indexOfNewPost = await this.indexOfNewPost();
       const userInfo = await this.getUserInfo();
@@ -398,6 +413,7 @@ export default {
           user: userInfo.name,
           title: title,
           content: body,
+          source: source,
           upvotes: 0,
           createdAt: new Date()
         });
@@ -460,6 +476,7 @@ export default {
               user: postInfo.user,
               title: postInfo.title,
               content: postInfo.content,
+              source: postInfo.source,
               upvotes: isUpvote ? postInfo.upvotes + 1 : postInfo.upvotes - 1,
               createdAt: postInfo.createdAt
             });

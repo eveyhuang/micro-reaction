@@ -68,6 +68,7 @@ export default {
               userId: uid,
               email: email,
               name: name,
+              isAdmin: false,
               createdAt: new Date(),
               thread: []
             });
@@ -155,6 +156,8 @@ export default {
         userId: user.uid,
         name: user.name,
         email: user.email,
+        isAdmin: user.isAdmin,
+        thread: user.thread,
         createdAt: user.createdAt
       };
     } catch (e) {
@@ -196,6 +199,8 @@ export default {
         userId: userInfo.userId,
         name: userInfo.name,
         email: userInfo.email,
+        isAdmin: user.isAdmin,
+        thread: user.thread,
         createdAt: userInfo.createdAt
       };
     } catch (e) {

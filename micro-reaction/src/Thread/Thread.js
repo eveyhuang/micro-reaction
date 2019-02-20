@@ -134,7 +134,7 @@ class Thread extends Component {
     const threadHeader = (
       <div className="thread-header_container">
         <div
-          className={`thread-header_wrapper${isPostPage ? "_postpage" : ""}`}
+          className={`thread-header_wrapper${isPostPage || !this.state.isAdmin ? "_postpage" : ""}`}
         >
           <div className="thread-header_userProfile">
             <img
@@ -156,7 +156,7 @@ class Thread extends Component {
             <DataLoading width={"4rem"} height={"4rem"} />
           )}
         </div>
-        {isPostPage ? null : (
+        {isPostPage ? null : this.state.isAdmin ? (
           <div className="thread-header_modal_wrapper">
             <div
               className="thread-header_create_post_wrapper"
@@ -173,7 +173,7 @@ class Thread extends Component {
               />
             )}
           </div>
-        )}
+        ) : null}
       </div>
     );
 

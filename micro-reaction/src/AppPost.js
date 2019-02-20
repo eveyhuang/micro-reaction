@@ -226,6 +226,20 @@ class AppPost extends Component {
     this.setState({ isThreading: false });
   };
 
+  startThreading = async (id, startName) => {
+    const prevComId = this.state.selectedCom.id;
+    this.selectComment(id);
+    this.showModal(id);
+    this.initiateTask();
+    this.setState({ isThreading: true });
+
+    if (!this.state.isThreading || prevComId != id) {
+      await fb.newTaskThread(id, startName).then(data => {
+        this.getAllThreadsOfThisUser();
+      });
+    }
+  };
+
   incCount(id) {
     const prevComId = this.state.selectedCom.id;
     this.selectComment(id);
@@ -494,6 +508,7 @@ class AppPost extends Component {
                   >
                     <Segment vertical>
                       <PostwithUpvotes
+                        startThreading={this.startThreading}
                         data={post}
                         handleRemovePost={this.handleRemovePost}
                         isThisUserAuthor={post.user == this.state.user.name}

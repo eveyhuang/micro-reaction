@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import fb from "../utils/firebaseWrapper";
 import { Link } from "react-router-dom";
 import {
   Comment,
@@ -14,18 +15,34 @@ import "./PostwithUpvotes.css";
 
 export default class PostWithupvotes extends Component {
   state = {
-    openItBelow: false
+    openItBelow: false,
+    isAdmin: false
+  };
+
+  componentWillMount = () => {
+    fb.isAdmin().then(value => {
+      this.setState({
+        isAdmin: value
+      });
+    });
   };
 
   toggleOpenItBelow = () => {
-    this.setState({
-      openItBelow: !this.state.openItBelow
-    });
+    this.setState(
+      {
+        openItBelow: !this.state.openItBelow
+      },
+      function() {
+        if (this.state.openItBelow) {
+          this.props.startThreading(this.props.data.id, "toggleOpenItBelow");
+        }
+      }
+    );
   };
 
   render() {
     const props = this.props;
-    const openSourceInNewTabButtonName = "Open Source in new tab";
+    // const openSourceInNewTabButtonName = "Open Source in new tab";
     const postPage = (
       <Grid columns={2}>
         <Grid.Column width={1}>
@@ -67,7 +84,7 @@ export default class PostWithupvotes extends Component {
               </Comment.Text>
               {props.data.source ? (
                 <div className="post_source_box">
-                  <a
+                  {/*<a
                     target="_blank"
                     rel="noopener noreferrer"
                     href={`${props.data.source}`}
@@ -81,7 +98,7 @@ export default class PostWithupvotes extends Component {
                     >
                       {openSourceInNewTabButtonName}
                     </Comment.Text>
-                  </a>
+                    </a>*/}
                   <div
                     className="post_source_box_open_it_below"
                     onClick={() => this.toggleOpenItBelow()}
@@ -100,14 +117,6 @@ export default class PostWithupvotes extends Component {
                   </div>
                 </div>
               ) : null}
-              <Comment.Author>
-                <text style={{ fontWeight: "bold" }}>{props.data.user}</text>
-                <text style={{ opacity: "0.5" }}>
-                  {` • Posted at ${props.getFormattedDate(
-                    props.data.createdAt.toDate()
-                  )}`}
-                </text>
-              </Comment.Author>
               {this.state.openItBelow ? (
                 <Iframe
                   url={props.data.source}
@@ -118,6 +127,14 @@ export default class PostWithupvotes extends Component {
                   allowFullScreen
                 />
               ) : null}
+              <Comment.Author>
+                <text style={{ fontWeight: "bold" }}>{props.data.user}</text>
+                <text style={{ opacity: "0.5" }}>
+                  {` • Posted at ${props.getFormattedDate(
+                    props.data.createdAt.toDate()
+                  )}`}
+                </text>
+              </Comment.Author>
             </Comment.Content>
           </Comment>
         </Grid.Column>
@@ -171,14 +188,20 @@ export default class PostWithupvotes extends Component {
                   </Button>
                 ) : null}
               </Header>
-              <Link to={`/${props.data.id}/${props.data.title}`}>
+              {this.state.isAdmin ? (
+                <Link to={`/${props.data.id}/${props.data.title}`}>
+                  <Comment.Text style={{ marginBottom: "0.5rem" }}>
+                    {props.data.content}
+                  </Comment.Text>
+                </Link>
+              ) : (
                 <Comment.Text style={{ marginBottom: "0.5rem" }}>
                   {props.data.content}
                 </Comment.Text>
-              </Link>
+              )}
               {props.data.source ? (
                 <div className="post_source_box">
-                  <a
+                  {/*<a
                     target="_blank"
                     rel="noopener noreferrer"
                     href={`${props.data.source}`}
@@ -192,7 +215,7 @@ export default class PostWithupvotes extends Component {
                     >
                       {openSourceInNewTabButtonName}
                     </Comment.Text>
-                  </a>
+                    </a>*/}
                   <div
                     className="post_source_box_open_it_below"
                     onClick={() => this.toggleOpenItBelow()}
@@ -211,14 +234,6 @@ export default class PostWithupvotes extends Component {
                   </div>
                 </div>
               ) : null}
-              <Comment.Author>
-                <text style={{ fontWeight: "bold" }}>{props.data.user}</text>
-                <text style={{ opacity: "0.5" }}>
-                  {` • Posted at ${props.getFormattedDate(
-                    props.data.createdAt.toDate()
-                  )}`}
-                </text>
-              </Comment.Author>
               {this.state.openItBelow ? (
                 <Iframe
                   url={props.data.source}
@@ -229,6 +244,14 @@ export default class PostWithupvotes extends Component {
                   allowFullScreen
                 />
               ) : null}
+              <Comment.Author>
+                <text style={{ fontWeight: "bold" }}>{props.data.user}</text>
+                <text style={{ opacity: "0.5" }}>
+                  {` • Posted at ${props.getFormattedDate(
+                    props.data.createdAt.toDate()
+                  )}`}
+                </text>
+              </Comment.Author>
             </Comment.Content>
           </Comment>
         </Grid.Column>

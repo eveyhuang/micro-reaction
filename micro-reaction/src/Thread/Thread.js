@@ -28,7 +28,12 @@ class Thread extends Component {
     selectedAnswer: ""
   };
 
+  componentDidMount() {
+    document.addEventListener("keydown", this.escFunction, false);
+  }
+
   componentWillMount() {
+    document.removeEventListener("keydown", this.escFunction, false);
     this.getAllThreadsOfThisUser();
     fb.isAdmin().then(value => {
       this.setState({
@@ -44,6 +49,15 @@ class Thread extends Component {
         ? nextProps.isThreadLoaded
         : false
     });
+  };
+
+  escFunction = event => {
+    if (event.keyCode === 27) {
+      //Esc key
+      this.setState({
+        selectedAnswer: ""
+      });
+    }
   };
 
   setCategories = (event, { value }) => {
@@ -86,10 +100,13 @@ class Thread extends Component {
 
   resetHistoryOfThisUser = async () => {
     this.props.resetHistoryOfThisUser();
-    this.setState({ userThread: [], isThreadLoaded: false }, async function() {
-      await fb.resetHistoryOfThisUser();
-      this.handleClose();
-    });
+    this.setState(
+      { userThread: [], isThreadLoaded: false, selectedAnswer: "" },
+      async function() {
+        await fb.resetHistoryOfThisUser();
+        this.handleClose();
+      }
+    );
   };
 
   handleClose = () => {
@@ -122,7 +139,7 @@ class Thread extends Component {
             </Form.Field>
             {credibilityTasks[currentTaskId].aOptions.map((value, index) => {
               return (
-                <div key={index}>
+                <div key={index} className="thread-contents_radio_element">
                   <Form.Field>
                     <Radio
                       label={value}
@@ -228,6 +245,9 @@ class Thread extends Component {
       <div className="thread-contents">
         <div>
           <div className="thread-contents_cancel_button_box">
+            <div>
+              <p>{`(${currentTaskId + 1}/${credibilityTasks.length})`}</p>
+            </div>
             <div className="thread-contents_cancel_button">
               <Icon name="close" size="large" onClick={this.handleClose} />
             </div>

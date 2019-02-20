@@ -76,7 +76,7 @@
 
 .thread-contents_cancel_button_box {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   flex-direction: row;
 }
@@ -118,6 +118,10 @@
   align-items: center;
   flex-direction: row;
   margin-top: 1rem;
+}
+
+.thread-contents_radio_element{
+  margin-bottom: 0.5rem;
 }
 
 .task_container {

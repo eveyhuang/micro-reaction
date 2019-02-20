@@ -188,7 +188,7 @@ export default class PostWithupvotes extends Component {
                   </Button>
                 ) : null}
               </Header>
-              {this.state.isAdmin ? (
+              {/*this.state.isAdmin ? (
                 <Link to={`/${props.data.id}/${props.data.title}`}>
                   <Comment.Text style={{ marginBottom: "0.5rem" }}>
                     {props.data.content}
@@ -198,7 +198,10 @@ export default class PostWithupvotes extends Component {
                 <Comment.Text style={{ marginBottom: "0.5rem" }}>
                   {props.data.content}
                 </Comment.Text>
-              )}
+              )*/}
+              <Comment.Text style={{ marginBottom: "0.5rem" }}>
+                {props.data.content}
+              </Comment.Text>
               {props.data.source ? (
                 <div className="post_source_box">
                   {/*<a

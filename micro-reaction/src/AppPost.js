@@ -98,7 +98,8 @@ class AppPost extends Component {
     postSeen: [],
     userThread: [],
     isThreadLoaded: false,
-    currentTaskId: 0
+    currentTaskId: 0,
+    isAdmin: false
   };
 
   getFormattedDate = d => {
@@ -129,6 +130,11 @@ class AppPost extends Component {
       });
     });
     this.getAllThreadsOfThisUser();
+    fb.isAdmin().then(value => {
+      this.setState({
+        isAdmin: value
+      });
+    });
   }
 
   componentDidMount() {
@@ -426,7 +432,10 @@ class AppPost extends Component {
   };
 
   handleOrderingDrowdown = (event, { value }) => {
-    this.setState({ orderingMode: value });
+    this.setState({
+      orderingMode: value,
+      comments: this.shuffle(this.state.comments)
+    });
   };
 
   shuffle = array => {
@@ -445,13 +454,14 @@ class AppPost extends Component {
 
   orderingBasedOnSelectedMode = () => {
     let resultList = [];
+    resultList = this.state.comments;
     if (this.state.orderingMode == "Popular") {
       resultList = this.state.comments.sort(function(a, b) {
         return b.upvotes - a.upvotes;
       });
       return resultList;
     }
-    resultList = this.shuffle(this.state.comments); // else this.state.orderingMode == "Random"
+    // else this.state.orderingMode == "Random"
     // console.log("Random!!!:", resultList);
     return resultList;
     // if (this.state.orderingMode == "Random") {
@@ -627,7 +637,12 @@ class AppPost extends Component {
           <HeaderComp
             middle={this.returnMiddle(this.state.tab)}
             left={
-              <HeaderNav tab={this.state.tab} onSelect={this.handleSelectTab} />
+              this.state.isAdmin ? (
+                <HeaderNav
+                  tab={this.state.tab}
+                  onSelect={this.handleSelectTab}
+                />
+              ) : null
             }
             right={
               <div className="logout" onClick={this.handleLogOut}>

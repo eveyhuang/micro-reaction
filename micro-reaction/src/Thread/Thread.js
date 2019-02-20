@@ -10,7 +10,8 @@ import {
   Message,
   Icon,
   Form,
-  Radio
+  Radio,
+  Popup
 } from "semantic-ui-react";
 import Modal from "../Modal";
 import CreatePost from "../CreatePost";
@@ -258,9 +259,22 @@ class Thread extends Component {
               scrollTo(post.id);
             }}
           >
-            <p className="thread-contents_task_question">{`${
-              credibilityTasks[currentTaskId].tQ
-            }`}</p>
+            {credibilityTasks[currentTaskId].qDesc ? (
+              <Popup
+                trigger={
+                  <p className="thread-contents_task_question">{`${
+                    credibilityTasks[currentTaskId].tQ
+                  }`}</p>
+                }
+                content={credibilityTasks[currentTaskId].qDesc}
+                size="large"
+                position="top center"
+              />
+            ) : (
+              <p className="thread-contents_task_question">{`${
+                credibilityTasks[currentTaskId].tQ
+              }`}</p>
+            )}
             {/*<p className="thread-contents_task_question_post_title">
               {`Title: ${post.title}`}
           </p>*/}
@@ -297,13 +311,22 @@ class Thread extends Component {
     return (
       <div className="task_container">
         <div className="task_header">{threadHeader}</div>
-        <div className="task_list">
-          {showTask ? (
+        {showTask ? (
+          <div className="task_list">
+            {threadContents}
+            {/*showTask ? (
             threadContents
           ) : (
-            <Header size="medium">Vote for contribution!</Header>
-          )}
-        </div>
+            <Popup
+              trigger={<Header size="medium">Vote for contribution!</Header>}
+              header="Vote for contribution!"
+              content="plz vote!"
+              size="large"
+              position="bottom center"
+            />
+          )*/}
+          </div>
+        ) : null}
         {this.state.isAdmin ? (
           <div className="task_history">
             <Header size="medium">History of your contributions</Header>

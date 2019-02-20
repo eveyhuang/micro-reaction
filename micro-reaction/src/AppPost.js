@@ -43,6 +43,8 @@ const credibilityTasks = [
     tId: 0,
     tType: "Decide Clickbait Title",
     tQ: "To what degree do you think the headline is a “Clickbait” ?",
+    qDesc:
+      "“Clickbait” is defined as “a certain kind of web content...that is designed to entice its readers into clicking an accompanying link”",
     aType: "radio",
     aOptions: [
       "Very much clickbaity",
@@ -55,6 +57,7 @@ const credibilityTasks = [
     tId: 1,
     tType: "Convincing Evidence",
     tQ: "How convincing do you find the evidence given for the primary claim?",
+    qDesc: "",
     aType: "radio",
     aOptions: [
       "Very much convincing",
@@ -69,6 +72,8 @@ const credibilityTasks = [
     tType: "Representative Citations",
     tQ:
       "This article properly characterizes the methods and conclusions of the quoted source.",
+    qDesc:
+      "The article could overstate or understate conclusions from the source, selectively quote or cites a portion while ignoring other important aspects, or extrapolate more from the source than what it actually conveys.",
     aType: "radio",
     aOptions: [
       "Strongly disagree",

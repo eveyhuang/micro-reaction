@@ -41,18 +41,44 @@ var _ = require("lodash");
 const credibilityTasks = [
   {
     tId: 0,
-    tQ: "Do you think this headline is clickbait?",
-    aType: ""
+    tType: "Decide Clickbait Title",
+    tQ: "To what degree do you think the headline is a “Clickbait” ?",
+    aType: "radio",
+    aOptions: [
+      "Very much clickbaity",
+      "Somewhat clickbaity",
+      "A little bit clickbaity",
+      "Not at all clickbaity"
+    ]
   },
   {
     tId: 1,
-    tQ: "Does this post include quotations from outside experts?",
-    aType: ""
+    tType: "Convincing Evidence",
+    tQ: "How convincing do you find the evidence given for the primary claim?",
+    aType: "radio",
+    aOptions: [
+      "Very much convincing",
+      "Fairly convincing",
+      "Moderately Convincing",
+      "Slightly Convincing",
+      "Not at all Convincing"
+    ]
   },
   {
     tId: 2,
-    tQ: "How many number of ads there?",
-    aType: ""
+    tType: "Representative Citations",
+    tQ:
+      "This article properly characterizes the methods and conclusions of the quoted source.",
+    aType: "radio",
+    aOptions: [
+      "Strongly disagree",
+      "Somewhat disagree",
+      "Neutral",
+      "Somewhat agree",
+      "Strongly agree",
+      "Unable to find source",
+      "Source is behind a paywall"
+    ]
   }
 ];
 
@@ -557,7 +583,8 @@ class AppPost extends Component {
             <div className="sticky_thread">
               <Thread
                 nextTask={this.nextTask}
-                tQ={credibilityTasks[this.state.currentTaskId].tQ}
+                credibilityTasks={credibilityTasks}
+                currentTaskId={this.state.currentTaskId}
                 isTaskOver={
                   credibilityTasks.length == this.state.currentTaskId + 1
                 }

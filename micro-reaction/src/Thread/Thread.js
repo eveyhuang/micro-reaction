@@ -8,21 +8,24 @@ import {
   Container,
   Header,
   Message,
-  Icon
+  Icon,
+  Form,
+  Radio
 } from "semantic-ui-react";
 import Modal from "../Modal";
 import CreatePost from "../CreatePost";
 import classNames from "classnames";
 import "./Thread.css";
 
-let selectedCategory = [];
+// let selectedAnswer = [];
 
 class Thread extends Component {
   state = {
     userThread: [],
     isThreadLoaded: false,
     createPost: false,
-    isAdmin: false
+    isAdmin: false,
+    selectedAnswer: ""
   };
 
   componentWillMount() {
@@ -44,37 +47,32 @@ class Thread extends Component {
   };
 
   setCategories = (event, { value }) => {
-    selectedCategory = value;
+    this.setState({ selectedAnswer: value });
   };
 
   addThisTaskOnThread = async (postId, userAnser, taskCateg) => {
     await fb.addThisTaskOnThread(postId, userAnser, taskCateg);
   };
 
-  submitCateg = async () => {
+  submitCateg = async tType => {
+    const selectedAnswer = this.state.selectedAnswer;
     this.props.setOffThreading();
-    await this.addThisTaskOnThread(
-      this.props.post.id,
-      selectedCategory,
-      "categorization"
-    );
-    this.props.handleSubmit(this.props.post.id, selectedCategory);
+    await this.addThisTaskOnThread(this.props.post.id, selectedAnswer, tType);
+    this.props.handleSubmit(this.props.post.id, selectedAnswer);
     this.props.handleClose();
-    selectedCategory = [];
     this.props.scrollTo(this.props.post.id);
     this.getAllThreadsOfThisUser();
   };
 
-  continueTask = async () => {
+  continueTask = async tType => {
+    const selectedAnswer = this.state.selectedAnswer;
+    this.setState({
+      selectedAnswer: ""
+    });
     this.props.nextTask();
-    await this.addThisTaskOnThread(
-      this.props.post.id,
-      selectedCategory,
-      "categorization"
-    );
+    await this.addThisTaskOnThread(this.props.post.id, selectedAnswer, tType);
     this.props.handleContinue();
-    this.props.handleSubmit(this.props.post.id, selectedCategory);
-    selectedCategory = [];
+    this.props.handleSubmit(this.props.post.id, selectedAnswer);
     // this.props.scrollTo(this.props.post.id);
     this.getAllThreadsOfThisUser();
   };
@@ -114,9 +112,56 @@ class Thread extends Component {
     });
   };
 
+  buildAnswerBox = (credibilityTasks, currentTaskId) => {
+    if (credibilityTasks[currentTaskId].aType == "radio") {
+      return (
+        <div>
+          <Form>
+            <Form.Field>
+              selected Answer: <b>{this.state.selectedAnswer}</b>
+            </Form.Field>
+            {credibilityTasks[currentTaskId].aOptions.map((value, index) => {
+              return (
+                <div key={index}>
+                  <Form.Field>
+                    <Radio
+                      label={value}
+                      name="radioGroup"
+                      value={value}
+                      checked={this.state.selectedAnswer === value}
+                      onChange={this.setCategories}
+                    />
+                  </Form.Field>
+                </div>
+              );
+            })}
+          </Form>
+        </div>
+      );
+    }
+    if (credibilityTasks[currentTaskId].aType == "dropdown") {
+      return (
+        <div>
+          <Dropdown
+            className="thread-contents_dropdown"
+            placeholder="Answer"
+            fluid
+            multiple
+            selection
+            closeOnChange
+            options={this.props.categ}
+            onChange={this.setCategories}
+          />
+        </div>
+      );
+    }
+  };
+
   render() {
     const {
-      tQ,
+      nextTask,
+      credibilityTasks,
+      currentTaskId,
       isTaskOver,
       isPostPage,
       updatePostsList,
@@ -134,7 +179,9 @@ class Thread extends Component {
     const threadHeader = (
       <div className="thread-header_container">
         <div
-          className={`thread-header_wrapper${isPostPage || !this.state.isAdmin ? "_postpage" : ""}`}
+          className={`thread-header_wrapper${
+            isPostPage || !this.state.isAdmin ? "_postpage" : ""
+          }`}
         >
           <div className="thread-header_userProfile">
             <img
@@ -191,10 +238,12 @@ class Thread extends Component {
               scrollTo(post.id);
             }}
           >
-            <p className="thread-contents_task_question">{`${tQ}`}</p>
-            <p className="thread-contents_task_question_post_title">
+            <p className="thread-contents_task_question">{`${
+              credibilityTasks[currentTaskId].tQ
+            }`}</p>
+            {/*<p className="thread-contents_task_question_post_title">
               {`Title: ${post.title}`}
-            </p>
+          </p>*/}
           </div>
         </div>
         {/*  <div className="thread-contents_task_post">
@@ -202,20 +251,23 @@ class Thread extends Component {
           <p> {post.author}</p>
           <p> {post.content} </p>
         </div>*/}
-        <Dropdown
-          className="thread-contents_dropdown"
-          placeholder="Answer"
-          fluid
-          multiple
-          selection
-          closeOnChange
-          options={categ}
-          onChange={this.setCategories}
-        />
+        {this.buildAnswerBox(credibilityTasks, currentTaskId)}
         <div className="thread-contents_button_box">
-          <Button onClick={this.submitCateg}>Submit & Exit</Button>
-          {isTaskOver ? null : (
-            <Button onClick={this.continueTask}>Submit & Continue</Button>
+          <Button
+            onClick={() =>
+              this.submitCateg(credibilityTasks[currentTaskId].tType)
+            }
+          >
+            Submit & Exit
+          </Button>
+          {this.props.isTaskOver ? null : (
+            <Button
+              onClick={() =>
+                this.continueTask(credibilityTasks[currentTaskId].tType)
+              }
+            >
+              Submit & Continue
+            </Button>
           )}
         </div>
         {/*<Button onClick={this.handleClose}>Close</Button>*/}

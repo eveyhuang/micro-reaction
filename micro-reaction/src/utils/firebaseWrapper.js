@@ -522,7 +522,7 @@ export default {
           chain: [
             {
               postId: postId,
-              taskCateg: "initial voting",
+              taskCateg: "initial triggering",
               userAns: userAns,
               doneAt: dateForKey
             }

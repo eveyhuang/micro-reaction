@@ -518,8 +518,10 @@ class AppPost extends Component {
   };
 
   handleRemovePost = async id => {
+    this.hideTask();
     await fb.removeThisPost(id).then(() => {
       this.updatePostsList();
+      this.getAllThreadsOfThisUser();
     });
   };
 

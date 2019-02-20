@@ -6,7 +6,8 @@ import "./CreatePost.css";
 class CreatePost extends Component {
   state = {
     title: "",
-    body: ""
+    body: "",
+    source: "",
   };
 
   handleTitleInput = e => {
@@ -20,6 +21,12 @@ class CreatePost extends Component {
       body: e.target.value
     });
   };
+
+  handleSourceInput = e => {
+    this.setState({
+      source: e.target.value
+    })
+  }
 
   render() {
     const { onClose, onCreate } = this.props;
@@ -50,11 +57,19 @@ class CreatePost extends Component {
               this.handleBodyInput(e);
             }}
           />
+          <textarea
+            rows={1}
+            placeholder="Source link here!"
+            value={this.state.source}
+            onChange={e => {
+              this.handleSourceInput(e);
+            }}
+          />
           <div className="right">
             <Button
               theme="outline"
               onClick={() => {
-                onCreate(this.state.title, this.state.body);
+                onCreate(this.state.title, this.state.body, this.state.source);
               }}
             >
               Post

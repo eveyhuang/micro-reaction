@@ -121,11 +121,11 @@ class Thread extends Component {
     });
   };
 
-  handleCreatePost = async (title, body) => {
+  handleCreatePost = async (title, body, source) => {
     this.setState({
       createPost: false
     });
-    await fb.createNewPost(title, body).then(() => {
+    await fb.createNewPost(title, body, source).then(() => {
       this.props.updatePostsList();
     });
   };

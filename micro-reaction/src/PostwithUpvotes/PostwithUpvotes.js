@@ -112,7 +112,7 @@ export default class PostWithupvotes extends Component {
                     >
                       {this.state.openItBelow
                         ? "Close Source"
-                        : "Open Source Below"}
+                        : "View Original Source"}
                     </Comment.Text>
                   </div>
                 </div>
@@ -232,7 +232,7 @@ export default class PostWithupvotes extends Component {
                     >
                       {this.state.openItBelow
                         ? "Close Source"
-                        : "Open Source Below"}
+                        : "View Original Source"}
                     </Comment.Text>
                   </div>
                 </div>

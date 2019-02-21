@@ -131,7 +131,8 @@ class AppPost extends Component {
     isThreadLoaded: false,
     currentTaskId: 0,
     isAdmin: false,
-    postWithSourceOpen: ""
+    postWithSourceOpen: "",
+    votes: []
   };
 
   getFormattedDate = d => {
@@ -165,6 +166,11 @@ class AppPost extends Component {
     fb.isAdmin().then(value => {
       this.setState({
         isAdmin: value
+      });
+    });
+    fb.getThisUserVotesList().then(value => {
+      this.setState({
+        votes: value
       });
     });
   }
@@ -282,73 +288,87 @@ class AppPost extends Component {
     }
   };
 
-  incCount(id) {
-    const prevComId = this.state.selectedCom.id;
-    if (id.toString() !== this.state.postWithSourceOpen.toString()) {
-      this.toggleSourceOfThisPost(id);
-    }
-    this.selectComment(id);
-    this.showModal(id);
-    this.initiateTask();
-    this.setState(
-      prevState => {
-        return {
-          comments: prevState.comments.map(post => {
-            if (post.id !== id) {
-              return post;
-            } else {
-              return {
-                ...post,
-                upvotes: post.upvotes + 1
-              };
-            }
-          })
-        };
-      },
-      async function() {
-        await fb.voteOnThisPost(id, true);
-        this.state.isThreading && prevComId == id
-          ? await fb.voteDuringThread(id, true)
-          : await fb.newTaskThread(id, "upvote");
-        this.setState({ isThreading: true });
-        this.getAllThreadsOfThisUser();
+  incCount = async id => {
+    await fb.getThisUserVotesList().then(value => {
+      if (value.includes(id)) {
+        return;
       }
-    );
-  }
+      const prevComId = this.state.selectedCom.id;
+      if (id.toString() !== this.state.postWithSourceOpen.toString()) {
+        this.toggleSourceOfThisPost(id);
+      }
+      this.selectComment(id);
+      this.showModal(id);
+      this.initiateTask();
+      this.setState(
+        prevState => {
+          return {
+            comments: prevState.comments.map(post => {
+              if (post.id !== id) {
+                return post;
+              } else {
+                return {
+                  ...post,
+                  upvotes: post.upvotes + 1
+                };
+              }
+            }),
+            votes: value
+          };
+        },
+        async function() {
+          await fb.checkThisPostAsVotedByThisUser(id);
+          await fb.voteOnThisPost(id, true);
+          this.state.isThreading && prevComId == id
+            ? await fb.voteDuringThread(id, true)
+            : await fb.newTaskThread(id, "upvote");
+          this.setState({ isThreading: true });
+          this.getAllThreadsOfThisUser();
+        }
+      );
+    });
+  };
 
-  decCount(id) {
-    const prevComId = this.state.selectedCom.id;
-    if (id.toString() !== this.state.postWithSourceOpen.toString()) {
-      this.toggleSourceOfThisPost(id);
-    }
-    this.selectComment(id);
-    this.showModal(id);
-    this.initiateTask();
-    this.setState(
-      prevState => {
-        return {
-          comments: prevState.comments.map(post => {
-            if (post.id !== id) {
-              return post;
-            } else {
-              return {
-                ...post,
-                upvotes: post.upvotes - 1
-              };
-            }
-          })
-        };
-      },
-      async function() {
-        await fb.voteOnThisPost(id, false);
-        this.state.isThreading && prevComId == id
-          ? await fb.voteDuringThread(id, false)
-          : await fb.newTaskThread(id, "downvote");
-        this.setState({ isThreading: true });
-        this.getAllThreadsOfThisUser();
+  decCount = async id => {
+    await fb.getThisUserVotesList().then(value => {
+      if (value.includes(id)) {
+        return;
       }
-    );
-  }
+      const prevComId = this.state.selectedCom.id;
+      if (id.toString() !== this.state.postWithSourceOpen.toString()) {
+        this.toggleSourceOfThisPost(id);
+      }
+      this.selectComment(id);
+      this.showModal(id);
+      this.initiateTask();
+      this.setState(
+        prevState => {
+          return {
+            comments: prevState.comments.map(post => {
+              if (post.id !== id) {
+                return post;
+              } else {
+                return {
+                  ...post,
+                  upvotes: post.upvotes - 1
+                };
+              }
+            }),
+            votes: value
+          };
+        },
+        async function() {
+          await fb.checkThisPostAsVotedByThisUser(id);
+          await fb.voteOnThisPost(id, false);
+          this.state.isThreading && prevComId == id
+            ? await fb.voteDuringThread(id, false)
+            : await fb.newTaskThread(id, "downvote");
+          this.setState({ isThreading: true });
+          this.getAllThreadsOfThisUser();
+        }
+      );
+    });
+  };
 
   nextTask = () => {
     this.setState({
@@ -425,7 +445,7 @@ class AppPost extends Component {
       selectedCom: [],
       showComId: 0,
       postSeen: [],
-      isThreading: false,
+      isThreading: false
     });
   };
 
@@ -546,6 +566,7 @@ class AppPost extends Component {
   };
 
   render() {
+    console.log("AppPost.state.votes:", this.state.votes);
     const postList = (
       <div>
         <div className="post_header">
@@ -571,6 +592,7 @@ class AppPost extends Component {
                   >
                     <Segment vertical>
                       <PostwithUpvotes
+                        isVoted={this.state.votes.includes(post.id)}
                         isSourceOpen={
                           post.id.toString() ==
                           this.state.postWithSourceOpen.toString()

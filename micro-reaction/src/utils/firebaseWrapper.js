@@ -70,7 +70,8 @@ export default {
               name: name,
               isAdmin: false,
               createdAt: new Date(),
-              thread: []
+              thread: [],
+              votes: []
             });
           arrived = true;
           // console.log("uid:", uid);
@@ -158,7 +159,8 @@ export default {
         email: user.email,
         isAdmin: user.isAdmin,
         thread: user.thread,
-        createdAt: user.createdAt
+        createdAt: user.createdAt,
+        votes: user.votes
       };
     } catch (e) {
       console.log(e.toString());
@@ -201,7 +203,8 @@ export default {
         email: userInfo.email,
         isAdmin: user.isAdmin,
         thread: user.thread,
-        createdAt: userInfo.createdAt
+        createdAt: userInfo.createdAt,
+        votes: userInfo.votes
       };
     } catch (e) {
       console.log(e.toString());
@@ -572,6 +575,50 @@ export default {
       return;
     }
   },
+  checkThisPostAsVotedByThisUser: async function(postId) {
+    try {
+      const user = await this.isUserLoggedIn();
+      if (!user) {
+        return null;
+      }
+      const userDoc = await db
+        .collection("users")
+        .doc(user.userId)
+        .get();
+      const userInfo = userDoc.data();
+      arrived = true;
+      ///
+      await db
+        .collection("users")
+        .doc(user.userId)
+        .set({
+          ...userInfo,
+          votes: userInfo.votes.concat([postId])
+        });
+    } catch (e) {
+      console.log(e.toString());
+      return;
+    }
+  },
+  getThisUserVotesList: async function() {
+    try {
+      const user = await this.isUserLoggedIn();
+      if (!user) {
+        return null;
+      }
+      const userDoc = await db
+        .collection("users")
+        .doc(user.userId)
+        .get();
+      const userInfo = userDoc.data();
+      arrived = true;
+      ///
+      return userInfo.votes
+    } catch (e) {
+      console.log(e.toString());
+      return;
+    }
+  },
   addThisTaskOnThread: async function(postId, userAns, taskCateg) {
     try {
       // console.log("inherit props:",postId, userAns, taskCateg)
@@ -697,7 +744,8 @@ export default {
         .doc(user.userId)
         .set({
           ...userInfo,
-          thread: []
+          thread: [],
+          votes: []
         });
     } catch (e) {
       console.log(e.toString());

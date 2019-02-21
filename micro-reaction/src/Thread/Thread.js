@@ -314,7 +314,6 @@ class Thread extends Component {
     const historyList = this.state.userThread.sort(function(a, b) {
       return b.tOrder - a.tOrder;
     });
-    console.log("historyList:", historyList);
 
     return (
       <div className="task_container">

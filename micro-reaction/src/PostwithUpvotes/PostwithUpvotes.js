@@ -137,7 +137,7 @@ export default class PostWithupvotes extends Component {
     const postList = (
       <Grid columns={2}>
         <Grid.Column width={1}>
-          <List relaxed>
+          <List relaxed style={{ opacity: props.isVoted ? "0.5" : "1" }}>
             <List.Item>
               <Icon
                 name="angle up"

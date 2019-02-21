@@ -1,9 +1,10 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 import Post from "./Post/Post";
 import PostwithReply from "./PostwithReply/PostwithReply";
 import firebase from "firebase";
 import Article from "./Article/Article";
-import "./App.css";
+import "./AppPost.css";
 import {
   Grid,
   Segment,
@@ -15,7 +16,7 @@ import {
 import { cloneDeep } from "lodash";
 import update from "immutability-helper";
 import PostwithUpvotes from "./PostwithUpvotes/PostwithUpvotes";
-import Modal from "./Modal/Modal";
+import Modal from "./Modal";
 import Counter from "./Counter";
 import LoginBox from "./Login/LoginBox";
 import RegisterBox from "./Login/RegisterBox";
@@ -37,19 +38,59 @@ import { isThursday } from "date-fns";
 
 var _ = require("lodash");
 
-const config = {
-  apiKey: "AIzaSyA2uYoAHxkdcIO-51GYuJxf6YXeBWcu_Ho",
-  authDomain: "micro-reaction.firebaseapp.com",
-  databaseURL: "https://micro-reaction.firebaseio.com",
-  projectId: "micro-reaction",
-  storageBucket: "micro-reaction.appspot.com",
-  messagingSenderId: "868707662659"
-};
+const credibilityTasks = [
+  {
+    tId: 0,
+    tType: "Decide Clickbait Title",
+    tQ: "To what degree do you think the headline is a “Clickbait” ?",
+    qDesc:
+      "“Clickbait” is defined as “a certain kind of web content...that is designed to entice its readers into clicking an accompanying link”",
+    aType: "radio",
+    aOptions: [
+      "Very much clickbaity",
+      "Somewhat clickbaity",
+      "A little bit clickbaity",
+      "Not at all clickbaity"
+    ]
+  },
+  {
+    tId: 1,
+    tType: "Convincing Evidence",
+    tQ: "How convincing do you find the evidence given for the primary claim?",
+    qDesc: "",
+    aType: "radio",
+    aOptions: [
+      "Very much convincing",
+      "Fairly convincing",
+      "Moderately Convincing",
+      "Slightly Convincing",
+      "Not at all Convincing"
+    ]
+  },
+  {
+    tId: 2,
+    tType: "Representative Citations",
+    tQ:
+      "This article properly characterizes the methods and conclusions of the quoted source.",
+    qDesc:
+      "The article could overstate or understate conclusions from the source, selectively quote or cites a portion while ignoring other important aspects, or extrapolate more from the source than what it actually conveys.",
+    aType: "radio",
+    aOptions: [
+      "Strongly disagree",
+      "Somewhat disagree",
+      "Neutral",
+      "Somewhat agree",
+      "Strongly agree",
+      "Unable to find source",
+      "Source is behind a paywall"
+    ]
+  }
+];
 
 @inject("posts")
 @inject("users")
 @observer
-class App extends Component {
+class AppPost extends Component {
   state = {
     tab: "home",
     user: fb.getUserInfo(),
@@ -87,7 +128,9 @@ class App extends Component {
     ],
     postSeen: [],
     userThread: [],
-    isThreadLoaded: false
+    isThreadLoaded: false,
+    currentTaskId: 0,
+    isAdmin: false
   };
 
   getFormattedDate = d => {
@@ -112,9 +155,17 @@ class App extends Component {
     document.removeEventListener("keydown", this.escFunction, false);
     this.autoLogin();
     fb.getAllPosts().then(data => {
-      this.setState({ comments: data, isCommentsLoaded: true });
+      this.setState({
+        comments: data.filter(value => Object.keys(value).length !== 0),
+        isCommentsLoaded: true
+      });
     });
     this.getAllThreadsOfThisUser();
+    fb.isAdmin().then(value => {
+      this.setState({
+        isAdmin: value
+      });
+    });
   }
 
   componentDidMount() {
@@ -144,9 +195,16 @@ class App extends Component {
   };
 
   updatePostsList = async () => {
+    const prevOrderingMode = this.state.orderingMode
+      ? this.state.orderingMode
+      : "Popular";
     this.setState({ isCommentsLoaded: false }, async function() {
       await fb.getAllPosts().then(data => {
-        this.setState({ comments: data, isCommentsLoaded: true });
+        this.setState({
+          comments: data.filter(value => Object.keys(value).length !== 0),
+          isCommentsLoaded: true,
+          orderingMode: prevOrderingMode
+        });
       });
     });
   };
@@ -205,10 +263,25 @@ class App extends Component {
     this.setState({ isThreading: false });
   };
 
+  startThreading = async (id, startName) => {
+    const prevComId = this.state.selectedCom.id;
+    this.selectComment(id);
+    this.showModal(id);
+    this.initiateTask();
+    this.setState({ isThreading: true });
+
+    if (!this.state.isThreading || prevComId != id) {
+      await fb.newTaskThread(id, startName).then(data => {
+        this.getAllThreadsOfThisUser();
+      });
+    }
+  };
+
   incCount(id) {
     const prevComId = this.state.selectedCom.id;
     this.selectComment(id);
     this.showModal(id);
+    this.initiateTask();
     this.setState(
       prevState => {
         return {
@@ -239,6 +312,7 @@ class App extends Component {
     const prevComId = this.state.selectedCom.id;
     this.selectComment(id);
     this.showModal(id);
+    this.initiateTask();
     this.setState(
       prevState => {
         return {
@@ -265,6 +339,18 @@ class App extends Component {
     );
   }
 
+  nextTask = () => {
+    this.setState({
+      currentTaskId: this.state.currentTaskId + 1
+    });
+  };
+
+  initiateTask = () => {
+    this.setState({
+      currentTaskId: 0
+    });
+  };
+
   selectComment(id) {
     this.state.comments.map(com => {
       if (com.id == id) {
@@ -274,13 +360,13 @@ class App extends Component {
   }
 
   handleContinue = () => {
-    var nextPostID = this.selectOtherPost(this.state.showComId);
-    // console.log("ID of the next Post to Show: ", nextPostID);
-    this.selectComment(nextPostID);
-    this.setState(prevState => ({
-      showComId: nextPostID,
-      postSeen: [...prevState.postSeen, nextPostID]
-    }));
+    // var nextPostID = this.selectOtherPost(this.state.showComId);
+    // // console.log("ID of the next Post to Show: ", nextPostID);
+    // this.selectComment(nextPostID);
+    // this.setState(prevState => ({
+    //   showComId: nextPostID,
+    //   postSeen: [...prevState.postSeen, nextPostID]
+    // }));
   };
 
   getRandomInt(max) {
@@ -322,6 +408,7 @@ class App extends Component {
   };
 
   hideTask = () => {
+    this.initiateTask();
     this.setState({
       showTask: false,
       selectedCom: [],
@@ -376,7 +463,10 @@ class App extends Component {
   };
 
   handleOrderingDrowdown = (event, { value }) => {
-    this.setState({ orderingMode: value });
+    this.setState({
+      orderingMode: value,
+      comments: this.shuffle(this.state.comments)
+    });
   };
 
   shuffle = array => {
@@ -395,43 +485,59 @@ class App extends Component {
 
   orderingBasedOnSelectedMode = () => {
     let resultList = [];
+    resultList = this.state.comments;
     if (this.state.orderingMode == "Popular") {
       resultList = this.state.comments.sort(function(a, b) {
         return b.upvotes - a.upvotes;
       });
       return resultList;
     }
-    return this.state.comments
-    // if (this.state.orederingMode == "Random") {
-    //   resultList = this.shuffle(this.state.comments);
+    // else this.state.orderingMode == "Random"
+    // console.log("Random!!!:", resultList);
+    return resultList;
+    // if (this.state.orderingMode == "Random") {
+    // resultList = this.shuffle(this.state.comments);
+    // console.log("Random!!!:",resultList)
     //   this.setState({ comments: resultList });
     //   return resultList;
     // }
   };
 
   scrollTo = name => {
-    // var elOffset = this._scroller.offsetTop;
-    // var elHeight = this._scroller.clientHeight;
-    // var windowHeight = window.height;
-    // var offset;
-    // if (elHeight < windowHeight) {
-    //   offset = elOffset - (windowHeight / 2 - elHeight / 2);
-    // } else {
-    //   offset = elOffset;
-    // }
+    var elOffset = this._scroller.offsetTop;
+    var elHeight = this._scroller.clientHeight;
+    var windowHeight = window.height;
+    var offset;
+    if (elHeight < windowHeight) {
+      offset = elOffset - (windowHeight / 2 - elHeight / 2);
+    } else {
+      offset = elOffset;
+    }
     // console.log("window:", windowHeight, offset, elHeight, elOffset);
-    this._scroller.scrollTo(name);
+    this._scroller.scrollTo(name, 100);
+  };
+
+  handleRemovePost = async id => {
+    this.hideTask();
+    await fb.removeThisPost(id).then(() => {
+      this.updatePostsList();
+      this.getAllThreadsOfThisUser();
+    });
   };
 
   render() {
     const postList = (
       <div>
         <div className="post_header">
-          <Dropdown
-            defaultValue="Popular"
-            onChange={this.handleOrderingDrowdown}
-            options={this.state.orderingOptions}
-          />
+          <div className="post_header_dropdown">
+            <Dropdown
+              fluid
+              selection
+              defaultValue={this.state.orderingMode}
+              onChange={this.handleOrderingDrowdown}
+              options={this.state.orderingOptions}
+            />
+          </div>
         </div>
         <ScrollView ref={scroller => (this._scroller = scroller)}>
           <div>
@@ -445,7 +551,10 @@ class App extends Component {
                   >
                     <Segment vertical>
                       <PostwithUpvotes
+                        startThreading={this.startThreading}
                         data={post}
+                        handleRemovePost={this.handleRemovePost}
+                        isThisUserAuthor={post.user == this.state.user.name}
                         getFormattedDate={this.getFormattedDate}
                         handleInc={id => this.incCount(id)}
                         handleDec={id => this.decCount(id)}
@@ -480,6 +589,13 @@ class App extends Component {
           {
             <div className="sticky_thread">
               <Thread
+                nextTask={this.nextTask}
+                credibilityTasks={credibilityTasks}
+                currentTaskId={this.state.currentTaskId}
+                isTaskOver={
+                  credibilityTasks.length == this.state.currentTaskId + 1
+                }
+                updatePostsList={this.updatePostsList}
                 resetHistoryOfThisUser={this.resetHistoryOfThisUser}
                 userThread={this.state.userThread}
                 isThreadLoaded={this.state.isThreadLoaded}
@@ -555,7 +671,12 @@ class App extends Component {
           <HeaderComp
             middle={this.returnMiddle(this.state.tab)}
             left={
-              <HeaderNav tab={this.state.tab} onSelect={this.handleSelectTab} />
+              this.state.isAdmin ? (
+                <HeaderNav
+                  tab={this.state.tab}
+                  onSelect={this.handleSelectTab}
+                />
+              ) : null
             }
             right={
               <div className="logout" onClick={this.handleLogOut}>
@@ -573,4 +694,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default AppPost;

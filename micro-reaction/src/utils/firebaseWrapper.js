@@ -68,6 +68,7 @@ export default {
               userId: uid,
               email: email,
               name: name,
+              isAdmin: false,
               createdAt: new Date(),
               thread: []
             });
@@ -155,6 +156,8 @@ export default {
         userId: user.uid,
         name: user.name,
         email: user.email,
+        isAdmin: user.isAdmin,
+        thread: user.thread,
         createdAt: user.createdAt
       };
     } catch (e) {
@@ -196,6 +199,8 @@ export default {
         userId: userInfo.userId,
         name: userInfo.name,
         email: userInfo.email,
+        isAdmin: user.isAdmin,
+        thread: user.thread,
         createdAt: userInfo.createdAt
       };
     } catch (e) {
@@ -236,6 +241,19 @@ export default {
     });
   },
   getAllPosts: async function() {
+    // await db
+    //   .collection("posts")
+    //   .doc("3")
+    //   .set({
+    //     pId: 3,
+    //     user: "tomswartz07",
+    //     title:
+    //       "Hurricane Harvey: Houston's flooding made worse by unchecked urban development and wetland destruction",
+    //     content:"Since Houston, Texas was founded nearly two centuries ago, Houstonians have been treating its wetlands as stinky, mosquito-infested blots in need of drainage. Even after it became a widely accepted scientific fact that wetlands can soak up large amounts of flood water, the city continued to pave over them. The watershed of the White Oak Bayou river, which includes much of northwest Houston, is a case in point. From 1992 to 2010, this area lost more than 70% of its wetlands, according to research (pdf) by Texas A&M University.",
+    //     source: "https://qz.com/1064364/hurricane-harvey-houstons-flooding-made-worse-by-unchecked-urban-development-and-wetland-destruction/",
+    //     upvotes: 131,
+    //     createdAt: new Date('2019-02-12')
+    //   });
     // await db
     //   .collection("posts")
     //   .doc("5")
@@ -320,6 +338,7 @@ export default {
             user: postInfo.user,
             title: postInfo.title,
             content: postInfo.content,
+            source: postInfo.source,
             upvotes: postInfo.upvotes,
             createdAt: postInfo.createdAt,
             categories: []
@@ -333,6 +352,47 @@ export default {
       return [];
     }
   },
+  getThisPost: async function(id) {
+    try {
+      var allPostIds = [];
+      const posts = await db.collection("posts").get();
+      posts.forEach(elem => {
+        allPostIds.push(elem.id);
+      });
+      let allPosts = await Promise.all(
+        allPostIds.map(async postId => {
+          // console.log("READ post");
+          if (postId == id) {
+            const postInfoDoc = await db
+              .collection("posts")
+              .doc(postId)
+              .get();
+            const postInfo = postInfoDoc.data();
+            if (!postInfo) {
+              return {};
+            }
+            return {
+              id: postInfo.pId,
+              postId: postId,
+              user: postInfo.user,
+              title: postInfo.title,
+              content: postInfo.content,
+              source: postInfo.source,
+              upvotes: postInfo.upvotes,
+              createdAt: postInfo.createdAt,
+              categories: []
+            };
+          }
+          return {};
+        })
+      );
+      // allPosts = allPosts.filter(post => post !== null && post.id);
+      return allPosts.filter(value => Object.keys(value).length !== 0)[0];
+    } catch (e) {
+      console.log(e.stack);
+      return;
+    }
+  },
   indexOfNewPost: async function() {
     try {
       var allPostIds = [];
@@ -341,6 +401,56 @@ export default {
         allPostIds.push(elem.id);
       });
       return allPostIds.length;
+    } catch (e) {
+      console.log(e.toString());
+      return;
+    }
+  },
+  createNewPost: async function(title, body, source) {
+    try {
+      const indexOfNewPost = await this.indexOfNewPost();
+      const userInfo = await this.getUserInfo();
+      await db
+        .collection("posts")
+        .doc(indexOfNewPost.toString())
+        .set({
+          pId: indexOfNewPost,
+          user: userInfo.name,
+          title: title,
+          content: body,
+          source: source,
+          upvotes: 0,
+          createdAt: new Date()
+        });
+    } catch (e) {
+      console.log(e.toString());
+      return;
+    }
+  },
+  removeThisPost: async function(id) {
+    try {
+      var allPostIds = [];
+      const posts = await db.collection("posts").get();
+      posts.forEach(elem => {
+        allPostIds.push(elem.id);
+      });
+      await allPostIds.forEach(async postId => {
+        if (postId == id) {
+          const postInfoDoc = await db
+            .collection("posts")
+            .doc(postId)
+            .get();
+          const postInfo = postInfoDoc.data();
+          if (!postInfo) {
+            return { error: `fail to search the post with this id: ${id}` };
+          }
+          await db
+            .collection("posts")
+            .doc(postId)
+            .delete();
+          return;
+        }
+      });
     } catch (e) {
       console.log(e.toString());
       return;
@@ -371,6 +481,7 @@ export default {
               user: postInfo.user,
               title: postInfo.title,
               content: postInfo.content,
+              source: postInfo.source,
               upvotes: isUpvote ? postInfo.upvotes + 1 : postInfo.upvotes - 1,
               createdAt: postInfo.createdAt
             });
@@ -411,7 +522,7 @@ export default {
           chain: [
             {
               postId: postId,
-              taskCateg: "initial voting",
+              taskCateg: "initial triggering",
               userAns: userAns,
               doneAt: dateForKey
             }
@@ -536,15 +647,18 @@ export default {
       const userInfo = userDoc.data();
       arrived = true;
       ///
+      let index = 0;
       const userThread = userInfo.thread;
       const allThreads = await db.collection("threads").get();
       userThread.forEach(uThread => {
         allThreads.forEach(elem => {
           if (uThread.toDate().toString() == elem.id.toString()) {
             threadsOfThesUser.push({
+              tOrder: index,
               threadId: uThread,
               thread: elem.data().chain
             });
+            index += 1;
           }
         });
       });

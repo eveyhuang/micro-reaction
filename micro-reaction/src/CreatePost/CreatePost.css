@@ -1,0 +1,49 @@
+.CreatePost .dark {
+  background: rgba(0, 0, 0, 0.4);
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 5;
+}
+.CreatePost .modal {
+  z-index: 10;
+  background: white;
+  position: fixed;
+  left: 50%;
+  top: 13rem;
+  width: 512px;
+  height: 20rem;
+  transform: translate(-50%);
+  padding: 1rem;
+  border-radius: 4px;
+}
+.CreatePost .modal .head {
+  display: flex;
+  align-items: center;
+}
+.CreatePost .modal .head h3 {
+  margin: 0;
+}
+.CreatePost .modal .head .exit {
+  margin-left: auto;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+.CreatePost .modal textarea {
+  margin-top: 1rem;
+  resize: none;
+  width: 100%;
+  font-size: 1rem;
+  padding: 0.5rem;
+  border: 1px solid #dee2e6;
+  border-radius: 2px;
+  outline: none;
+  display: block;
+}
+.CreatePost .modal .right {
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: flex-end;
+}

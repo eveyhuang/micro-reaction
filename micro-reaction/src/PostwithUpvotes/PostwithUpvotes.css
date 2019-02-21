@@ -1,0 +1,19 @@
+.post_title_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+}
+
+.post_source_box {
+  width: 20rem;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+}
+
+.post_source_box_open_it_below {
+  color: #4891e4;
+}

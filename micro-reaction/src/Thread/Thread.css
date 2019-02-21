@@ -1,6 +1,52 @@
-.thread-header {
+.thread-header_container {
+  /* display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column; */
+}
+
+.thread-header_wrapper_postpage {
+  width: 100%;
   display: flex;
   justify-content: flex-start;
+  align-items: center;
+  flex-direction: row;
+}
+
+.thread-header_wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: row;
+  margin-bottom: 1rem;
+}
+
+.thread-header_create_post_wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 3rem;
+  background-color: #417cef;
+  border-radius: 0.5rem;
+}
+
+.thread-header_create_post_wrapper:hover {
+  background-color: #98b9fc;
+  cursor: pointer;
+}
+
+.thread-header_create_post_text {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.thread-header_modal_wrapper {
+  display: flex;
+  justify-content: center;
   align-items: center;
   flex-direction: row;
 }
@@ -9,6 +55,10 @@
   width: 4rem;
   height: 4rem;
   margin-right: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
 .thread-header_userInfo_userName {
@@ -22,12 +72,11 @@
 }
 
 .thread-contents_dropdown {
-  margin-bottom: 1rem;
 }
 
 .thread-contents_cancel_button_box {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   flex-direction: row;
 }
@@ -47,6 +96,13 @@
   cursor: pointer;
 }
 
+.thread-contents_task_question_notice {
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: center;
+}
+
 .thread-contents_task_wrapper {
   margin-top: 1rem;
   margin-bottom: 1rem;
@@ -54,6 +110,18 @@
 
 .thread-contents_task_question_post_title {
   cursor: pointer;
+}
+
+.thread-contents_button_box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  margin-top: 1rem;
+}
+
+.thread-contents_radio_element{
+  margin-bottom: 0.5rem;
 }
 
 .task_container {

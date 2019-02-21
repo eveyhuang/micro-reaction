@@ -308,7 +308,9 @@ class Thread extends Component {
       </div>
     );
 
-    const historyList = this.state.userThread.reverse();
+    const historyList = this.state.userThread.sort(function(a, b) {
+      return b.tOrder - a.tOrder;
+    });
     console.log("historyList:", historyList);
 
     return (

@@ -71,6 +71,9 @@ class Thread extends Component {
 
   submitCateg = async tType => {
     const selectedAnswer = this.state.selectedAnswer;
+    this.setState({
+      selectedAnswer: ""
+    });
     this.props.setOffThreading();
     await this.addThisTaskOnThread(this.props.post.id, selectedAnswer, tType);
     this.props.handleSubmit(this.props.post.id, selectedAnswer);

@@ -130,7 +130,8 @@ class AppPost extends Component {
     userThread: [],
     isThreadLoaded: false,
     currentTaskId: 0,
-    isAdmin: false
+    isAdmin: false,
+    postWithSourceOpen: ""
   };
 
   getFormattedDate = d => {
@@ -191,7 +192,11 @@ class AppPost extends Component {
   };
 
   resetHistoryOfThisUser = () => {
-    this.setState({ userThread: [], isThreadLoaded: false });
+    this.setState({
+      userThread: [],
+      isThreadLoaded: false,
+      postWithSourceOpen: -1
+    });
   };
 
   updatePostsList = async () => {
@@ -279,6 +284,9 @@ class AppPost extends Component {
 
   incCount(id) {
     const prevComId = this.state.selectedCom.id;
+    if (id.toString() !== this.state.postWithSourceOpen.toString()) {
+      this.toggleSourceOfThisPost(id);
+    }
     this.selectComment(id);
     this.showModal(id);
     this.initiateTask();
@@ -310,6 +318,9 @@ class AppPost extends Component {
 
   decCount(id) {
     const prevComId = this.state.selectedCom.id;
+    if (id.toString() !== this.state.postWithSourceOpen.toString()) {
+      this.toggleSourceOfThisPost(id);
+    }
     this.selectComment(id);
     this.showModal(id);
     this.initiateTask();
@@ -414,7 +425,7 @@ class AppPost extends Component {
       selectedCom: [],
       showComId: 0,
       postSeen: [],
-      isThreading: false
+      isThreading: false,
     });
   };
 
@@ -525,6 +536,15 @@ class AppPost extends Component {
     });
   };
 
+  toggleSourceOfThisPost = postId => {
+    this.setState({
+      postWithSourceOpen:
+        this.state.postWithSourceOpen.toString() == postId.toString()
+          ? -1
+          : postId
+    });
+  };
+
   render() {
     const postList = (
       <div>
@@ -551,6 +571,11 @@ class AppPost extends Component {
                   >
                     <Segment vertical>
                       <PostwithUpvotes
+                        isSourceOpen={
+                          post.id.toString() ==
+                          this.state.postWithSourceOpen.toString()
+                        }
+                        toggleSourceOfThisPost={this.toggleSourceOfThisPost}
                         startThreading={this.startThreading}
                         data={post}
                         handleRemovePost={this.handleRemovePost}

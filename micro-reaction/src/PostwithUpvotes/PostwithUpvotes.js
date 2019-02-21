@@ -15,7 +15,6 @@ import "./PostwithUpvotes.css";
 
 export default class PostWithupvotes extends Component {
   state = {
-    openItBelow: false,
     isAdmin: false
   };
 
@@ -28,16 +27,10 @@ export default class PostWithupvotes extends Component {
   };
 
   toggleOpenItBelow = () => {
-    this.setState(
-      {
-        openItBelow: !this.state.openItBelow
-      },
-      function() {
-        if (this.state.openItBelow) {
-          this.props.startThreading(this.props.data.id, "toggleOpenItBelow");
-        }
-      }
-    );
+    this.props.toggleSourceOfThisPost(this.props.data.id);
+    if (!this.props.isSourceOpen) {
+      this.props.startThreading(this.props.data.id, "toggleOpenItBelow");
+    }
   };
 
   render() {
@@ -110,14 +103,14 @@ export default class PostWithupvotes extends Component {
                         cursor: "pointer"
                       }}
                     >
-                      {this.state.openItBelow
+                      {this.props.isSourceOpen
                         ? "Close Source"
                         : "View Original Source"}
                     </Comment.Text>
                   </div>
                 </div>
               ) : null}
-              {this.state.openItBelow ? (
+              {this.props.isSourceOpen ? (
                 <Iframe
                   url={props.data.source}
                   width="100%"
@@ -230,14 +223,14 @@ export default class PostWithupvotes extends Component {
                         cursor: "pointer"
                       }}
                     >
-                      {this.state.openItBelow
+                      {this.props.isSourceOpen
                         ? "Close Source"
                         : "View Original Source"}
                     </Comment.Text>
                   </div>
                 </div>
               ) : null}
-              {this.state.openItBelow ? (
+              {this.props.isSourceOpen ? (
                 <Iframe
                   url={props.data.source}
                   width="100%"

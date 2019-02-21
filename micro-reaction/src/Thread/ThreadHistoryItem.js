@@ -24,7 +24,9 @@ class ThreadHistoryItem extends Component {
     return (
       <div className="this_thread_wrapper">
         <div className="this_thread_title" onClick={this.handleThreadClick}>
-          <h3>{`${index}: ${getFormattedDate(uThread.threadId.toDate())}`}</h3>
+          <h3>{`${uThread.tOrder + 1}: ${getFormattedDate(
+            uThread.threadId.toDate()
+          )}`}</h3>
         </div>
         {this.state.isThreadOpen
           ? uThread.thread.map((task, index) => {

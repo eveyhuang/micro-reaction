@@ -308,6 +308,9 @@ class Thread extends Component {
       </div>
     );
 
+    const historyList = this.state.userThread.reverse();
+    console.log("historyList:", historyList);
+
     return (
       <div className="task_container">
         <div className="task_header">{threadHeader}</div>
@@ -331,9 +334,9 @@ class Thread extends Component {
           <div className="task_history">
             <Header size="medium">History of your contributions</Header>
             {this.state.isThreadLoaded ? (
-              this.state.userThread.length > 0 ? (
+              historyList.length > 0 ? (
                 <div className="task_history_box">
-                  {this.state.userThread.map((uThread, index) => {
+                  {historyList.map((uThread, index) => {
                     return (
                       <div key={index}>
                         <ThreadHistoryItem

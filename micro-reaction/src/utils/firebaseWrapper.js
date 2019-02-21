@@ -338,7 +338,7 @@ export default {
             user: postInfo.user,
             title: postInfo.title,
             content: postInfo.content,
-            source:postInfo.source,
+            source: postInfo.source,
             upvotes: postInfo.upvotes,
             createdAt: postInfo.createdAt,
             categories: []
@@ -377,7 +377,7 @@ export default {
               user: postInfo.user,
               title: postInfo.title,
               content: postInfo.content,
-              source:postInfo.source,
+              source: postInfo.source,
               upvotes: postInfo.upvotes,
               createdAt: postInfo.createdAt,
               categories: []
@@ -647,15 +647,18 @@ export default {
       const userInfo = userDoc.data();
       arrived = true;
       ///
+      let index = 0;
       const userThread = userInfo.thread;
       const allThreads = await db.collection("threads").get();
       userThread.forEach(uThread => {
         allThreads.forEach(elem => {
           if (uThread.toDate().toString() == elem.id.toString()) {
             threadsOfThesUser.push({
+              tOrder: index,
               threadId: uThread,
               thread: elem.data().chain
             });
+            index += 1;
           }
         });
       });

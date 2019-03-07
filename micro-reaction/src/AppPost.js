@@ -34,7 +34,7 @@ import enLocale from "date-fns/locale/en";
 import differenceInDays from "date-fns/difference_in_days";
 import distanceInWords from "date-fns/distance_in_words";
 import format from "date-fns/format";
-import { isThursday } from "date-fns";
+import { getSeconds } from "date-fns";
 
 var _ = require("lodash");
 
@@ -87,6 +87,8 @@ const credibilityTasks = [
   }
 ];
 
+const openSourceTaskTriggerInterval = 10;
+
 @inject("posts")
 @inject("users")
 @observer
@@ -132,6 +134,7 @@ class AppPost extends Component {
     currentTaskId: 0,
     isAdmin: false,
     postWithSourceOpen: "",
+    lastOpenTime: null,
     votes: []
   };
 
@@ -175,13 +178,36 @@ class AppPost extends Component {
     });
   }
 
+  // setTimerId = null;
+  setInterverId = null;
+  duration = null;
+
   componentDidMount() {
     document.addEventListener("keydown", this.escFunction, false);
     this.getUser();
     fb.isAdmin().then(data => {
       this.setState({ isAdmin: data });
     });
+    this.setInterverId = setInterval(() => {
+      if (this.state.postWithSourceOpen && this.state.lastOpenTime) {
+        this.duration = getSeconds(
+          new Date(new Date() - this.state.lastOpenTime)
+        );
+        console.log("duration:", this.duration);
+      }
+      if (
+        !this.state.isThreading &&
+        this.state.postWithSourceOpen &&
+        this.duration >= openSourceTaskTriggerInterval
+      ) {
+        this.startThreading(this.state.postWithSourceOpen, "toggleOpenItBelow");
+      }
+    }, 1000);
   }
+
+  componentWillUnmount = () => {
+    clearInterval(this.setInterverId);
+  };
 
   escFunction = event => {
     if (event.keyCode === 27) {
@@ -266,22 +292,13 @@ class AppPost extends Component {
     });
   };
 
-  // setOnThreading = () => {
-  //   this.setState({ isThreading: true });
-  // };
-
-  setOffThreading = () => {
-    this.setState({ isThreading: false });
-  };
-
   startThreading = async (id, startName) => {
     const prevComId = this.state.selectedCom.id;
-    this.selectComment(id);
-    this.showModal(id);
-    this.initiateTask();
     this.setState({ isThreading: true });
-
     if (!this.state.isThreading || prevComId != id) {
+      this.selectComment(id);
+      this.showModal(id);
+      this.initiateTask();
       await fb.newTaskThread(id, startName).then(data => {
         this.getAllThreadsOfThisUser();
       });
@@ -445,8 +462,10 @@ class AppPost extends Component {
       selectedCom: [],
       showComId: 0,
       postSeen: [],
-      isThreading: false
+      isThreading: false,
+      lastOpenTime: null
     });
+    this.duration = null;
   };
 
   handleLogin = () => {
@@ -565,8 +584,13 @@ class AppPost extends Component {
     });
   };
 
+  setLastOpenTime = () => {
+    this.setState({
+      lastOpenTime: new Date()
+    });
+  };
+
   render() {
-    console.log("AppPost.state.votes:", this.state.votes);
     const postList = (
       <div>
         <div className="post_header">
@@ -592,6 +616,8 @@ class AppPost extends Component {
                   >
                     <Segment vertical>
                       <PostwithUpvotes
+                        setLastOpenTime={this.setLastOpenTime}
+                        isThreading={this.state.isThreading}
                         isVoted={this.state.votes.includes(post.id)}
                         isSourceOpen={
                           post.id.toString() ==
@@ -648,7 +674,6 @@ class AppPost extends Component {
                 isThreadLoaded={this.state.isThreadLoaded}
                 getAllThreadsOfThisUser={this.getAllThreadsOfThisUser}
                 getFormattedDate={this.getFormattedDate}
-                setOffThreading={this.setOffThreading}
                 scrollTo={this.scrollTo}
                 user={this.state.user}
                 showTask={this.state.showTask}

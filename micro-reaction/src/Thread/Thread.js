@@ -74,7 +74,6 @@ class Thread extends Component {
     this.setState({
       selectedAnswer: ""
     });
-    this.props.setOffThreading();
     await this.addThisTaskOnThread(this.props.post.id, selectedAnswer, tType);
     this.props.handleSubmit(this.props.post.id, selectedAnswer);
     this.props.handleClose();

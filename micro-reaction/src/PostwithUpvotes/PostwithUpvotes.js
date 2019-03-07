@@ -15,7 +15,8 @@ import "./PostwithUpvotes.css";
 
 export default class PostWithupvotes extends Component {
   state = {
-    isAdmin: false
+    isAdmin: false,
+    isSourceOpen: false
   };
 
   componentWillMount = () => {
@@ -28,9 +29,11 @@ export default class PostWithupvotes extends Component {
 
   toggleOpenItBelow = () => {
     this.props.toggleSourceOfThisPost(this.props.data.id);
-    if (!this.props.isSourceOpen) {
-      this.props.startThreading(this.props.data.id, "toggleOpenItBelow");
-    }
+    this.setState({ isSourceOpen: !this.props.isSourceOpen }, function() {
+      if (this.state.isSourceOpen) {
+        this.props.setLastOpenTime();
+      }
+    });
   };
 
   render() {

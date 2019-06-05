@@ -10,6 +10,7 @@ import {
 import fb from "../utils/firebaseWrapper";
 
 let selectedCategory = [];
+// This is the modal for tasks user interface. 
 
 const Modal = ({
   handleSubmit,

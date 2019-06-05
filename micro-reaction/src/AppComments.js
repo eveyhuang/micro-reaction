@@ -1,8 +1,5 @@
 import React, { Component } from "react";
-import Post from "./Post/Post";
-import PostwithReply from "./PostwithReply/PostwithReply";
 import firebase from "firebase";
-import Article from "./Article/Article";
 import "./AppComments.css";
 import {
   Grid,

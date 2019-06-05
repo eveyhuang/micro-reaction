@@ -1,9 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import Post from "./Post/Post";
-import PostwithReply from "./PostwithReply/PostwithReply";
-import firebase from "firebase";
-import Article from "./Article/Article";
+
 import "./AppPost.css";
 import {
   Grid,

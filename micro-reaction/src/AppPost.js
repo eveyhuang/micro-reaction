@@ -105,24 +105,7 @@ class AppPost extends Component {
       { key: "Popular", text: "Popular", value: "Popular" },
       { key: "Random", text: "Random", value: "Random" }
     ],
-    // comments: [
-    //   {
-    //     id: postInfo.pId,
-    //     postId: postId,
-    //     user: postInfo.user,
-    //     title: postInfo.title,
-    //     content: postInfo.content,
-    //     upvotes: postInfo.upvotes,
-    //     createdAt: postInfo.createdAt,
-    //     categories: []
-    //   }
-    // ],
     selectedCom: [],
-    categOptions: [
-      { key: "A", text: "A", value: "a" },
-      { key: "B", text: "B", value: "b" },
-      { key: "C", text: "C", value: "c" }
-    ],
     postSeen: [],
     userThread: [],
     isThreadLoaded: false,
@@ -357,13 +340,7 @@ class AppPost extends Component {
   }
 
   handleContinue = () => {
-    // var nextPostID = this.selectOtherPost(this.state.showComId);
-    // // console.log("ID of the next Post to Show: ", nextPostID);
-    // this.selectComment(nextPostID);
-    // this.setState(prevState => ({
-    //   showComId: nextPostID,
-    //   postSeen: [...prevState.postSeen, nextPostID]
-    // }));
+   
   };
 
   getRandomInt(max) {
@@ -373,29 +350,13 @@ class AppPost extends Component {
   selectOtherPost(curID) {
     var nextID;
     let postSeen = this.state.postSeen;
-    // this.state.comments.map(post => {
-    //   if (post.id !== curID && !postSeen.includes(post.id)) {
-    //     nextID = post.id;
-    //   }
-    // });
+    
     let posibleId = this.getRandomInt(this.state.comments.length);
     nextID = posibleId;
     return nextID;
   }
 
-  // componentWillMount() {
-  //   /*  if (!firebase.apps.length) {
-  //     firebase.initializeApp(config);
-  //   } */
-  // }
 
-  // componentDidMount() {
-  //   /* firebase.database().ref('/comments').on('value',snapshot => {
-  //     this.setState({
-  //       comments: snapshot.val()
-  //     });
-  //   }) */
-  // }
 
   showModal = id => {
     this.setState({
@@ -489,15 +450,9 @@ class AppPost extends Component {
       });
       return resultList;
     }
-    // else this.state.orderingMode == "Random"
-    // console.log("Random!!!:", resultList);
+    
     return resultList;
-    // if (this.state.orderingMode == "Random") {
-    // resultList = this.shuffle(this.state.comments);
-    // console.log("Random!!!:",resultList)
-    //   this.setState({ comments: resultList });
-    //   return resultList;
-    // }
+   
   };
 
   scrollTo = name => {

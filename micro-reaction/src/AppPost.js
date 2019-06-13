@@ -38,22 +38,29 @@ var _ = require("lodash");
 const credibilityTasks = [
   {
     tId: 0,
-    tType: "Decide Clickbait Title",
-    tQ: "To what degree do you think the headline is a “Clickbait” ?",
+    tType: "Claim",
+    tQ: "What is the primary claim made in this article? Please help us highlight it.",
     qDesc:
-      "“Clickbait” is defined as “a certain kind of web content...that is designed to entice its readers into clicking an accompanying link”",
+      "The purpose of an argument—the central idea on which the rhetor is attempting to change the mind of the receivers—is the primary claim of the argument.",
     aType: "radio",
     aOptions: [
-      "Very much clickbaity",
-      "Somewhat clickbaity",
-      "A little bit clickbaity",
-      "Not at all clickbaity"
+      
     ]
   },
   {
     tId: 1,
     tType: "Convincing Evidence",
-    tQ: "How convincing do you find the evidence given for the primary claim?",
+    tQ: "What are the evidences given to support the primary claim? Please help us highlight them.",
+    qDesc: "",
+    aType: "radio",
+    aOptions: [
+      
+    ]
+  },
+  {
+    tId: 2,
+    tType: "Convincing Evidence",
+    tQ: "How convincing do you find the evidences given for the primary claim?",
     qDesc: "",
     aType: "radio",
     aOptions: [
@@ -65,7 +72,17 @@ const credibilityTasks = [
     ]
   },
   {
-    tId: 2,
+    tId: 3,
+    tType: "Convincing Sources",
+    tQ: "Where does the author cite other sources? Please help us highlight them.",
+    qDesc: "",
+    aType: "radio",
+    aOptions: [
+     
+    ]
+  },
+  {
+    tId: 4,
     tType: "Representative Citations",
     tQ:
       "This article properly characterizes the methods and conclusions of the quoted source.",

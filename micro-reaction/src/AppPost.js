@@ -3,18 +3,13 @@ import { Link } from "react-router-dom";
 
 import "./AppPost.css";
 import {
-  Grid,
   Segment,
-  Header,
-  Rail,
-  Sticky,
   Dropdown
 } from "semantic-ui-react";
-import { cloneDeep } from "lodash";
+
 import update from "immutability-helper";
 import PostwithUpvotes from "./PostwithUpvotes/PostwithUpvotes";
-import Modal from "./Modal";
-import Counter from "./Counter";
+
 import LoginBox from "./Login/LoginBox";
 import RegisterBox from "./Login/RegisterBox";
 import Loading from "./Login/loading";
@@ -31,9 +26,8 @@ import enLocale from "date-fns/locale/en";
 import differenceInDays from "date-fns/difference_in_days";
 import distanceInWords from "date-fns/distance_in_words";
 import format from "date-fns/format";
-import { isThursday } from "date-fns";
 
-var _ = require("lodash");
+
 
 const credibilityTasks = [
   {
@@ -83,6 +77,20 @@ const credibilityTasks = [
   },
   {
     tId: 4,
+    tType: "Convincing Evidence",
+    tQ: "How convincing do you find the sources given for the primary claim?",
+    qDesc: "",
+    aType: "radio",
+    aOptions: [
+      "Very much convincing",
+      "Fairly convincing",
+      "Moderately Convincing",
+      "Slightly Convincing",
+      "Not at all Convincing"
+    ]
+  },
+  {
+    tId: 5,
     tType: "Representative Citations",
     tQ:
       "This article properly characterizes the methods and conclusions of the quoted source.",
@@ -117,6 +125,7 @@ class AppPost extends Component {
     showTask: false,
     showComId: 0,
     comments: [],
+    reasons:[],
     orderingMode: "Popular",
     orderingOptions: [
       { key: "Popular", text: "Popular", value: "Popular" },
@@ -234,17 +243,19 @@ class AppPost extends Component {
     this.setState({ user });
   };
 
-  categorize = (comid, categ) => {
+  // comments = article/post 
+  categorize = (comid, categ, reasons) => {
     this.setState(prevState => {
       return {
         comments: prevState.comments.map(post => {
           if (post.id !== comid) {
             return post;
           } else {
-            // console.log(comid, categ);
+            console.log(comid, categ, reasons);
             return {
               ...post,
-              categories: categ
+              categories: categ,
+              reasons:reasons
             };
           }
         })
@@ -578,7 +589,7 @@ class AppPost extends Component {
                 handleClose={this.hideTask}
                 handleContinue={this.handleContinue}
                 post={this.state.selectedCom}
-                categ={this.state.categOptions}
+                
               />
             </div>
           }

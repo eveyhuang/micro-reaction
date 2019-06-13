@@ -572,7 +572,7 @@ export default {
       return;
     }
   },
-  addThisTaskOnThread: async function(postId, userAns, taskCateg) {
+  addThisTaskOnThread: async function(postId, userAns, userReason,taskCateg) {
     try {
       // console.log("inherit props:",postId, userAns, taskCateg)
       var allThreadIds = [];
@@ -600,6 +600,7 @@ export default {
               postId: postId,
               taskCateg: taskCateg,
               userAns: userAns,
+              userReason: userReason,
               doneAt: new Date()
             }
           ])

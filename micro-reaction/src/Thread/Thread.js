@@ -1,3 +1,5 @@
+// thread is the task interface
+
 import React, { Component } from "react";
 import DataLoading from "../DataLoading";
 import ThreadHistoryItem from "./ThreadHistoryItem";
@@ -69,15 +71,17 @@ class Thread extends Component {
     this.setState({reasons:value});
   };
 
-  addThisTaskOnThread = async (postId, userAnser, taskCateg) => {
-    await fb.addThisTaskOnThread(postId, userAnser, taskCateg);
+  addThisTaskOnThread = async (postId, userAnswer, userReason, taskCateg) => {
+    await fb.addThisTaskOnThread(postId, userAnswer, userReason, taskCateg);
   };
 
   submitCateg = async tType => {
     const selectedAnswer = this.state.selectedAnswer;
+    const userReasons = this.state.reasons;
+    console.log(userReasons);
     this.props.setOffThreading();
-    await this.addThisTaskOnThread(this.props.post.id, selectedAnswer, tType);
-    this.props.handleSubmit(this.props.post.id, selectedAnswer);
+    await this.addThisTaskOnThread(this.props.post.id, selectedAnswer, userReasons, tType);
+    this.props.handleSubmit(this.props.post.id, selectedAnswer, userReasons);
     this.props.handleClose();
     this.props.scrollTo(this.props.post.id);
     this.getAllThreadsOfThisUser();
@@ -85,13 +89,15 @@ class Thread extends Component {
 
   continueTask = async tType => {
     const selectedAnswer = this.state.selectedAnswer;
+    const userReasons = this.state.reasons;
     this.setState({
-      selectedAnswer: ""
+      selectedAnswer: "",
+      reasons:"",
     });
     this.props.nextTask();
-    await this.addThisTaskOnThread(this.props.post.id, selectedAnswer, tType);
+    await this.addThisTaskOnThread(this.props.post.id, selectedAnswer, userReasons,tType);
     this.props.handleContinue();
-    this.props.handleSubmit(this.props.post.id, selectedAnswer);
+    this.props.handleSubmit(this.props.post.id, selectedAnswer, userReasons);
     // this.props.scrollTo(this.props.post.id);
     this.getAllThreadsOfThisUser();
   };
@@ -167,14 +173,16 @@ class Thread extends Component {
                 </div>
               );
             })}
-          <Form.Field control={TextArea} label= 'Why (Optional)'
+          <Form.Field control={TextArea} 
+          label= 'Why (Optional)'
+          value={this.state.reasons || ''}
           placeholder='What is your reasoning behind your answer?'
           onChange={this.setReasons}/>
           </Form>
         </div>
       );
     }
-    if (credibilityTasks[currentTaskId].aType == "dropdown") {
+/*     if (credibilityTasks[currentTaskId].aType == "dropdown") {
       return (
         <div>
           <Dropdown
@@ -189,7 +197,7 @@ class Thread extends Component {
           />
         </div>
       );
-    }
+    } */
   };
 
   render() {
@@ -336,17 +344,7 @@ class Thread extends Component {
         {showTask ? (
           <div className="task_list">
             {threadContents}
-            {/*showTask ? (
-            threadContents
-          ) : (
-            <Popup
-              trigger={<Header size="medium">Vote for contribution!</Header>}
-              header="Vote for contribution!"
-              content="plz vote!"
-              size="large"
-              position="bottom center"
-            />
-          )*/}
+            
           </div>
         ) : null}
         {this.state.isAdmin ? (

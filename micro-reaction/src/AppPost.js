@@ -42,7 +42,7 @@ const credibilityTasks = [
     tQ: "What is the primary claim made in this article? Please help us highlight it.",
     qDesc:
       "The purpose of an argument—the central idea on which the rhetor is attempting to change the mind of the receivers—is the primary claim of the argument.",
-    aType: "radio",
+    aType: "annotation",
     aOptions: [
       
     ]
@@ -52,7 +52,7 @@ const credibilityTasks = [
     tType: "Convincing Evidence",
     tQ: "What are the evidences given to support the primary claim? Please help us highlight them.",
     qDesc: "",
-    aType: "radio",
+    aType: "annotation",
     aOptions: [
       
     ]
@@ -76,7 +76,7 @@ const credibilityTasks = [
     tType: "Convincing Sources",
     tQ: "Where does the author cite other sources? Please help us highlight them.",
     qDesc: "",
-    aType: "radio",
+    aType: "annotation",
     aOptions: [
      
     ]

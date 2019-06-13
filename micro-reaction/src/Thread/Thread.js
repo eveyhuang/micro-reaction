@@ -130,6 +130,15 @@ class Thread extends Component {
     });
   };
 
+  buildAnnotationAnswerBox = (credibilityTasks, currentTaskId) =>{
+    if (credibilityTasks[currentTaskId].aType == "annotation"){
+      return (
+        <Button>
+          Start Annotation
+        </Button>
+      )
+    }
+  }
   buildAnswerBox = (credibilityTasks, currentTaskId) => {
     if (credibilityTasks[currentTaskId].aType == "radio") {
       return (
@@ -286,21 +295,22 @@ class Thread extends Component {
           <p> {post.content} </p>
         </div>*/}
         {this.buildAnswerBox(credibilityTasks, currentTaskId)}
+        {this.buildAnnotationAnswerBox(credibilityTasks, currentTaskId)}
         <div className="thread-contents_button_box">
-          <Button
+          {/* <Button
             onClick={() =>
               this.submitCateg(credibilityTasks[currentTaskId].tType)
             }
           >
             Submit & Exit
-          </Button>
+          </Button> */}
           {this.props.isTaskOver ? null : (
             <Button
               onClick={() =>
                 this.continueTask(credibilityTasks[currentTaskId].tType)
               }
             >
-              Submit & Continue
+              Submit
             </Button>
           )}
         </div>

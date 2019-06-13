@@ -131,7 +131,7 @@ class Thread extends Component {
   };
 
   buildAnnotationAnswerBox = (credibilityTasks, currentTaskId) =>{
-    if (credibilityTasks[currentTaskId].aType == "annotation"){
+    if (credibilityTasks[currentTaskId].aType === "annotation"){
       return (
         <Button>
           Start Annotation
@@ -140,7 +140,7 @@ class Thread extends Component {
     }
   }
   buildAnswerBox = (credibilityTasks, currentTaskId) => {
-    if (credibilityTasks[currentTaskId].aType == "radio") {
+    if (credibilityTasks[currentTaskId].aType === "radio") {
       return (
         <div>
           <Form>
@@ -297,14 +297,16 @@ class Thread extends Component {
         {this.buildAnswerBox(credibilityTasks, currentTaskId)}
         {this.buildAnnotationAnswerBox(credibilityTasks, currentTaskId)}
         <div className="thread-contents_button_box">
-          {/* <Button
+          
+          {this.props.isTaskOver ? (
+            <Button
             onClick={() =>
               this.submitCateg(credibilityTasks[currentTaskId].tType)
             }
-          >
-            Submit & Exit
-          </Button> */}
-          {this.props.isTaskOver ? null : (
+            >
+            Submit
+          </Button>
+          ) : (
             <Button
               onClick={() =>
                 this.continueTask(credibilityTasks[currentTaskId].tType)
@@ -314,7 +316,6 @@ class Thread extends Component {
             </Button>
           )}
         </div>
-        {/*<Button onClick={this.handleClose}>Close</Button>*/}
       </div>
     );
 

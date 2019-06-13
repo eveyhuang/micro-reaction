@@ -562,7 +562,7 @@ class AppPost extends Component {
                 credibilityTasks={credibilityTasks}
                 currentTaskId={this.state.currentTaskId}
                 isTaskOver={
-                  credibilityTasks.length == this.state.currentTaskId + 1
+                  credibilityTasks.length === this.state.currentTaskId +1
                 }
                 updatePostsList={this.updatePostsList}
                 resetHistoryOfThisUser={this.resetHistoryOfThisUser}

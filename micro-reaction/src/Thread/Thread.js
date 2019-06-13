@@ -5,9 +5,8 @@ import fb from "../utils/firebaseWrapper";
 import {
   Button,
   Dropdown,
-  Container,
   Header,
-  Message,
+  TextArea,
   Icon,
   Form,
   Radio,
@@ -26,7 +25,8 @@ class Thread extends Component {
     isThreadLoaded: false,
     createPost: false,
     isAdmin: false,
-    selectedAnswer: ""
+    selectedAnswer: "",
+    reasons:""
   };
 
   componentDidMount() {
@@ -63,6 +63,10 @@ class Thread extends Component {
 
   setCategories = (event, { value }) => {
     this.setState({ selectedAnswer: value });
+  };
+
+  setReasons= (event, {value}) => {
+    this.setState({reasons:value});
   };
 
   addThisTaskOnThread = async (postId, userAnser, taskCateg) => {
@@ -129,7 +133,7 @@ class Thread extends Component {
       this.props.updatePostsList();
     });
   };
-
+         
   buildAnnotationAnswerBox = (credibilityTasks, currentTaskId) =>{
     if (credibilityTasks[currentTaskId].aType === "annotation"){
       return (
@@ -159,9 +163,13 @@ class Thread extends Component {
                       onChange={this.setCategories}
                     />
                   </Form.Field>
+
                 </div>
               );
             })}
+          <Form.Field control={TextArea} label= 'Why (Optional)'
+          placeholder='What is your reasoning behind your answer?'
+          onChange={this.setReasons}/>
           </Form>
         </div>
       );

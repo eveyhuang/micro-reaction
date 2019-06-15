@@ -75,29 +75,30 @@ class Thread extends Component {
     await fb.addThisTaskOnThread(postId, userAnswer, userReason, taskCateg);
   };
 
-  submitCateg = async tType => {
+  submitCateg = async currentTaskId=> {
     const selectedAnswer = this.state.selectedAnswer;
     const userReasons = this.state.reasons;
-    console.log(userReasons);
+    console.log(currentTaskId, selectedAnswer, userReasons);
     this.props.setOffThreading();
-    await this.addThisTaskOnThread(this.props.post.id, selectedAnswer, userReasons, tType);
-    this.props.handleSubmit(this.props.post.id, selectedAnswer, userReasons);
+    await this.addThisTaskOnThread(this.props.post.id, selectedAnswer, userReasons);
+    this.props.handleSubmit(this.props.post.id,selectedAnswer, userReasons);
     this.props.handleClose();
     this.props.scrollTo(this.props.post.id);
     this.getAllThreadsOfThisUser();
   };
 
-  continueTask = async tType => {
+  continueTask = async currentTaskId=> {
     const selectedAnswer = this.state.selectedAnswer;
     const userReasons = this.state.reasons;
     this.setState({
       selectedAnswer: "",
       reasons:"",
     });
+    console.log(currentTaskId, selectedAnswer, userReasons);
     this.props.nextTask();
-    await this.addThisTaskOnThread(this.props.post.id, selectedAnswer, userReasons,tType);
+    await this.addThisTaskOnThread(this.props.post.id, selectedAnswer, userReasons);
     this.props.handleContinue();
-    this.props.handleSubmit(this.props.post.id, selectedAnswer, userReasons);
+    this.props.handleSubmit(this.props.post.id, currentTaskId, selectedAnswer, userReasons);
     // this.props.scrollTo(this.props.post.id);
     this.getAllThreadsOfThisUser();
   };
@@ -182,22 +183,7 @@ class Thread extends Component {
         </div>
       );
     }
-/*     if (credibilityTasks[currentTaskId].aType == "dropdown") {
-      return (
-        <div>
-          <Dropdown
-            className="thread-contents_dropdown"
-            placeholder="Answer"
-            fluid
-            multiple
-            selection
-            closeOnChange
-            options={this.props.categ}
-            onChange={this.setCategories}
-          />
-        </div>
-      );
-    } */
+
   };
 
   render() {
@@ -317,7 +303,7 @@ class Thread extends Component {
           {this.props.isTaskOver ? (
             <Button
             onClick={() =>
-              this.submitCateg(credibilityTasks[currentTaskId].tType)
+              this.submitCateg(currentTaskId)
             }
             >
             Submit
@@ -325,7 +311,7 @@ class Thread extends Component {
           ) : (
             <Button
               onClick={() =>
-                this.continueTask(credibilityTasks[currentTaskId].tType)
+                this.continueTask(currentTaskId)
               }
             >
               Submit
@@ -336,7 +322,7 @@ class Thread extends Component {
     );
 
     const historyList = this.state.userThread.reverse();
-    console.log("historyList:", historyList);
+    // console.log("historyList:", historyList);
 
     return (
       <div className="task_container">

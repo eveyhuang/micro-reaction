@@ -341,11 +341,13 @@ export default {
             source: postInfo.source,
             upvotes: postInfo.upvotes,
             createdAt: postInfo.createdAt,
-            categories: []
+            categories: [],
+            answers:postInfo.answers
           };
         })
       );
       // allPosts = allPosts.filter(post => post !== null && post.id);
+      console.log(allPosts);
       return allPosts;
     } catch (e) {
       console.log(e.toString());

@@ -136,7 +136,15 @@ class AppPost extends Component {
     userThread: [],
     isThreadLoaded: false,
     currentTaskId: 0,
-    isAdmin: false
+    isAdmin: false,
+    answers:[
+      {taskID:0, answers:[]},
+      {taskID:1, answers:[]},
+      {taskID:2, answers:[]},
+      {taskID:3, answers:[]},
+      {taskID:4, answers:[]},
+      {taskID:5, answers:[]}
+    ]
   };
 
   getFormattedDate = d => {
@@ -235,7 +243,7 @@ class AppPost extends Component {
   };
 
   getUser = async function() {
-    console.log("getUser!!!");
+    
     const user = this.state.user || (await fb.getUserInfo());
     if (!user) {
       return null;
@@ -244,23 +252,33 @@ class AppPost extends Component {
   };
 
   // comments = article/post 
-  categorize = (comid, categ, reasons) => {
+  categorize = (comid, curTaskID,categ, reasons) => {
+    let curAnswer= [comid, curTaskID, categ,reasons];
+    // let allAnswers = this.state.answers.concat(curAnswer);
+    
     this.setState(prevState => {
       return {
-        comments: prevState.comments.map(post => {
-          if (post.id !== comid) {
-            return post;
+        answers:prevState.answers.map(answer => {
+          if (answer.taskID !== curTaskID){
+            return answer;
           } else {
-            console.log(comid, categ, reasons);
+            console.log("cur asnwer: ", answer)
+            console.log("adding: ", curAnswer);
+            const newAnswer = answer.answers.slice()
+            newAnswer.push(curAnswer)
+            console.log("updated: ", newAnswer)
             return {
-              ...post,
-              categories: categ,
-              reasons:reasons
-            };
+              ...answer,
+              answers:newAnswer
+            }
+
           }
         })
       };
-    });
+    }
+    )
+    console.log(this.state.answers);
+    
   };
 
   // setOnThreading = () => {

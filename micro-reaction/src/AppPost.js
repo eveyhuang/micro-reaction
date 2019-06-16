@@ -137,14 +137,7 @@ class AppPost extends Component {
     isThreadLoaded: false,
     currentTaskId: 0,
     isAdmin: false,
-    answers:[
-      {taskID:0, answers:[]},
-      {taskID:1, answers:[]},
-      {taskID:2, answers:[]},
-      {taskID:3, answers:[]},
-      {taskID:4, answers:[]},
-      {taskID:5, answers:[]}
-    ]
+    
   };
 
   getFormattedDate = d => {
@@ -252,38 +245,58 @@ class AppPost extends Component {
   };
 
   // comments = article/post 
-  categorize = (comid, curTaskID,categ, reasons) => {
-    let curAnswer= [comid, curTaskID, categ,reasons];
-    // let allAnswers = this.state.answers.concat(curAnswer);
+  submitTask = (comid, curTaskID, answer, reasons) => {
     
-    this.setState(prevState => {
-      return {
-        answers:prevState.answers.map(answer => {
-          if (answer.taskID !== curTaskID){
-            return answer;
-          } else {
-            console.log("cur asnwer: ", answer)
-            console.log("adding: ", curAnswer);
-            const newAnswer = answer.answers.slice()
-            newAnswer.push(curAnswer)
-            console.log("updated: ", newAnswer)
-            return {
-              ...answer,
-              answers:newAnswer
-            }
+    this.updateStateAnswers (comid, curTaskID, answer, reasons);
+    var updatedAnswers = this.getAllAnswers(comid);
+    console.log( "after update: ", updatedAnswers);
+    fb.updatePostAnswers(comid, updatedAnswers);
+  }
 
-          }
-        })
-      };
-    }
-    )
-    console.log(this.state.answers);
-    
+  updateStateAnswers = (comid, curTaskID, answer, reasons) => {
+    let curAnswer= [comid, curTaskID, this.state.user.name, answer,reasons];
+    // let allAnswers = this.state.answers.concat(curAnswer);
+    this.setState(
+      prevState => {
+      return {
+          comments: prevState.comments.map(post => {
+            if (post.id !== comid) {
+              return post;
+            } else {
+              console.log(post)
+              console.log("pre update all answers: ", post.answers)
+              return {
+                ...post,
+                answers:post.answers.map(answer => {
+                  if (answer.taskID !== curTaskID){
+                    return answer;
+                  } else {
+                    const newAnswer = answer.answers.slice();
+                    newAnswer.push(curAnswer);
+                    console.log("to update: ", answer.taskID,newAnswer);
+                    return {
+                      ...answer,
+                      answers:newAnswer
+                    }
+                  }
+                }),
+              };
+            }
+          })
+        };
+      
+    },
+    )    
   };
 
-  // setOnThreading = () => {
-  //   this.setState({ isThreading: true });
-  // };
+  getAllAnswers(id) {
+    let allAnswers;
+    this.state.comments.map(post => {
+      if (post.id === id) { allAnswers=post.answers;}
+    })
+    console.log("found all answers ! ",id, allAnswers);
+    return allAnswers;
+  }
 
   setOffThreading = () => {
     this.setState({ isThreading: false });
@@ -603,7 +616,7 @@ class AppPost extends Component {
                 scrollTo={this.scrollTo}
                 user={this.state.user}
                 showTask={this.state.showTask}
-                handleSubmit={this.categorize}
+                handleSubmit={this.submitTask}
                 handleClose={this.hideTask}
                 handleContinue={this.handleContinue}
                 post={this.state.selectedCom}

@@ -10,6 +10,26 @@ export const FIREBASE_APP_NAME = "micro-reaction-1e530";
 export const FIREBASE_API_KEY = "AIzaSyBStrPkEOxIu4KoulLiKERZY0-YmwE_iOo";
 export const FIREBASE_SENDER_ID = "339249208466";
 
+var posts= [
+  {
+  "pId": 0,
+  "content": "Since Houston, Texas was founded nearly two centuries ago, Houstonians have been treating its wetlands as stinky, mosquito-infested blots in need of drainage. Even after it became a widely accepted scientific fact that wetlands can soak up large amounts of flood water, the city continued to pave over them. The watershed of the White Oak Bayou river, which includes much of northwest Houston, is a case in point. From 1992 to 2010, this area lost more than 70% of its wetlands, according to research (pdf) by Texas A&M University.",
+  "source": "https://qz.com/1064364/hurricane-harvey-houstons-flooding-made-worse-by-unchecked-urban-development-and-wetland-destruction/",
+  "title": "Hurricane Harvey: Houston's flooding made worse by unchecked urban development and wetland destruction",
+  "user": "tomswartz07",
+  "createdAt": "2019.02.12",
+  "upvotes": 45,
+  "answers": [
+    {"taskID":0, "answers":[]},
+    {"taskID":1, "answers":[]},
+    {"taskID":2, "answers":[]},
+    {"taskID":3, "answers":[]},
+    {"taskID":4, "answers":[]},
+    {"taskID":5, "answers":[]}
+  ]
+  },
+]
+
 var firebase = require("firebase");
 
 firebase.initializeApp({
@@ -26,6 +46,27 @@ const db = firebase.firestore();
 db.settings({
   timestampsInSnapshots: true
 });
+
+// posts.forEach(function(obj) {
+//   db.collection("posts").doc(obj.pId.toString()).set({
+//       pId: obj.pId,
+//       content: obj.content,
+//       source: obj.source,
+//       title: obj.title,
+//       user:obj.user,
+//       upvotes: obj.upvotes,
+//       createdAt:obj.createdAt,
+//       answers: obj.answers
+//   }).then(function(docRef) {
+//       console.log("Document written with ID: ", docRef.id);
+//   })
+//   .catch(function(error) {
+//       console.error("Error adding document: ", error);
+//   });
+// });
+
+
+
 
 var arrived = false;
 var userObject = null;
@@ -241,80 +282,7 @@ export default {
     });
   },
   getAllPosts: async function() {
-    // await db
-    //   .collection("posts")
-    //   .doc("3")
-    //   .set({
-    //     pId: 3,
-    //     user: "tomswartz07",
-    //     title:
-    //       "Hurricane Harvey: Houston's flooding made worse by unchecked urban development and wetland destruction",
-    //     content:"Since Houston, Texas was founded nearly two centuries ago, Houstonians have been treating its wetlands as stinky, mosquito-infested blots in need of drainage. Even after it became a widely accepted scientific fact that wetlands can soak up large amounts of flood water, the city continued to pave over them. The watershed of the White Oak Bayou river, which includes much of northwest Houston, is a case in point. From 1992 to 2010, this area lost more than 70% of its wetlands, according to research (pdf) by Texas A&M University.",
-    //     source: "https://qz.com/1064364/hurricane-harvey-houstons-flooding-made-worse-by-unchecked-urban-development-and-wetland-destruction/",
-    //     upvotes: 131,
-    //     createdAt: new Date('2019-02-12')
-    //   });
-    // await db
-    //   .collection("posts")
-    //   .doc("5")
-    //   .set({
-    //     pId: 5,
-    //     user: "LaysClassic1oz",
-    //     title: "First Hand Account Of The Day After Hurrican Sandy",
-    //     content:
-    //       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-    //     upvotes: 20,
-    //     createdAt: new Date()
-    //   });
-    // await db
-    //   .collection("posts")
-    //   .doc("6")
-    //   .set({
-    //     pId: 6,
-    //     user: "rauce12",
-    //     title: "7 places to get help with Sandy loans in New Jersey",
-    //     content:
-    //       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-    //     upvotes: 16,
-    //     createdAt: new Date()
-    //   });
-    // await db
-    //   .collection("posts")
-    //   .doc("7")
-    //   .set({
-    //     pId: 7,
-    //     user: "goodnik",
-    //     title: "Leave No Pet Behind! Pet Evacuation Laws in NYC",
-    //     content:
-    //       " Be sure to keep your pet's necessities ready in a to-go bag should you need to evacuate on short notice. Best to include: (at least) a couple days of food veterinary (vaccination) records (put in Ziploc bag to ensure they stay dry) any vital medications (7 days worth is ideal) ID tags. For cat owners: You may want to limit your pet's access to hideaways so that you can easily grab them and load them into a carrier in the event of an evacuation.",
-    //     upvotes: 8,
-    //     createdAt: new Date()
-    //   });
-    // await db
-    //   .collection("posts")
-    //   .doc("8")
-    //   .set({
-    //     pId: 8,
-    //     user: "deleted",
-    //     title: "A safety note when dealing with flooded streets...",
-    //     content:
-    //       "From a New Orleanian who is used to flooding in urban areas: STAY THE FUCK OFF THE FLOODED STREETS!!!! Why? Because manhole covers get unseated and leave open holes that if you fall in, you won't be coming out of. Think about it as the strongest riptide possible. You can't swim out of it. You can't escape once you're in. You'll die a painful death drowning and scared. Unless you can be 100% sure of where you're walking, don't risk it. Every time it floods in New Orleans, there's always a death or two (at least) that happens this way and it's entirely avoidable. Take care of yourselves and be safe. Just because the rain has stopped doesn't mean that flood waters are safe to wade in.",
-    //     upvotes: 6,
-    //     createdAt: new Date()
-    //   });
-    // await db
-    //   .collection("posts")
-    //   .doc("9")
-    //   .set({
-    //     pId: 9,
-    //     user: "tomswartz07",
-    //     title: "Tip: Charge your computers and devices now",
-    //     content:
-    //       "Tip: Charge your computers and devices now. Even if internet is down, you can use USB ports to charge your phones if the power goes out!",
-    //     upvotes: 5,
-    //     createdAt: new Date()
-    //   });
-
+   
     try {
       var allPostIds = [];
       const posts = await db.collection("posts").get();
@@ -347,13 +315,14 @@ export default {
         })
       );
       // allPosts = allPosts.filter(post => post !== null && post.id);
-      console.log(allPosts);
+     //console.log(allPosts);
       return allPosts;
     } catch (e) {
       console.log(e.toString());
       return [];
     }
   },
+
   getThisPost: async function(id) {
     try {
       var allPostIds = [];
@@ -382,7 +351,8 @@ export default {
               source: postInfo.source,
               upvotes: postInfo.upvotes,
               createdAt: postInfo.createdAt,
-              categories: []
+              categories: [],
+              answers:postInfo.answers
             };
           }
           return {};
@@ -458,6 +428,58 @@ export default {
       return;
     }
   },
+  updatePostAnswers: async function(id, updatedAnswer) {
+    try {
+      var allPostIds = [];
+      const posts = await db.collection("posts").get();
+      posts.forEach(elem => {
+        allPostIds.push(elem.id);
+      });
+    
+      await allPostIds.forEach(async postId => {
+        
+        if (Number(postId) === id) {
+          
+          const postInfoDoc = await db
+            .collection("posts")
+            .doc(postId)
+            .get();
+          const postInfo = postInfoDoc.data();
+          
+          if (!postInfo) {
+            return { error: `failed to find the post with this id: ${id}` };
+          }
+
+          console.log("fb to update answer: ", updatedAnswer)
+          
+          await db
+            .collection("posts")
+            .doc(postId)
+            // .collection('answers')
+            // .collection(taskID)
+            // .add(updatedAnswer)
+            .set({
+              pId: postInfo.pId,
+              user: postInfo.user,
+              title: postInfo.title,
+              content: postInfo.content,
+              source: postInfo.source,
+              upvotes: postInfo.upvotes,
+              createdAt: postInfo.createdAt,
+              answers:updatedAnswer
+            });
+          console.log("firebase:  ",postId, postInfo.answers)
+          return;
+        }
+      });
+      // allPosts = allPosts.filter(post => post !== null && post.id);
+    } catch (e) {
+      console.log("fb error: ", e.toString());
+      return;
+    }
+
+  },
+
   voteOnThisPost: async function(id, isUpvote) {
     try {
       var allPostIds = [];

@@ -1,8 +1,8 @@
+// seems to be outdated and unused.
+
+
 import React, { Component } from "react";
-import Post from "./Post/Post";
-import PostwithReply from "./PostwithReply/PostwithReply";
 import firebase from "firebase";
-import Article from "./Article/Article";
 import "./AppComments.css";
 import {
   Grid,
@@ -66,24 +66,7 @@ class AppComments extends Component {
       { key: "Popular", text: "Popular", value: "Popular" },
       { key: "Random", text: "Random", value: "Random" }
     ],
-    // comments: [
-    //   {
-    //     id: postInfo.pId,
-    //     postId: postId,
-    //     user: postInfo.user,
-    //     title: postInfo.title,
-    //     content: postInfo.content,
-    //     upvotes: postInfo.upvotes,
-    //     createdAt: postInfo.createdAt,
-    //     categories: []
-    //   }
-    // ],
     selectedCom: [],
-    categOptions: [
-      { key: "A", text: "A", value: "a" },
-      { key: "B", text: "B", value: "b" },
-      { key: "C", text: "C", value: "c" }
-    ],
     postSeen: [],
     userThread: [],
     isThreadLoaded: false
@@ -282,11 +265,7 @@ class AppComments extends Component {
   selectOtherPost(curID) {
     var nextID;
     let postSeen = this.state.postSeen;
-    // this.state.comments.map(post => {
-    //   if (post.id !== curID && !postSeen.includes(post.id)) {
-    //     nextID = post.id;
-    //   }
-    // });
+
     let posibleId = this.getRandomInt(this.state.comments.length);
     nextID = posibleId;
     return nextID;
@@ -333,11 +312,11 @@ class AppComments extends Component {
 
   showLoginBox() {
     this.setState({ isLoginOpen: true, isRegisterOpen: false });
-  }
+  };
 
   showRegisterBox() {
     this.setState({ isRegisterOpen: true, isLoginOpen: false });
-  }
+  };
 
   handleLogOut = () => {
     if (fb.logout()) {
@@ -507,7 +486,7 @@ class AppComments extends Component {
           </div>
           {
             <div className="sticky_thread">
-              <Thread
+             {/*  <Thread
                 isPostPage
                 updatePostsList={this.updatePostsList}
                 resetHistoryOfThisUser={this.resetHistoryOfThisUser}
@@ -524,7 +503,7 @@ class AppComments extends Component {
                 handleContinue={this.handleContinue}
                 post={this.state.selectedCom}
                 categ={this.state.categOptions}
-              />
+              /> */}
             </div>
           }
         </div>

@@ -136,9 +136,7 @@ export default class PostWithupvotes extends Component {
               <Comment.Author>
                 <text style={{ fontWeight: "bold" }}>{props.data.user}</text>
                 <text style={{ opacity: "0.5" }}>
-                  {` • Posted at ${props.getFormattedDate(
-                    props.data.createdAt.toDate()
-                  )}`}
+                  {` • Posted at ${props.data.createdAt}`}
                 </text>
               </Comment.Author>
             </Comment.Content>
@@ -271,6 +269,12 @@ export default class PostWithupvotes extends Component {
                   allowFullScreen
                 />)
               ) : null}
+              <Comment.Author>
+                <text style={{ fontWeight: "bold" }}>{props.data.user}</text>
+                <text style={{ opacity: "0.5" }}>
+                  {` • Posted at ${props.data.createdAt}}`}
+                </text>
+              </Comment.Author>
             </Comment.Content>
           </Comment>
         </Grid.Column>

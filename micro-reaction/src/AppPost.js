@@ -1,23 +1,15 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import Post from "./Post/Post";
-import PostwithReply from "./PostwithReply/PostwithReply";
-import firebase from "firebase";
-import Article from "./Article/Article";
+
 import "./AppPost.css";
 import {
-  Grid,
   Segment,
-  Header,
-  Rail,
-  Sticky,
   Dropdown
 } from "semantic-ui-react";
-import { cloneDeep } from "lodash";
+
 import update from "immutability-helper";
 import PostwithUpvotes from "./PostwithUpvotes/PostwithUpvotes";
-import Modal from "./Modal";
-import Counter from "./Counter";
+
 import LoginBox from "./Login/LoginBox";
 import RegisterBox from "./Login/RegisterBox";
 import Loading from "./Login/loading";
@@ -34,29 +26,35 @@ import enLocale from "date-fns/locale/en";
 import differenceInDays from "date-fns/difference_in_days";
 import distanceInWords from "date-fns/distance_in_words";
 import format from "date-fns/format";
-import { isThursday } from "date-fns";
 
-var _ = require("lodash");
+
 
 const credibilityTasks = [
   {
     tId: 0,
-    tType: "Decide Clickbait Title",
-    tQ: "To what degree do you think the headline is a “Clickbait” ?",
+    tType: "Claim",
+    tQ: "What is the primary claim made in this article? Please help us highlight it.",
     qDesc:
-      "“Clickbait” is defined as “a certain kind of web content...that is designed to entice its readers into clicking an accompanying link”",
-    aType: "radio",
+      "The purpose of an argument—the central idea on which the rhetor is attempting to change the mind of the receivers—is the primary claim of the argument.",
+    aType: "annotation",
     aOptions: [
-      "Very much clickbaity",
-      "Somewhat clickbaity",
-      "A little bit clickbaity",
-      "Not at all clickbaity"
+      
     ]
   },
   {
     tId: 1,
     tType: "Convincing Evidence",
-    tQ: "How convincing do you find the evidence given for the primary claim?",
+    tQ: "What are the evidences given to support the primary claim? Please help us highlight them.",
+    qDesc: "",
+    aType: "annotation",
+    aOptions: [
+      
+    ]
+  },
+  {
+    tId: 2,
+    tType: "Convincing Evidence",
+    tQ: "How convincing do you find the evidences given for the primary claim?",
     qDesc: "",
     aType: "radio",
     aOptions: [
@@ -68,7 +66,31 @@ const credibilityTasks = [
     ]
   },
   {
-    tId: 2,
+    tId: 3,
+    tType: "Convincing Sources",
+    tQ: "Where does the author cite other sources? Please help us highlight them.",
+    qDesc: "",
+    aType: "annotation",
+    aOptions: [
+     
+    ]
+  },
+  {
+    tId: 4,
+    tType: "Convincing Evidence",
+    tQ: "How convincing do you find the sources given for the primary claim?",
+    qDesc: "",
+    aType: "radio",
+    aOptions: [
+      "Very much convincing",
+      "Fairly convincing",
+      "Moderately Convincing",
+      "Slightly Convincing",
+      "Not at all Convincing"
+    ]
+  },
+  {
+    tId: 5,
     tType: "Representative Citations",
     tQ:
       "This article properly characterizes the methods and conclusions of the quoted source.",
@@ -103,34 +125,19 @@ class AppPost extends Component {
     showTask: false,
     showComId: 0,
     comments: [],
+    reasons:[],
     orderingMode: "Popular",
     orderingOptions: [
       { key: "Popular", text: "Popular", value: "Popular" },
       { key: "Random", text: "Random", value: "Random" }
     ],
-    // comments: [
-    //   {
-    //     id: postInfo.pId,
-    //     postId: postId,
-    //     user: postInfo.user,
-    //     title: postInfo.title,
-    //     content: postInfo.content,
-    //     upvotes: postInfo.upvotes,
-    //     createdAt: postInfo.createdAt,
-    //     categories: []
-    //   }
-    // ],
     selectedCom: [],
-    categOptions: [
-      { key: "A", text: "A", value: "a" },
-      { key: "B", text: "B", value: "b" },
-      { key: "C", text: "C", value: "c" }
-    ],
     postSeen: [],
     userThread: [],
     isThreadLoaded: false,
     currentTaskId: 0,
-    isAdmin: false
+    isAdmin: false,
+    
   };
 
   getFormattedDate = d => {
@@ -229,7 +236,7 @@ class AppPost extends Component {
   };
 
   getUser = async function() {
-    console.log("getUser!!!");
+    
     const user = this.state.user || (await fb.getUserInfo());
     if (!user) {
       return null;
@@ -237,27 +244,56 @@ class AppPost extends Component {
     this.setState({ user });
   };
 
-  categorize = (comid, categ) => {
-    this.setState(prevState => {
+  // comments = article/post 
+  submitTask = (comid, curTaskID, answer, reasons) => {
+    
+    this.updateStateAnswers (comid, curTaskID, answer, reasons);
+  
+    let newAnswer= [comid,curTaskID, this.state.user.name, answer,reasons]
+    console.log("new Task Answers! ",newAnswer);
+    
+    
+    fb.updatePostAnswers(comid, curTaskID, newAnswer);
+  }
+
+  updateStateAnswers = (comid, curTaskID, answer, reasons) => {
+    let curAnswer= [
+      {
+       postId:comid,
+       taskId:curTaskID,
+       user: this.state.user.name,
+       answer: answer,
+       reason: reasons
+      }
+    ]
+    console.log("new answer :", curAnswer)
+    this.setState(
+      prevState => {
       return {
-        comments: prevState.comments.map(post => {
-          if (post.id !== comid) {
-            return post;
-          } else {
-            // console.log(comid, categ);
-            return {
-              ...post,
-              categories: categ
-            };
-          }
-        })
-      };
-    });
+          comments: prevState.comments.map(post => {
+            if (post.id !== comid) {
+              return post;
+            } else {
+              const newAnswer = post.answers.concat(curAnswer)       
+              return {
+                ...post,
+                answers:newAnswer
+              };
+            }
+          })
+        };
+      
+    },
+    )    
   };
 
-  // setOnThreading = () => {
-  //   this.setState({ isThreading: true });
-  // };
+  getAllAnswers(id) {
+    let allAnswers;
+    this.state.comments.map(post => {
+      if (post.id === id) { allAnswers=post.answers;}
+    })
+    return allAnswers;
+  }
 
   setOffThreading = () => {
     this.setState({ isThreading: false });
@@ -360,13 +396,7 @@ class AppPost extends Component {
   }
 
   handleContinue = () => {
-    // var nextPostID = this.selectOtherPost(this.state.showComId);
-    // // console.log("ID of the next Post to Show: ", nextPostID);
-    // this.selectComment(nextPostID);
-    // this.setState(prevState => ({
-    //   showComId: nextPostID,
-    //   postSeen: [...prevState.postSeen, nextPostID]
-    // }));
+   
   };
 
   getRandomInt(max) {
@@ -376,29 +406,13 @@ class AppPost extends Component {
   selectOtherPost(curID) {
     var nextID;
     let postSeen = this.state.postSeen;
-    // this.state.comments.map(post => {
-    //   if (post.id !== curID && !postSeen.includes(post.id)) {
-    //     nextID = post.id;
-    //   }
-    // });
+    
     let posibleId = this.getRandomInt(this.state.comments.length);
     nextID = posibleId;
     return nextID;
   }
 
-  // componentWillMount() {
-  //   /*  if (!firebase.apps.length) {
-  //     firebase.initializeApp(config);
-  //   } */
-  // }
 
-  // componentDidMount() {
-  //   /* firebase.database().ref('/comments').on('value',snapshot => {
-  //     this.setState({
-  //       comments: snapshot.val()
-  //     });
-  //   }) */
-  // }
 
   showModal = id => {
     this.setState({
@@ -492,15 +506,9 @@ class AppPost extends Component {
       });
       return resultList;
     }
-    // else this.state.orderingMode == "Random"
-    // console.log("Random!!!:", resultList);
+    
     return resultList;
-    // if (this.state.orderingMode == "Random") {
-    // resultList = this.shuffle(this.state.comments);
-    // console.log("Random!!!:",resultList)
-    //   this.setState({ comments: resultList });
-    //   return resultList;
-    // }
+   
   };
 
   scrollTo = name => {
@@ -593,7 +601,7 @@ class AppPost extends Component {
                 credibilityTasks={credibilityTasks}
                 currentTaskId={this.state.currentTaskId}
                 isTaskOver={
-                  credibilityTasks.length == this.state.currentTaskId + 1
+                  credibilityTasks.length === this.state.currentTaskId +1
                 }
                 updatePostsList={this.updatePostsList}
                 resetHistoryOfThisUser={this.resetHistoryOfThisUser}
@@ -605,11 +613,11 @@ class AppPost extends Component {
                 scrollTo={this.scrollTo}
                 user={this.state.user}
                 showTask={this.state.showTask}
-                handleSubmit={this.categorize}
+                handleSubmit={this.submitTask}
                 handleClose={this.hideTask}
                 handleContinue={this.handleContinue}
                 post={this.state.selectedCom}
-                categ={this.state.categOptions}
+                
               />
             </div>
           }

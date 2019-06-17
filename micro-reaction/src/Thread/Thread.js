@@ -1,3 +1,5 @@
+// thread is the task interface
+
 import React, { Component } from "react";
 import DataLoading from "../DataLoading";
 import ThreadHistoryItem from "./ThreadHistoryItem";
@@ -5,9 +7,8 @@ import fb from "../utils/firebaseWrapper";
 import {
   Button,
   Dropdown,
-  Container,
   Header,
-  Message,
+  TextArea,
   Icon,
   Form,
   Radio,
@@ -26,7 +27,8 @@ class Thread extends Component {
     isThreadLoaded: false,
     createPost: false,
     isAdmin: false,
-    selectedAnswer: ""
+    selectedAnswer: "",
+    reasons:""
   };
 
   componentDidMount() {
@@ -65,29 +67,38 @@ class Thread extends Component {
     this.setState({ selectedAnswer: value });
   };
 
-  addThisTaskOnThread = async (postId, userAnser, taskCateg) => {
-    await fb.addThisTaskOnThread(postId, userAnser, taskCateg);
+  setReasons= (event, {value}) => {
+    this.setState({reasons:value});
   };
 
-  submitCateg = async tType => {
+  addThisTaskOnThread = async (postId, userAnswer, userReason, taskCateg) => {
+    await fb.addThisTaskOnThread(postId, userAnswer, userReason, taskCateg);
+  };
+
+  submitCateg = async currentTaskId=> {
     const selectedAnswer = this.state.selectedAnswer;
+    const userReasons = this.state.reasons;
+    console.log(currentTaskId, selectedAnswer, userReasons);
     this.props.setOffThreading();
-    await this.addThisTaskOnThread(this.props.post.id, selectedAnswer, tType);
-    this.props.handleSubmit(this.props.post.id, selectedAnswer);
+    await this.addThisTaskOnThread(this.props.post.id, selectedAnswer, userReasons);
+    this.props.handleSubmit(this.props.post.id,selectedAnswer, userReasons);
     this.props.handleClose();
     this.props.scrollTo(this.props.post.id);
     this.getAllThreadsOfThisUser();
   };
 
-  continueTask = async tType => {
+  continueTask = async currentTaskId=> {
     const selectedAnswer = this.state.selectedAnswer;
+    const userReasons = this.state.reasons;
     this.setState({
-      selectedAnswer: ""
+      selectedAnswer: "",
+      reasons:"",
     });
+    console.log(currentTaskId, selectedAnswer, userReasons);
     this.props.nextTask();
-    await this.addThisTaskOnThread(this.props.post.id, selectedAnswer, tType);
+    await this.addThisTaskOnThread(this.props.post.id, selectedAnswer, userReasons);
     this.props.handleContinue();
-    this.props.handleSubmit(this.props.post.id, selectedAnswer);
+    this.props.handleSubmit(this.props.post.id, currentTaskId, selectedAnswer, userReasons);
     // this.props.scrollTo(this.props.post.id);
     this.getAllThreadsOfThisUser();
   };
@@ -129,9 +140,18 @@ class Thread extends Component {
       this.props.updatePostsList();
     });
   };
-
+         
+  buildAnnotationAnswerBox = (credibilityTasks, currentTaskId) =>{
+    if (credibilityTasks[currentTaskId].aType === "annotation"){
+      return (
+        <Button>
+          Start Annotation
+        </Button>
+      )
+    }
+  }
   buildAnswerBox = (credibilityTasks, currentTaskId) => {
-    if (credibilityTasks[currentTaskId].aType == "radio") {
+    if (credibilityTasks[currentTaskId].aType === "radio") {
       return (
         <div>
           <Form>
@@ -150,29 +170,20 @@ class Thread extends Component {
                       onChange={this.setCategories}
                     />
                   </Form.Field>
+
                 </div>
               );
             })}
+          <Form.Field control={TextArea} 
+          label= 'Why (Optional)'
+          value={this.state.reasons || ''}
+          placeholder='What is your reasoning behind your answer?'
+          onChange={this.setReasons}/>
           </Form>
         </div>
       );
     }
-    if (credibilityTasks[currentTaskId].aType == "dropdown") {
-      return (
-        <div>
-          <Dropdown
-            className="thread-contents_dropdown"
-            placeholder="Answer"
-            fluid
-            multiple
-            selection
-            closeOnChange
-            options={this.props.categ}
-            onChange={this.setCategories}
-          />
-        </div>
-      );
-    }
+
   };
 
   render() {
@@ -286,30 +297,32 @@ class Thread extends Component {
           <p> {post.content} </p>
         </div>*/}
         {this.buildAnswerBox(credibilityTasks, currentTaskId)}
+        {this.buildAnnotationAnswerBox(credibilityTasks, currentTaskId)}
         <div className="thread-contents_button_box">
-          <Button
+          
+          {this.props.isTaskOver ? (
+            <Button
             onClick={() =>
-              this.submitCateg(credibilityTasks[currentTaskId].tType)
+              this.submitCateg(currentTaskId)
             }
-          >
-            Submit & Exit
+            >
+            Submit
           </Button>
-          {this.props.isTaskOver ? null : (
+          ) : (
             <Button
               onClick={() =>
-                this.continueTask(credibilityTasks[currentTaskId].tType)
+                this.continueTask(currentTaskId)
               }
             >
-              Submit & Continue
+              Submit
             </Button>
           )}
         </div>
-        {/*<Button onClick={this.handleClose}>Close</Button>*/}
       </div>
     );
 
     const historyList = this.state.userThread.reverse();
-    console.log("historyList:", historyList);
+    // console.log("historyList:", historyList);
 
     return (
       <div className="task_container">
@@ -317,17 +330,7 @@ class Thread extends Component {
         {showTask ? (
           <div className="task_list">
             {threadContents}
-            {/*showTask ? (
-            threadContents
-          ) : (
-            <Popup
-              trigger={<Header size="medium">Vote for contribution!</Header>}
-              header="Vote for contribution!"
-              content="plz vote!"
-              size="large"
-              position="bottom center"
-            />
-          )*/}
+            
           </div>
         ) : null}
         {this.state.isAdmin ? (

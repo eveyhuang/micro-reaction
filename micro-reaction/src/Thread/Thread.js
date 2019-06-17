@@ -6,7 +6,7 @@ import ThreadHistoryItem from "./ThreadHistoryItem";
 import fb from "../utils/firebaseWrapper";
 import {
   Button,
-  Dropdown,
+  Grid,
   Header,
   TextArea,
   Icon,
@@ -20,7 +20,7 @@ import classNames from "classnames";
 import "./Thread.css";
 
 
-// let selectedAnswer = [];
+let allTaskAnswer = [];
 
 class Thread extends Component {
   state = {
@@ -29,11 +29,13 @@ class Thread extends Component {
     createPost: false,
     isAdmin: false,
     selectedAnswer: "",
-    reasons:""
+    reasons:"",
   };
+  
 
   componentDidMount() {
     document.addEventListener("keydown", this.escFunction, false);
+    allTaskAnswer = this.props.getAnswers()
   }
 
   componentWillMount() {
@@ -185,17 +187,48 @@ class Thread extends Component {
           placeholder='What is your reasoning behind your answer?'
           onChange={this.setReasons}/>
           </Form>
+          <Button onClick={()=> this.showOthersAnswers(credibilityTasks,currentTaskId)}> View others answers</Button>
+
+          
         </div>
       );
     }
 
   };
 
-  viewOthersAnswerbox = (currentTaskId) => {
-    var allAnswers = this.props.getAnswers(this.props.curPost, currentTaskId);
-    console.log(allAnswers)
-
+  showOthersAnswers = (credibilityTasks, currentTaskId)=>{
+    let allAnswers=[];
+    if (credibilityTasks[currentTaskId].aType === "radio") {
+      allAnswers=allAnswers.concat(this.props.getAnswers(this.props.post.id, currentTaskId))
+      console.log("trying to show: ", allAnswers)
+      return (
+      <div>
+        <Popup >
+          <Grid centered divided columns={3}>
+          {allAnswers.map(eachAnswer => {
+            if (eachAnswer) {
+              let user =eachAnswer.user
+              let answer= eachAnswer.answer
+              let reason = eachAnswer.reason
+              
+              return (
+                <Grid.Column textAlign='center'>
+                  <Header as='h4'>{answer}</Header>
+                  <p>
+                    <b>{user}:</b>{reason}
+                  </p>
+                  
+                </Grid.Column>
+              )
+            }
+          })}
+          </Grid>
+        </Popup>
+        
+      </div>
+    )
   }
+  } 
 
   render() {
     const {
@@ -309,9 +342,8 @@ class Thread extends Component {
         </div>*/}
         {this.buildAnswerBox(credibilityTasks, currentTaskId)}
         {this.buildAnnotationAnswerBox(credibilityTasks, currentTaskId)}
-        {/* {this.viewOthersAnswerbox(currentTaskId)} */}
+        {/* {this.showOthersAnswers(credibilityTasks,currentTaskId)} */}
         <div className="thread-contents_button_box">
-          
           {this.props.isTaskOver ? (
             <Button
             onClick={() =>
@@ -329,6 +361,7 @@ class Thread extends Component {
               Submit
             </Button>
           )}
+
         </div>
       </div>
     );

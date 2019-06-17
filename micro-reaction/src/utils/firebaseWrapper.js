@@ -325,7 +325,7 @@ export default {
       return allPosts;
     } catch (e) {
       console.log(e.toString());
-      return posts;
+      return ;
     }
   },
 
@@ -370,6 +370,48 @@ export default {
       console.log(e.stack);
       return;
     }
+  },
+  getAllAnswersofTask: async function(id, taskId){
+    var allAnswers = [];
+    try {
+      var allPostIds = [];
+      
+      const posts = await db.collection("posts").get();
+      posts.forEach(elem => {
+        allPostIds.push(elem.id);
+      });
+      let allPosts = await Promise.all(
+        allPostIds.map(async postId => {
+          // console.log("READ post");
+          if (postId == id) {
+            const postInfoDoc = await db
+              .collection("posts")
+              .doc(postId)
+              .get();
+            const postInfo = postInfoDoc.data();
+            if (!postInfo) {
+              return {};
+            }
+            postInfo.answers.map(eachAnswer => {
+              if (eachAnswer.taskId === taskId) {
+                console.log("fb: found answer :", eachAnswer)
+                allAnswers = allAnswers.concat(eachAnswer)
+              }
+            })
+            console.log("fb: found all: ", allAnswers)
+            return allAnswers;
+          }
+            return {};
+          
+        })
+       
+      ).then(()=> {return allAnswers});
+      
+    } catch (e) {
+      console.log(e.stack);
+      return;
+    }
+
   },
   indexOfNewPost: async function() {
     try {

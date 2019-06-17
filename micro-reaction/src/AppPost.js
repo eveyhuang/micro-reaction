@@ -109,17 +109,7 @@ const credibilityTasks = [
   }
 ];
 
-var posts= [
-  {
-  "pId": 0,
-  "content": "Since Houston, Texas was founded nearly two centuries ago, Houstonians have been treating its wetlands as stinky, mosquito-infested blots in need of drainage. Even after it became a widely accepted scientific fact that wetlands can soak up large amounts of flood water, the city continued to pave over them. The watershed of the White Oak Bayou river, which includes much of northwest Houston, is a case in point. From 1992 to 2010, this area lost more than 70% of its wetlands, according to research (pdf) by Texas A&M University.",
-  "source": "https://qz.com/1064364/hurricane-harvey-houstons-flooding-made-worse-by-unchecked-urban-development-and-wetland-destruction/",
-  "title": "Hurricane Harvey: Houston's flooding made worse by unchecked urban development and wetland destruction",
-  "user": "tomswartz07",
-  "upvotes": 45,
-  "answers": []
-  },
-]
+
 
 
 
@@ -271,7 +261,7 @@ class AppPost extends Component {
     
     let newAnswer= [comid,curTaskID, this.state.user.name, answer,reasons]
     console.log("new Task Answers to be added to db:  ",newAnswer);
-    this.getAllAnswersofTask(comid, curTaskID);
+    // this.getAllAnswersofTask(comid, curTaskID);
     
     fb.updatePostAnswers(comid, curTaskID, newAnswer);
   }
@@ -308,18 +298,11 @@ class AppPost extends Component {
   };
 
   getAllAnswersofTask(postId, taskId) {
-    let allAnswers=[];
-    this.state.comments.map(post => {
-      if (post.id === postId) { 
-        post.answers.map(answer => {
-          if (answer.taskId === taskId) {
-            allAnswers = allAnswers.concat(answer)
-          }
-        });}
-    })
+    let allAnswers=fb.getAllAnswersofTask(postId,taskId);
     console.log("all answers for post", postId, " task ",taskId, allAnswers)
+
     return allAnswers;
-  }
+  } 
 
   setOffThreading = () => {
     this.setState({ isThreading: false });
@@ -644,7 +627,7 @@ class AppPost extends Component {
                 handleContinue={this.handleContinue}
                 post={this.state.selectedCom}
                 getAnswers={this.getAllAnswersofTask}
-                curPost = {this.state.postId}                
+                                
               />
             </div>
           }

@@ -12,7 +12,7 @@ export const FIREBASE_SENDER_ID = "339249208466";
 
 var posts= [
   {
-  "pId": 0,
+  "id": 0,
   "content": "Since Houston, Texas was founded nearly two centuries ago, Houstonians have been treating its wetlands as stinky, mosquito-infested blots in need of drainage. Even after it became a widely accepted scientific fact that wetlands can soak up large amounts of flood water, the city continued to pave over them. The watershed of the White Oak Bayou river, which includes much of northwest Houston, is a case in point. From 1992 to 2010, this area lost more than 70% of its wetlands, according to research (pdf) by Texas A&M University.",
   "source": "https://qz.com/1064364/hurricane-harvey-houstons-flooding-made-worse-by-unchecked-urban-development-and-wetland-destruction/",
   "title": "Hurricane Harvey: Houston's flooding made worse by unchecked urban development and wetland destruction",
@@ -20,6 +20,16 @@ var posts= [
   "upvotes": 45,
   "answers": []
   },
+]
+
+var fakeUser = [
+  {
+    "name":"evey",
+    "isAdmin": true,
+    "email": "jiaxinh.evey@gmail.com",
+    "userId":" ",
+    "thread": []
+  }
 ]
 
 var firebase = require("firebase");
@@ -39,22 +49,22 @@ db.settings({
   timestampsInSnapshots: true
 });
 
-posts.forEach(function(obj) {
-  db.collection("posts").doc(obj.pId.toString()).set({
-      pId: obj.pId,
-      content: obj.content,
-      source: obj.source,
-      title: obj.title,
-      user:obj.user,
-      upvotes: obj.upvotes,
-      answers: obj.answers
-  }).then(function(docRef) {
-      console.log("Document written with ID: ", docRef.id);
-  })
-  .catch(function(error) {
-      console.error("Error adding document: ", error);
-  });
-});
+// posts.forEach(function(obj) {
+//   db.collection("posts").doc(obj.pId.toString()).set({
+//       pId: obj.pId,
+//       content: obj.content,
+//       source: obj.source,
+//       title: obj.title,
+//       user:obj.user,
+//       upvotes: obj.upvotes,
+//       answers: obj.answers
+//   }).then(function(docRef) {
+//       console.log("Document written with ID: ", docRef.id);
+//   })
+//   .catch(function(error) {
+//       console.error("Error adding document: ", error);
+//   });
+// });
 
 
 
@@ -236,7 +246,13 @@ export default {
       };
     } catch (e) {
       console.log(e.toString());
-      return null;
+      return {
+        userId: fakeUser.userId,
+        name: fakeUser.name,
+        email: fakeUser.email,
+        isAdmin: fakeUser.isAdmin,
+        thread: fakeUser.thread, 
+      };
     }
   },
   isUserLoggedIn: function() {
@@ -309,7 +325,7 @@ export default {
       return allPosts;
     } catch (e) {
       console.log(e.toString());
-      return [];
+      return posts;
     }
   },
 
@@ -470,7 +486,7 @@ export default {
       });
       // allPosts = allPosts.filter(post => post !== null && post.id);
     } catch (e) {
-      console.log("fb error: ", e.toString());
+      console.log( e.toString());
       return;
     }
 
@@ -517,40 +533,40 @@ export default {
   },
   newTaskThread: async function(postId, userAns) {
     try {
-      const user = await this.isUserLoggedIn();
-      if (!user) {
-        return null;
-      }
-      const userDoc = await db
-        .collection("users")
-        .doc(user.userId)
-        .get();
-      const userInfo = userDoc.data();
-      arrived = true;
+      // const user = await this.isUserLoggedIn();
+      // if (!user) {
+      //   return null;
+      // }
+      // const userDoc = await db
+      //   .collection("users")
+      //   .doc(user.userId)
+      //   .get();
+      // const userInfo = userDoc.data();
+      // arrived = true;
 
-      var allThreadIds = [];
-      const threads = await db.collection("threads").get();
-      threads.forEach(elem => {
-        allThreadIds.push(elem.id);
-      });
-      const dateForKey = new Date();
-      await db
-        .collection("threads")
-        .doc(dateForKey.toString())
-        .set({
-          userId: userInfo.userId,
-          userName: userInfo.name,
-          chain: [
-            {
-              postId: postId,
-              taskCateg: "initial triggering",
-              userAns: userAns,
-              doneAt: dateForKey
-            }
-          ],
+      // var allThreadIds = [];
+      // const threads = await db.collection("threads").get();
+      // threads.forEach(elem => {
+      //   allThreadIds.push(elem.id);
+      // });
+      // const dateForKey = new Date();
+      // await db
+      //   .collection("threads")
+      //   .doc(dateForKey.toString())
+      //   .set({
+      //     userId: userInfo.userId,
+      //     userName: userInfo.name,
+      //     chain: [
+      //       {
+      //         postId: postId,
+      //         taskCateg: "initial triggering",
+      //         userAns: userAns,
+      //         doneAt: dateForKey
+      //       }
+      //     ],
           
-        });
-      await this.addCurrentThreadToThisUser(dateForKey);
+      //   });
+      // await this.addCurrentThreadToThisUser(dateForKey);
     } catch (e) {
       console.log(e.toString());
       return;
@@ -596,36 +612,36 @@ export default {
   addThisTaskOnThread: async function(postId, userAns, userReason,taskCateg) {
     try {
       // console.log("inherit props:",postId, userAns, taskCateg)
-      var allThreadIds = [];
-      // const threads =
-      await db
-        .collection("threads")
-        .get()
-        .then(threads => {
-          threads.forEach(elem => {
-            allThreadIds.push(elem.id);
-          });
-        });
-      const lastThreadId = allThreadIds[allThreadIds.length - 1];
-      const lastThread = await db
-        .collection("threads")
-        .doc(lastThreadId.toString())
-        .get();
-      const lastThreadData = lastThread.data();
-      db.collection("threads")
-        .doc(lastThreadId)
-        .set({
-          ...lastThreadData,
-          chain: lastThreadData.chain.concat([
-            {
-              postId: postId,
-              taskCateg: taskCateg,
-              userAns: userAns,
-              userReason: userReason,
-              doneAt: new Date()
-            }
-          ])
-        });
+      // var allThreadIds = [];
+      // // const threads =
+      // await db
+      //   .collection("threads")
+      //   .get()
+      //   .then(threads => {
+      //     threads.forEach(elem => {
+      //       allThreadIds.push(elem.id);
+      //     });
+      //   });
+      // const lastThreadId = allThreadIds[allThreadIds.length - 1];
+      // const lastThread = await db
+      //   .collection("threads")
+      //   .doc(lastThreadId.toString())
+      //   .get();
+      // const lastThreadData = lastThread.data();
+      // db.collection("threads")
+      //   .doc(lastThreadId)
+      //   .set({
+      //     ...lastThreadData,
+      //     chain: lastThreadData.chain.concat([
+      //       {
+      //         postId: postId,
+      //         taskCateg: taskCateg,
+      //         userAns: userAns,
+      //         userReason: userReason,
+      //         doneAt: new Date()
+      //       }
+      //     ])
+      //   });
     } catch (e) {
       console.log(e.toString());
       return;
@@ -633,23 +649,23 @@ export default {
   },
   addCurrentThreadToThisUser: async function(threadId) {
     try {
-      const user = await this.isUserLoggedIn();
-      if (!user) {
-        return null;
-      }
-      const userDoc = await db
-        .collection("users")
-        .doc(user.userId)
-        .get();
-      const userInfo = userDoc.data();
-      arrived = true;
-      await db
-        .collection("users")
-        .doc(user.userId)
-        .set({
-          ...userInfo,
-          thread: userInfo.thread.concat([threadId])
-        });
+      // const user = await this.isUserLoggedIn();
+      // if (!user) {
+      //   return null;
+      // }
+      // const userDoc = await db
+      //   .collection("users")
+      //   .doc(user.userId)
+      //   .get();
+      // const userInfo = userDoc.data();
+      // arrived = true;
+      // await db
+      //   .collection("users")
+      //   .doc(user.userId)
+      //   .set({
+      //     ...userInfo,
+      //     thread: userInfo.thread.concat([threadId])
+      //   });
     } catch (e) {
       console.log(e.toString());
       return;
@@ -657,34 +673,34 @@ export default {
   },
   getAllThreadsOfThisUser: async function() {
     try {
-      let threadsOfThesUser = [];
-      const user = await this.isUserLoggedIn();
-      if (!user) {
-        return null;
-      }
-      const userDoc = await db
-        .collection("users")
-        .doc(user.userId)
-        .get();
-      const userInfo = userDoc.data();
-      arrived = true;
-      ///
-      let index = 0;
-      const userThread = userInfo.thread;
-      const allThreads = await db.collection("threads").get();
-      userThread.forEach(uThread => {
-        allThreads.forEach(elem => {
-          if (uThread.toDate().toString() == elem.id.toString()) {
-            threadsOfThesUser.push({
-              tOrder: index,
-              threadId: uThread,
-              thread: elem.data().chain
-            });
-            index += 1;
-          }
-        });
-      });
-      return threadsOfThesUser;
+      // let threadsOfThesUser = [];
+      // const user = await this.isUserLoggedIn();
+      // if (!user) {
+      //   return null;
+      // }
+      // const userDoc = await db
+      //   .collection("users")
+      //   .doc(user.userId)
+      //   .get();
+      // const userInfo = userDoc.data();
+      // arrived = true;
+      // ///
+      // let index = 0;
+      // const userThread = userInfo.thread;
+      // const allThreads = await db.collection("threads").get();
+      // userThread.forEach(uThread => {
+      //   allThreads.forEach(elem => {
+      //     if (uThread.toDate().toString() == elem.id.toString()) {
+      //       threadsOfThesUser.push({
+      //         tOrder: index,
+      //         threadId: uThread,
+      //         thread: elem.data().chain
+      //       });
+      //       index += 1;
+      //     }
+      //   });
+      // });
+      // return threadsOfThesUser;
     } catch (e) {
       console.log(e.toString());
       return;

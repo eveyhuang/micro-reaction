@@ -374,7 +374,7 @@ class Thread extends Component {
             
           </div>
         ) : null}
-        {this.state.isAdmin ? (
+        {/* {this.state.isAdmin ? (
           <div className="task_history">
             <Header size="medium">History of your contributions</Header>
             {this.state.isThreadLoaded ? (
@@ -405,7 +405,7 @@ class Thread extends Component {
               </div>
             ) : null}
           </div>
-        ) : null}
+        ) : null} */}
       </div>
     );
   }

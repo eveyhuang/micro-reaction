@@ -186,8 +186,21 @@ class Thread extends Component {
           placeholder='What is your reasoning behind your answer?'
           onChange={this.setReasons}/>
           </Form>
-          <Button onClick={()=> this.showOthersAnswers(credibilityTasks,currentTaskId)}> View others answers</Button>
-
+          {/* <Button onClick={()=> this.showOthersAnswers(credibilityTasks,currentTaskId)}> View others answers</Button> */}
+          {/* <Popup trigger= {<Button onClick={()=> this.showOthersAnswers(credibilityTasks,currentTaskId)}>View Others Answers</Button>}>
+           </Popup> */}
+           <React.Fragment>
+            {this.showOthersAnswers(credibilityTasks,currentTaskId).map((answer) => (
+              
+              <Popup
+                content={answer.user+ ": "+ answer.reason}
+                key={answer.user}
+                header={answer.answer}
+                trigger={<Button icon='user' />}
+              />
+            ))}
+          </React.Fragment>
+          
           
         </div>
       );
@@ -197,35 +210,19 @@ class Thread extends Component {
 
   showOthersAnswers = (credibilityTasks, currentTaskId)=>{
     let allAnswers=[];
+    let filterdAnswers=[];
     if (credibilityTasks[currentTaskId].aType === "radio") {
       // allAnswers=allAnswers.concat(this.props.getAnswers(this.props.post.id, currentTaskId))
       allAnswers = this.props.getExistingAnswers(currentTaskId, this.props.currentPostId)
-      console.log("trying to show: ", allAnswers)
+      allAnswers.map(eachAnswer=>{
+        if (eachAnswer.answer !== "" && eachAnswer.reason !== "") {
+          filterdAnswers=filterdAnswers.concat(eachAnswer);
+        }
+      })
+      
       return (
-      <div>
-        <Popup trigger={<Button>Show</Button>} >
-          <Grid centered divided columns={3}>
-          {allAnswers.map(eachAnswer => {
-            if (eachAnswer) {
-              let user =eachAnswer.user
-              let answer= eachAnswer.answer
-              let reason = eachAnswer.reason
-              console.log("each answer: ", eachAnswer)
-              return (
-                <Grid.Column textAlign='center'>
-                  <Header as='h4'>{answer}</Header>
-                  <p>
-                    <b>{user}:</b>{reason}
-                  </p>
-                  
-                </Grid.Column>
-              )
-            }
-          })}
-          </Grid>
-        </Popup>
-        
-      </div>
+        filterdAnswers         // <Grid centered divided columns={3}>     
+ 
     )
   }
   } 
@@ -342,7 +339,6 @@ class Thread extends Component {
         </div>*/}
         {this.buildAnswerBox(credibilityTasks, currentTaskId)}
         {this.buildAnnotationAnswerBox(credibilityTasks, currentTaskId)}
-        {/* {this.showOthersAnswers(credibilityTasks,currentTaskId)} */}
         <div className="thread-contents_button_box">
           {this.props.isTaskOver ? (
             <Button

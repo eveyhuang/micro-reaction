@@ -196,9 +196,9 @@ class AppPost extends Component {
   };
 
   getAllThreadsOfThisUser = async () => {
-    await fb.getAllThreadsOfThisUser(this.state.userId).then(threads => {
-      return this.setState({ userThread: threads, isThreadLoaded: true });
-    });
+    // await fb.getAllThreadsOfThisUser(this.state.userId).then(threads => {
+    //   return this.setState({ userThread: threads, isThreadLoaded: true });
+    // });
   };
 
   resetHistoryOfThisUser = () => {
@@ -297,12 +297,28 @@ class AppPost extends Component {
     )    
   };
 
-  getAllAnswersofTask(postId, taskId) {
-    let allAnswers=fb.getAllAnswersofTask(postId,taskId);
-    console.log("all answers for post", postId, " task ",taskId, allAnswers)
+  getAllAnswersofTask(taskId,postId) {
+    console.log("selected post is: ", this.state.selectedCom)
+    let allAnswers=[];
+    if (this.state ){
+      //console.log(this.state);
+      this.state.comments.map(post => {
+        if (post.postId === postId) { 
+          post.answers.map(answer => {
+            if (answer.taskId === taskId) {
+              allAnswers = allAnswers.concat(answer)
+            }
+          });}
+      })
+      console.log("all answers for post", postId, " task ",taskId, allAnswers)
 
-    return allAnswers;
-  } 
+      return allAnswers;
+    } else {
+      console.log("Staet not declared. all answers for post", postId, " task ",taskId, allAnswers)
+      return allAnswers
+    }
+    
+  }
 
   setOffThreading = () => {
     this.setState({ isThreading: false });
@@ -626,8 +642,9 @@ class AppPost extends Component {
                 handleClose={this.hideTask}
                 handleContinue={this.handleContinue}
                 post={this.state.selectedCom}
-                getAnswers={this.getAllAnswersofTask}
-                                
+                currentPostId = {this.state.selectedCom.postId}
+                // existingAnswers={()=>{this.getAllAnswersofTask(this.state.currentTaskId, this.state.selectedCom.postId)}}
+                getExistingAnswers={this.getAllAnswersofTask.bind(this)}   
               />
             </div>
           }

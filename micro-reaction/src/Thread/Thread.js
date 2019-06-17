@@ -35,7 +35,6 @@ class Thread extends Component {
 
   componentDidMount() {
     document.addEventListener("keydown", this.escFunction, false);
-    allTaskAnswer = this.props.getAnswers()
   }
 
   componentWillMount() {
@@ -199,18 +198,19 @@ class Thread extends Component {
   showOthersAnswers = (credibilityTasks, currentTaskId)=>{
     let allAnswers=[];
     if (credibilityTasks[currentTaskId].aType === "radio") {
-      allAnswers=allAnswers.concat(this.props.getAnswers(this.props.post.id, currentTaskId))
+      // allAnswers=allAnswers.concat(this.props.getAnswers(this.props.post.id, currentTaskId))
+      allAnswers = this.props.getExistingAnswers(currentTaskId, this.props.currentPostId)
       console.log("trying to show: ", allAnswers)
       return (
       <div>
-        <Popup >
+        <Popup trigger={<Button>Show</Button>} >
           <Grid centered divided columns={3}>
           {allAnswers.map(eachAnswer => {
             if (eachAnswer) {
               let user =eachAnswer.user
               let answer= eachAnswer.answer
               let reason = eachAnswer.reason
-              
+              console.log("each answer: ", eachAnswer)
               return (
                 <Grid.Column textAlign='center'>
                   <Header as='h4'>{answer}</Header>

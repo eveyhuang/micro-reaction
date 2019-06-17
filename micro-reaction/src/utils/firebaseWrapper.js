@@ -17,7 +17,6 @@ var posts= [
   "source": "https://qz.com/1064364/hurricane-harvey-houstons-flooding-made-worse-by-unchecked-urban-development-and-wetland-destruction/",
   "title": "Hurricane Harvey: Houston's flooding made worse by unchecked urban development and wetland destruction",
   "user": "tomswartz07",
-  "createdAt": "2019.02.12",
   "upvotes": 45,
   "answers": []
   },
@@ -48,7 +47,6 @@ posts.forEach(function(obj) {
       title: obj.title,
       user:obj.user,
       upvotes: obj.upvotes,
-      createdAt:obj.createdAt,
       answers: obj.answers
   }).then(function(docRef) {
       console.log("Document written with ID: ", docRef.id);
@@ -103,7 +101,6 @@ export default {
               email: email,
               name: name,
               isAdmin: false,
-              createdAt: new Date(),
               thread: []
             });
           arrived = true;
@@ -192,7 +189,7 @@ export default {
         email: user.email,
         isAdmin: user.isAdmin,
         thread: user.thread,
-        createdAt: user.createdAt
+        
       };
     } catch (e) {
       console.log(e.toString());
@@ -235,7 +232,7 @@ export default {
         email: userInfo.email,
         isAdmin: user.isAdmin,
         thread: user.thread,
-        createdAt: userInfo.createdAt
+        
       };
     } catch (e) {
       console.log(e.toString());
@@ -301,7 +298,7 @@ export default {
             content: postInfo.content,
             source: postInfo.source,
             upvotes: postInfo.upvotes,
-            createdAt: postInfo.createdAt,
+            
             categories: [],
             answers:postInfo.answers
           };
@@ -343,7 +340,7 @@ export default {
               content: postInfo.content,
               source: postInfo.source,
               upvotes: postInfo.upvotes,
-              createdAt: postInfo.createdAt,
+             
               categories: [],
               answers:postInfo.answers
             };
@@ -385,7 +382,7 @@ export default {
           content: body,
           source: source,
           upvotes: 0,
-          createdAt: new Date(),
+         
         });
     } catch (e) {
       console.log(e.toString());
@@ -506,7 +503,7 @@ export default {
               content: postInfo.content,
               source: postInfo.source,
               upvotes: isUpvote ? postInfo.upvotes + 1 : postInfo.upvotes - 1,
-              createdAt: postInfo.createdAt,
+              
               answers:postInfo.answers
             });
           return;
@@ -551,7 +548,7 @@ export default {
               doneAt: dateForKey
             }
           ],
-          createdAt: dateForKey
+          
         });
       await this.addCurrentThreadToThisUser(dateForKey);
     } catch (e) {

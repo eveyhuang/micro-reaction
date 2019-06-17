@@ -248,9 +248,7 @@ class AppPost extends Component {
   submitTask = (comid, curTaskID, answer, reasons) => {
     
     this.updateStateAnswers (comid, curTaskID, answer, reasons);
-    var updatedAnswers = this.getAllAnswers(comid);
-    console.log( "after update: ", updatedAnswers);
-
+  
     let newAnswer= [comid,curTaskID, this.state.user.name, answer,reasons]
     console.log("new Task Answers! ",newAnswer);
     
@@ -276,10 +274,7 @@ class AppPost extends Component {
             if (post.id !== comid) {
               return post;
             } else {
-              
-              console.log("pre update all answers: ", post.answers)
-              const newAnswer = post.answers.concat(curAnswer)
-              console.log("after update :", newAnswer)
+              const newAnswer = post.answers.concat(curAnswer)       
               return {
                 ...post,
                 answers:newAnswer

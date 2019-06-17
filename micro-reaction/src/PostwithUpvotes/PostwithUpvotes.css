@@ -16,4 +16,21 @@
 
 .post_source_box_open_it_below {
   color: #4891e4;
+  cursor: "pointer";
+}
+
+.rightTextAlign {
+  display: flex;
+  text-align: right;
+}
+
+.textBox {
+  border-style: solid;
+  border-color: coral;
+  margin-left: 3%;
+  margin-right: 3%;
+  padding: 10px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+
 }

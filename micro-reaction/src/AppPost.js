@@ -151,7 +151,14 @@ class AppPost extends Component {
     isThreadLoaded: false,
     currentTaskId: 0,
     isAdmin: false,
+    annotatedText: null,
     
+  };
+
+  constructor(props) {
+    super(props);
+
+    //this.updateAnnotation = this.updateAnnotation.bind(this);
   };
 
   getFormattedDate = d => {
@@ -559,6 +566,14 @@ class AppPost extends Component {
     });
   };
 
+  updateAnnotation = text => {
+    this.setState({annotatedText: text})
+  };
+
+  removeHighlight = () => {
+    // Call child's remove highlight here.
+  }
+
   render() {
     const postList = (
       <div>
@@ -592,6 +607,7 @@ class AppPost extends Component {
                         getFormattedDate={this.getFormattedDate}
                         handleInc={id => this.incCount(id)}
                         handleDec={id => this.decCount(id)}
+                        updateAnnotation = {this.updateAnnotation}
                       />
                     </Segment>
                   </div>
@@ -644,7 +660,9 @@ class AppPost extends Component {
                 handleContinue={this.handleContinue}
                 post={this.state.selectedCom}
                 getAnswers={this.getAllAnswersofTask}
-                curPost = {this.state.postId}                
+                curPost = {this.state.postId}  
+                annotatedText = {this.state.annotatedText}
+                removeHighlight = {this.removeHighlight}
               />
             </div>
           }

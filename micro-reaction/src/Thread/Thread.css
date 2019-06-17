@@ -232,3 +232,12 @@
   font-weight: bold;
   opacity: 0.5;
 }
+
+.red_bold {
+  color: red;
+  font-weight: bold;
+}
+
+.text_highlight {
+  background-color:#FFFF00;
+}

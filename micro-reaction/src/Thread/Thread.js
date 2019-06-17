@@ -147,12 +147,25 @@ class Thread extends Component {
   };
          
   buildAnnotationAnswerBox = (credibilityTasks, currentTaskId) =>{
+    console.log(this.props.annotatedText)
     if (credibilityTasks[currentTaskId].aType === "annotation"){
-      return (
-        <Button>
-          Start Annotation
-        </Button>
-      )
+      if (this.props.annotatedText == null) {
+        return(
+          <div className="red_bold"> 
+            Please drag from article. 
+          </div>
+        )
+      }
+      else{
+        return (
+          <div>
+            Your answer is:<br/>
+            <span className="text_highlight">
+              {this.props.annotatedText}
+            </span>
+          </div>
+        )
+      }
     }
   };
   buildAnswerBox = (credibilityTasks, currentTaskId) => {
@@ -213,7 +226,8 @@ class Thread extends Component {
       handleClose,
       handleContinue,
       post,
-      categ
+      categ,
+      annotatedText
     } = this.props;
 
     const threadHeader = (
@@ -313,14 +327,18 @@ class Thread extends Component {
         <div className="thread-contents_button_box">
           
           {this.props.isTaskOver ? (
+            <div>
             <Button
             onClick={() =>
               this.submitCateg(currentTaskId)
             }
             >
             Submit
-          </Button>
+            </Button>
+            <Button color='red' onClick={this.props.removeHighlight}> RESET </Button>
+            </div>
           ) : (
+            <div>
             <Button
               onClick={() =>
                 this.continueTask(currentTaskId)
@@ -328,6 +346,8 @@ class Thread extends Component {
             >
               Submit
             </Button>
+            <Button color='red' onClick={this.props.removeHighlight}> RESET </Button>
+            </div>
           )}
         </div>
       </div>

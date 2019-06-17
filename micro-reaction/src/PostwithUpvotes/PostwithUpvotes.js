@@ -9,13 +9,15 @@ import {
   List,
   Header,
   Button,
-  Modal
+  Segment
 } from "semantic-ui-react";
 import Iframe from "react-iframe";
 import "./PostwithUpvotes.css";
 
 export default class PostWithupvotes extends Component {
   state = {
+    isAnnotated: false,
+    isDoubleClicked: false,
     openItBelow: false,
     isAdmin: false
   };
@@ -41,9 +43,39 @@ export default class PostWithupvotes extends Component {
     );
   };
 
-  isTest = (data) => {
-    if (data.ttitle) return true;
-    return false;
+  highlight = () => {
+    if (!this.state.isAnnotated) {
+      console.log("Y")
+      var selection = window.getSelection();
+      var range = selection.getRangeAt(0);
+      var newNode = document.createElement("span");
+      newNode.setAttribute("name", "text-highlight");
+      newNode.setAttribute("style", "background-color: pink;");
+      range.surroundContents(newNode);
+
+      this.props.updateAnnotation(selection.toString());
+      this.setState({isAnnotated: true});
+    }
+  }
+
+  doubleclick = () => {
+    if(!this.state.isDoubleClicked) {
+      this.setState({isAnnotated: false, isDoubleClicked: true});
+      console.log("X")
+      this.highlight()
+    }
+  }
+
+  remove_highlight = () => {
+    if (this.state.isAnnotated) {
+      var range = document.createRange();
+      var node = document.getElementsByName("text-highlight");
+      var pa = node.parentNode;
+      pa.removeChild(node);
+      
+      this.props.updateAnnotation(null);
+      this.setState({isAnnotated: false});
+    }    
   }
 
   render() {
@@ -51,7 +83,7 @@ export default class PostWithupvotes extends Component {
     // const openSourceInNewTabButtonName = "Open Source in new tab";
     const postPage = (
       <Grid columns={2}>
-        <Grid.Column width={1}>
+        <Grid.Column width={2}>
           <List relaxed>
             <List.Item>
               <Icon
@@ -147,33 +179,32 @@ export default class PostWithupvotes extends Component {
 
     const postList = (
       <Grid columns={2}>
-        <Grid.Column width={1}>
-          <List relaxed>
-            <List.Item>
-              <Icon
-                name="angle up"
-                size="large"
-                onClick={() => props.handleInc(props.data.id)}
-              />
-            </List.Item>
-            <List.Item>
-              <Statistic size="mini">
-                <Statistic.Value>{props.data.upvotes}</Statistic.Value>
-              </Statistic>
-            </List.Item>
-            <List.Item>
-              <Icon
-                name="angle down"
-                size="large"
-                onClick={() => props.handleDec(props.data.id)}
-              />
-            </List.Item>
-          </List>
-        </Grid.Column>
-        <Grid.Column width={14}>
-          <Comment>
-            <Comment.Content>
-              <Header
+        <Grid.Row>
+          <Grid.Column width={1}>
+            <List relaxed>
+              <List.Item>
+                <Icon
+                  name="angle up"
+                  size="large"
+                  onClick={() => props.handleInc(props.data.id)}
+                />
+              </List.Item>
+              <List.Item>
+                <Statistic size="mini">
+                  <Statistic.Value>{props.data.upvotes}</Statistic.Value>
+                </Statistic>
+              </List.Item>
+              <List.Item>
+                <Icon
+                  name="angle down"
+                  size="large"
+                  onClick={() => props.handleDec(props.data.id)}
+                />
+              </List.Item>
+            </List>
+          </Grid.Column>
+          <Grid.Column width={14}>
+            <Header
                 className="post_title_header"
                 as="h3"
                 dividing
@@ -192,93 +223,44 @@ export default class PostWithupvotes extends Component {
                     Remove
                   </Button>
                 ) : null}
-              </Header>
-              {/*this.state.isAdmin ? (
-                <Link to={`/${props.data.id}/${props.data.title}`}>
-                  <Comment.Text style={{ marginBottom: "0.5rem" }}>
-                    {props.data.content}
-                  </Comment.Text>
-                </Link>
-              ) : (
-                <Comment.Text style={{ marginBottom: "0.5rem" }}>
-                  {props.data.content}
-                </Comment.Text>
-              )*/}
-              <Comment.Author>
-                <text style={{ fontWeight: "bold" }}>{props.data.user}</text>
-                <text style={{ opacity: "0.5" }}>
-                  {` • Posted at ${props.getFormattedDate(
-                    props.data.createdAt.toDate()
-                  )}`}
-                </text>
-              </Comment.Author>
-              {props.data.source ? (
-                <div className="post_source_box">
-                  {/*<a
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href={`${props.data.source}`}
-                  >
-                    <Comment.Text
-                      style={{
-                        marginBottom: "0.5rem",
-                        fontWeight: "bold",
-                        cursor: "pointer"
-                      }}
-                    >
-                      {openSourceInNewTabButtonName}
-                    </Comment.Text>
-                    </a>*/}
-                  <div
-                    className="post_source_box_open_it_below"
-                    onClick={() => this.toggleOpenItBelow()}
-                  >
-                    <Comment.Text
-                      style={{
-                        marginBottom: "0.5rem",
-                        fontWeight: "bold",
-                        cursor: "pointer"
-                      }}
-                    >
-                      <Button> Open Source </Button>
-                    </Comment.Text>
-                  </div>
-                </div>
+            </Header>
+            {props.data.source ? (
+              <Grid column={2}>
+              <Grid.Column width={6}>
+                <Button onClick={this.toggleOpenItBelow}> Open Source </Button>
+              </Grid.Column>
+              <Grid.Column width={10} style={{fontWeight: "bold"}} className="rightTextAlign">
+                By {props.data.user}
+              </Grid.Column>
+              </Grid>
               ) : null}
-              {this.state.openItBelow ? (
-                props.data.ttitle ?
-                <Modal trigger={this.state.openItBelow}>
-                <Modal.Header>Article</Modal.Header>
-                <Modal.Content>
-                  <div dangerouslySetInnerHTML={{__html: props.data.tcontent.replace(/\\n/g,'<br>')}} />
-                </Modal.Content>
-                <Modal.Actions>
-                  <Button primary>
-                    Nothing <Icon name='right chevron' />
-                  </Button>
-                </Modal.Actions>
-                </Modal>
-                
-                : (
-                <Iframe
-                  url={props.data.source}
-                  width="100%"
-                  height="450px"
-                  display="initial"
-                  position="relative"
-                  allowFullScreen
-                />)
-              ) : null}
-              <Comment.Author>
+
+              {/*<Comment.Author>
                 <text style={{ fontWeight: "bold" }}>{props.data.user}</text>
                 <text style={{ opacity: "0.5" }}>
                   {` • Posted at ${props.data.createdAt}}`}
                 </text>
               </Comment.Author>
-            </Comment.Content>
-          </Comment>
-        </Grid.Column>
+              <text style={{ opacity: "0.5" }}>
+                  {` • Posted at ${props.getFormattedDate(
+                    props.data.createdAt.toDate()
+                  )}`}
+              </text>
+              */}
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row>
+          {this.state.openItBelow ? (
+            <div>
+              <div onMouseUp={this.highlight} onDoubleClick={this.doubleclick} className="textBox">
+                {props.data.content}
+              </div>
+            </div>
+          ) : null}
+
+        </Grid.Row>
       </Grid>
+
     );
 
     return props.isPostPage ? postPage : postList;

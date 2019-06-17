@@ -19,6 +19,7 @@ import CreatePost from "../CreatePost";
 import classNames from "classnames";
 import "./Thread.css";
 
+
 // let selectedAnswer = [];
 
 class Thread extends Component {
@@ -78,13 +79,17 @@ class Thread extends Component {
   submitCateg = async currentTaskId=> {
     const selectedAnswer = this.state.selectedAnswer;
     const userReasons = this.state.reasons;
+    this.setState({
+      selectedAnswer: "",
+      reasons:"",
+    });
     console.log(currentTaskId, selectedAnswer, userReasons);
-    this.props.setOffThreading();
-    await this.addThisTaskOnThread(this.props.post.id, selectedAnswer, userReasons);
-    this.props.handleSubmit(this.props.post.id,selectedAnswer, userReasons);
+    // this.props.setOffThreading();
+    // await this.addThisTaskOnThread(this.props.post.id, selectedAnswer, userReasons);
+    this.props.handleSubmit(this.props.post.id, currentTaskId, selectedAnswer, userReasons);
     this.props.handleClose();
     this.props.scrollTo(this.props.post.id);
-    this.getAllThreadsOfThisUser();
+    // this.getAllThreadsOfThisUser();
   };
 
   continueTask = async currentTaskId=> {
@@ -96,11 +101,11 @@ class Thread extends Component {
     });
     console.log(currentTaskId, selectedAnswer, userReasons);
     this.props.nextTask();
-    await this.addThisTaskOnThread(this.props.post.id, selectedAnswer, userReasons);
+    // await this.addThisTaskOnThread(this.props.post.id, selectedAnswer, userReasons);
     this.props.handleContinue();
     this.props.handleSubmit(this.props.post.id, currentTaskId, selectedAnswer, userReasons);
     // this.props.scrollTo(this.props.post.id);
-    this.getAllThreadsOfThisUser();
+    // this.getAllThreadsOfThisUser();
   };
 
   getAllThreadsOfThisUser = async () => {
@@ -149,7 +154,7 @@ class Thread extends Component {
         </Button>
       )
     }
-  }
+  };
   buildAnswerBox = (credibilityTasks, currentTaskId) => {
     if (credibilityTasks[currentTaskId].aType === "radio") {
       return (
@@ -185,6 +190,12 @@ class Thread extends Component {
     }
 
   };
+
+  viewOthersAnswerbox = (currentTaskId) => {
+    var allAnswers = this.props.getAnswers(this.props.curPost, currentTaskId);
+    console.log(allAnswers)
+
+  }
 
   render() {
     const {
@@ -298,6 +309,7 @@ class Thread extends Component {
         </div>*/}
         {this.buildAnswerBox(credibilityTasks, currentTaskId)}
         {this.buildAnnotationAnswerBox(credibilityTasks, currentTaskId)}
+        {/* {this.viewOthersAnswerbox(currentTaskId)} */}
         <div className="thread-contents_button_box">
           
           {this.props.isTaskOver ? (

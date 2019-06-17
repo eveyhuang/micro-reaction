@@ -109,6 +109,20 @@ const credibilityTasks = [
   }
 ];
 
+var posts= [
+  {
+  "pId": 0,
+  "content": "Since Houston, Texas was founded nearly two centuries ago, Houstonians have been treating its wetlands as stinky, mosquito-infested blots in need of drainage. Even after it became a widely accepted scientific fact that wetlands can soak up large amounts of flood water, the city continued to pave over them. The watershed of the White Oak Bayou river, which includes much of northwest Houston, is a case in point. From 1992 to 2010, this area lost more than 70% of its wetlands, according to research (pdf) by Texas A&M University.",
+  "source": "https://qz.com/1064364/hurricane-harvey-houstons-flooding-made-worse-by-unchecked-urban-development-and-wetland-destruction/",
+  "title": "Hurricane Harvey: Houston's flooding made worse by unchecked urban development and wetland destruction",
+  "user": "tomswartz07",
+  "upvotes": 45,
+  "answers": []
+  },
+]
+
+
+
 @inject("posts")
 @inject("users")
 @observer
@@ -207,6 +221,7 @@ class AppPost extends Component {
       : "Popular";
     this.setState({ isCommentsLoaded: false }, async function() {
       await fb.getAllPosts().then(data => {
+        console.log("Pulled this post from db: ", data)
         this.setState({
           comments: data.filter(value => Object.keys(value).length !== 0),
           isCommentsLoaded: true,
@@ -248,10 +263,15 @@ class AppPost extends Component {
   submitTask = (comid, curTaskID, answer, reasons) => {
     
     this.updateStateAnswers (comid, curTaskID, answer, reasons);
-  
-    let newAnswer= [comid,curTaskID, this.state.user.name, answer,reasons]
-    console.log("new Task Answers! ",newAnswer);
+    this.state.comments.map(post=> {
+      if (post.id === comid){
+        console.log("state has been updated with answers: ", post.answers)
+      }
+    })
     
+    let newAnswer= [comid,curTaskID, this.state.user.name, answer,reasons]
+    console.log("new Task Answers to be added to db:  ",newAnswer);
+    this.getAllAnswersofTask(comid, curTaskID);
     
     fb.updatePostAnswers(comid, curTaskID, newAnswer);
   }
@@ -287,11 +307,17 @@ class AppPost extends Component {
     )    
   };
 
-  getAllAnswers(id) {
-    let allAnswers;
+  getAllAnswersofTask(postId, taskId) {
+    let allAnswers=[];
     this.state.comments.map(post => {
-      if (post.id === id) { allAnswers=post.answers;}
+      if (post.id === postId) { 
+        post.answers.map(answer => {
+          if (answer.taskId === taskId) {
+            allAnswers = allAnswers.concat(answer)
+          }
+        });}
     })
+    console.log("all answers for post", postId, " task ",taskId, allAnswers)
     return allAnswers;
   }
 
@@ -617,7 +643,8 @@ class AppPost extends Component {
                 handleClose={this.hideTask}
                 handleContinue={this.handleContinue}
                 post={this.state.selectedCom}
-                
+                getAnswers={this.getAllAnswersofTask}
+                curPost = {this.state.postId}                
               />
             </div>
           }

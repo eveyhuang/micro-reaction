@@ -250,12 +250,25 @@ class AppPost extends Component {
     this.updateStateAnswers (comid, curTaskID, answer, reasons);
     var updatedAnswers = this.getAllAnswers(comid);
     console.log( "after update: ", updatedAnswers);
-    fb.updatePostAnswers(comid, updatedAnswers);
+
+    let newAnswer= [comid,curTaskID, this.state.user.name, answer,reasons]
+    console.log("new Task Answers! ",newAnswer);
+    
+    
+    fb.updatePostAnswers(comid, curTaskID, newAnswer);
   }
 
   updateStateAnswers = (comid, curTaskID, answer, reasons) => {
-    let curAnswer= [comid, curTaskID, this.state.user.name, answer,reasons];
-    // let allAnswers = this.state.answers.concat(curAnswer);
+    let curAnswer= [
+      {
+       postId:comid,
+       taskId:curTaskID,
+       user: this.state.user.name,
+       answer: answer,
+       reason: reasons
+      }
+    ]
+    console.log("new answer :", curAnswer)
     this.setState(
       prevState => {
       return {
@@ -263,23 +276,13 @@ class AppPost extends Component {
             if (post.id !== comid) {
               return post;
             } else {
-              console.log(post)
+              
               console.log("pre update all answers: ", post.answers)
+              const newAnswer = post.answers.concat(curAnswer)
+              console.log("after update :", newAnswer)
               return {
                 ...post,
-                answers:post.answers.map(answer => {
-                  if (answer.taskID !== curTaskID){
-                    return answer;
-                  } else {
-                    const newAnswer = answer.answers.slice();
-                    newAnswer.push(curAnswer);
-                    console.log("to update: ", answer.taskID,newAnswer);
-                    return {
-                      ...answer,
-                      answers:newAnswer
-                    }
-                  }
-                }),
+                answers:newAnswer
               };
             }
           })
@@ -294,7 +297,6 @@ class AppPost extends Component {
     this.state.comments.map(post => {
       if (post.id === id) { allAnswers=post.answers;}
     })
-    console.log("found all answers ! ",id, allAnswers);
     return allAnswers;
   }
 

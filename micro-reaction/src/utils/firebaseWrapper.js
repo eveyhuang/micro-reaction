@@ -19,14 +19,7 @@ var posts= [
   "user": "tomswartz07",
   "createdAt": "2019.02.12",
   "upvotes": 45,
-  "answers": [
-    {"taskID":0, "answers":[]},
-    {"taskID":1, "answers":[]},
-    {"taskID":2, "answers":[]},
-    {"taskID":3, "answers":[]},
-    {"taskID":4, "answers":[]},
-    {"taskID":5, "answers":[]}
-  ]
+  "answers": []
   },
 ]
 
@@ -47,23 +40,23 @@ db.settings({
   timestampsInSnapshots: true
 });
 
-// posts.forEach(function(obj) {
-//   db.collection("posts").doc(obj.pId.toString()).set({
-//       pId: obj.pId,
-//       content: obj.content,
-//       source: obj.source,
-//       title: obj.title,
-//       user:obj.user,
-//       upvotes: obj.upvotes,
-//       createdAt:obj.createdAt,
-//       answers: obj.answers
-//   }).then(function(docRef) {
-//       console.log("Document written with ID: ", docRef.id);
-//   })
-//   .catch(function(error) {
-//       console.error("Error adding document: ", error);
-//   });
-// });
+posts.forEach(function(obj) {
+  db.collection("posts").doc(obj.pId.toString()).set({
+      pId: obj.pId,
+      content: obj.content,
+      source: obj.source,
+      title: obj.title,
+      user:obj.user,
+      upvotes: obj.upvotes,
+      createdAt:obj.createdAt,
+      answers: obj.answers
+  }).then(function(docRef) {
+      console.log("Document written with ID: ", docRef.id);
+  })
+  .catch(function(error) {
+      console.error("Error adding document: ", error);
+  });
+});
 
 
 
@@ -392,7 +385,7 @@ export default {
           content: body,
           source: source,
           upvotes: 0,
-          createdAt: new Date()
+          createdAt: new Date(),
         });
     } catch (e) {
       console.log(e.toString());
@@ -428,7 +421,9 @@ export default {
       return;
     }
   },
-  updatePostAnswers: async function(id, updatedAnswer) {
+  
+  updatePostAnswers: async function(id, taskID,updatedAnswer) {
+    
     try {
       var allPostIds = [];
       const posts = await db.collection("posts").get();
@@ -450,25 +445,29 @@ export default {
             return { error: `failed to find the post with this id: ${id}` };
           }
 
-          console.log("fb to update answer: ", updatedAnswer)
+  
+
+          console.log("fb to update: ", updatedAnswer)
           
           await db
             .collection("posts")
             .doc(postId)
-            // .collection('answers')
-            // .collection(taskID)
-            // .add(updatedAnswer)
             .set({
-              pId: postInfo.pId,
-              user: postInfo.user,
-              title: postInfo.title,
-              content: postInfo.content,
-              source: postInfo.source,
-              upvotes: postInfo.upvotes,
-              createdAt: postInfo.createdAt,
-              answers:updatedAnswer
-            });
-          console.log("firebase:  ",postId, postInfo.answers)
+             ...postInfo,
+             answers:postInfo.answers.concat([
+               {
+                postId:updatedAnswer[0],
+                taskId:updatedAnswer[1],
+                user: updatedAnswer[2],
+                answer: updatedAnswer[3],
+                reason: updatedAnswer[4]
+               }
+             ])
+
+            })
+          
+          
+
           return;
         }
       });
@@ -507,7 +506,8 @@ export default {
               content: postInfo.content,
               source: postInfo.source,
               upvotes: isUpvote ? postInfo.upvotes + 1 : postInfo.upvotes - 1,
-              createdAt: postInfo.createdAt
+              createdAt: postInfo.createdAt,
+              answers:postInfo.answers
             });
           return;
         }

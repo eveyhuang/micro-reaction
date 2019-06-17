@@ -8,7 +8,8 @@ import {
   Grid,
   List,
   Header,
-  Button
+  Button,
+  Modal
 } from "semantic-ui-react";
 import Iframe from "react-iframe";
 import "./PostwithUpvotes.css";
@@ -39,6 +40,11 @@ export default class PostWithupvotes extends Component {
       }
     );
   };
+
+  isTest = (data) => {
+    if (data.ttitle) return true;
+    return false;
+  }
 
   render() {
     const props = this.props;
@@ -173,7 +179,8 @@ export default class PostWithupvotes extends Component {
                 className="post_title_header"
                 as="h3"
                 dividing
-                style={{ width: "100%" }}
+                textAlign = 'left'
+                style={{ width: "100%"}}
               >
                 {props.data.title}
                 {props.isThisUserAuthor ? (
@@ -199,9 +206,14 @@ export default class PostWithupvotes extends Component {
                   {props.data.content}
                 </Comment.Text>
               )*/}
-              <Comment.Text style={{ marginBottom: "0.5rem" }}>
-                {props.data.content}
-              </Comment.Text>
+              <Comment.Author>
+                <text style={{ fontWeight: "bold" }}>{props.data.user}</text>
+                <text style={{ opacity: "0.5" }}>
+                  {` • Posted at ${props.getFormattedDate(
+                    props.data.createdAt.toDate()
+                  )}`}
+                </text>
+              </Comment.Author>
               {props.data.source ? (
                 <div className="post_source_box">
                   {/*<a
@@ -230,14 +242,26 @@ export default class PostWithupvotes extends Component {
                         cursor: "pointer"
                       }}
                     >
-                      {this.state.openItBelow
-                        ? "Close Source"
-                        : "Open Source Below"}
+                      <Button> Open Source </Button>
                     </Comment.Text>
                   </div>
                 </div>
               ) : null}
               {this.state.openItBelow ? (
+                props.data.ttitle ?
+                <Modal trigger={this.state.openItBelow}>
+                <Modal.Header>Article</Modal.Header>
+                <Modal.Content>
+                  <div dangerouslySetInnerHTML={{__html: props.data.tcontent.replace(/\\n/g,'<br>')}} />
+                </Modal.Content>
+                <Modal.Actions>
+                  <Button primary>
+                    Nothing <Icon name='right chevron' />
+                  </Button>
+                </Modal.Actions>
+                </Modal>
+                
+                : (
                 <Iframe
                   url={props.data.source}
                   width="100%"
@@ -245,16 +269,8 @@ export default class PostWithupvotes extends Component {
                   display="initial"
                   position="relative"
                   allowFullScreen
-                />
+                />)
               ) : null}
-              <Comment.Author>
-                <text style={{ fontWeight: "bold" }}>{props.data.user}</text>
-                <text style={{ opacity: "0.5" }}>
-                  {` • Posted at ${props.getFormattedDate(
-                    props.data.createdAt.toDate()
-                  )}`}
-                </text>
-              </Comment.Author>
             </Comment.Content>
           </Comment>
         </Grid.Column>

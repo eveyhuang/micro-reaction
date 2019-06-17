@@ -334,13 +334,13 @@ export default {
           }
           return {
             id: postInfo.pId,
-            postId: postId,
+            pId: postId,
             user: postInfo.user,
             title: postInfo.title,
             content: postInfo.content,
             source: postInfo.source,
             upvotes: postInfo.upvotes,
-            createdAt: postInfo.createdAt,
+            //createdAt: postInfo.createdAt,
             categories: []
           };
         })

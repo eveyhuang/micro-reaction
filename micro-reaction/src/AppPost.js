@@ -109,17 +109,7 @@ const credibilityTasks = [
   }
 ];
 
-var posts= [
-  {
-  "pId": 0,
-  "content": "Since Houston, Texas was founded nearly two centuries ago, Houstonians have been treating its wetlands as stinky, mosquito-infested blots in need of drainage. Even after it became a widely accepted scientific fact that wetlands can soak up large amounts of flood water, the city continued to pave over them. The watershed of the White Oak Bayou river, which includes much of northwest Houston, is a case in point. From 1992 to 2010, this area lost more than 70% of its wetlands, according to research (pdf) by Texas A&M University.",
-  "source": "https://qz.com/1064364/hurricane-harvey-houstons-flooding-made-worse-by-unchecked-urban-development-and-wetland-destruction/",
-  "title": "Hurricane Harvey: Houston's flooding made worse by unchecked urban development and wetland destruction",
-  "user": "tomswartz07",
-  "upvotes": 45,
-  "answers": []
-  },
-]
+
 
 
 
@@ -213,9 +203,9 @@ class AppPost extends Component {
   };
 
   getAllThreadsOfThisUser = async () => {
-    await fb.getAllThreadsOfThisUser(this.state.userId).then(threads => {
-      return this.setState({ userThread: threads, isThreadLoaded: true });
-    });
+    // await fb.getAllThreadsOfThisUser(this.state.userId).then(threads => {
+    //   return this.setState({ userThread: threads, isThreadLoaded: true });
+    // });
   };
 
   resetHistoryOfThisUser = () => {
@@ -278,7 +268,7 @@ class AppPost extends Component {
     
     let newAnswer= [comid,curTaskID, this.state.user.name, answer,reasons]
     console.log("new Task Answers to be added to db:  ",newAnswer);
-    this.getAllAnswersofTask(comid, curTaskID);
+    // this.getAllAnswersofTask(comid, curTaskID);
     
     fb.updatePostAnswers(comid, curTaskID, newAnswer);
   }
@@ -314,18 +304,27 @@ class AppPost extends Component {
     )    
   };
 
-  getAllAnswersofTask(postId, taskId) {
+  getAllAnswersofTask(taskId,postId) {
+    console.log("selected post is: ", this.state.selectedCom)
     let allAnswers=[];
-    this.state.comments.map(post => {
-      if (post.id === postId) { 
-        post.answers.map(answer => {
-          if (answer.taskId === taskId) {
-            allAnswers = allAnswers.concat(answer)
-          }
-        });}
-    })
-    console.log("all answers for post", postId, " task ",taskId, allAnswers)
-    return allAnswers;
+    if (this.state ){
+      //console.log(this.state);
+      this.state.comments.map(post => {
+        if (post.postId === postId) { 
+          post.answers.map(answer => {
+            if (answer.taskId === taskId) {
+              allAnswers = allAnswers.concat(answer)
+            }
+          });}
+      })
+      console.log("all answers for post", postId, " task ",taskId, allAnswers)
+
+      return allAnswers;
+    } else {
+      console.log("Staet not declared. all answers for post", postId, " task ",taskId, allAnswers)
+      return allAnswers
+    }
+    
   }
 
   setOffThreading = () => {
@@ -574,6 +573,7 @@ class AppPost extends Component {
     // Call child's remove highlight here.
   }
 
+
   render() {
     const postList = (
       <div>
@@ -608,6 +608,7 @@ class AppPost extends Component {
                         handleInc={id => this.incCount(id)}
                         handleDec={id => this.decCount(id)}
                         updateAnnotation = {this.updateAnnotation}
+                        isActivePost = {post.id === this.state.showComId}
                       />
                     </Segment>
                   </div>
@@ -663,6 +664,9 @@ class AppPost extends Component {
                 curPost = {this.state.postId}  
                 annotatedText = {this.state.annotatedText}
                 removeHighlight = {this.removeHighlight}
+                currentPostId = {this.state.selectedCom.postId}
+                // existingAnswers={()=>{this.getAllAnswersofTask(this.state.currentTaskId, this.state.selectedCom.postId)}}
+                getExistingAnswers={this.getAllAnswersofTask.bind(this)}   
               />
             </div>
           }

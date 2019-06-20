@@ -13,13 +13,49 @@ export const FIREBASE_SENDER_ID = "339249208466";
 var posts= [
   {
   "id": 0,
-  "content": "Since Houston, Texas was founded nearly two centuries ago, Houstonians have been treating its wetlands as stinky, mosquito-infested blots in need of drainage. Even after it became a widely accepted scientific fact that wetlands can soak up large amounts of flood water, the city continued to pave over them. The watershed of the White Oak Bayou river, which includes much of northwest Houston, is a case in point. From 1992 to 2010, this area lost more than 70% of its wetlands, according to research (pdf) by Texas A&M University.",
-  "source": "https://qz.com/1064364/hurricane-harvey-houstons-flooding-made-worse-by-unchecked-urban-development-and-wetland-destruction/",
-  "title": "Hurricane Harvey: Houston's flooding made worse by unchecked urban development and wetland destruction",
-  "user": "tomswartz07",
+  "content":"Turns out coconut oil has more saturated fats than lard! USA TODAY",
+  "source": "https://www.usatoday.com/story/news/nation-now/2017/06/16/coconut-oil-isnt-healthy-its-never-been-healthy/402719001/",
+  "title": "Coconut oil isn't healthy. It's never been healthy.",
+  "user": "Ashley May",
   "upvotes": 45,
   "answers": []
   },
+  {
+    "id": 1,
+    "content":"At least 1,200 people have been killed and millions have been left homeless following devastating floods that have hit India, Bangladesh and Nepal, in one of the worst flooding disasters to have affected the region in years.",
+    "source": "https://www.independent.co.uk/news/world/asia/india-floods-bangladesh-nepal-deaths-millions-homeless-latest-news-updates-a7919006.html",
+    "title": "Floods in India, Bangladesh and Nepal kill 1,200 and leave millions homeless",
+    "user": "Chloe Farand",
+    "upvotes": 70,
+    "answers": []
+    },
+  {
+    "id": 2,
+    "content":"Long-dormant bacteria and viruses, trapped in ice and permafrost for centuries, are reviving as Earth's climate warms",
+    "source": "http://www.bbc.com/earth/story/20170504-there-are-diseases-hidden-in-ice-and-they-are-waking-up?ocid=fbert",
+    "title": "There are diseases hidden in ice, and they are waking up",
+    "user": "Jasmin Fox-Skelly",
+    "upvotes": 88,
+    "answers": []
+    }, 
+  {
+    "id": 3,
+    "content":"Based on their study, Rail and study co-author Abby Lippman, a McGill University professor emeritus, published an op-ed article in Montreal’s Le Devoir newspaper questioning the safety and benefits of human papillomavirus vaccines. Their op-ed urged Quebec to halt HPV immunization until its dangers are independently investigated. Of course they were roundly attacked through the Canadian mainstream media.",
+    "source": "http://www.alternativenewsnetwork.net/lead-developer-hpv-vaccines-comes-clean-warns-parents-young-girls-giant-deadly-scam/",
+    "title": "Lead Developer of HPV Vaccines Comes Clean, Warns Parents & Young Girls It is All A Giant Deadly Scam",
+    "user": "SatyaRaj",
+    "upvotes": 122,
+    "answers": []
+    }, 
+  {
+    "id": 4,
+    "content":" Our hearts and prayers go out to all those killed or injured in the Las Vegas shooting, and in a nation where so many anti-Americans are kneeling in pampered protest, this mass shooting saw veterans and police officers standing up, helping the victims and heading straight for the shooter to take him out. Real Americans don’t kneel, they stand and get to work to save lives. Today I offer tremendous gratitude to all the first responders who helped save lives and stop the violence.",
+    "source": "https://www.naturalnews.com/2017-10-02-five-things-that-just-dont-add-up-about-the-las-vegas-mass-shooting.html",
+    "title": "Five things that just don't add up about the Las Vegas mass shooting",
+    "user": "Mike Adams",
+    "upvotes": 72,
+    "answers": []
+    }, 
 ]
 
 var fakeUser = [
@@ -50,8 +86,8 @@ db.settings({
 });
 
 // posts.forEach(function(obj) {
-//   db.collection("posts").doc(obj.pId.toString()).set({
-//       pId: obj.pId,
+//   db.collection("posts").doc(obj.id.toString()).set({
+//       pId: obj.id,
 //       content: obj.content,
 //       source: obj.source,
 //       title: obj.title,
@@ -325,7 +361,7 @@ export default {
       return allPosts;
     } catch (e) {
       console.log(e.toString());
-      return posts;
+      return ;
     }
   },
 
@@ -371,6 +407,31 @@ export default {
       return;
     }
   },
+  // getAllAnswersofTask: async function(id, taskId){
+  //   var allAnswers = [];
+  //   try {
+      
+  //     db.collection("posts").doc(id.toString()).get().then(elem => {
+  //       const postInfo = elem.data();
+  //       if (!postInfo) {
+  //         return {};
+  //       }
+  //       postInfo.answers.map(eachAnswer => {
+  //         if (eachAnswer.taskId === taskId) {
+  //           console.log("fb: found answer :", eachAnswer)
+  //           allAnswers = allAnswers.concat(eachAnswer)
+  //         }
+        
+  //     })
+  //     console.log("fb: found all: ", allAnswers)
+  //     return allAnswers
+  //   })      
+  //   } catch (e) {
+  //     console.log(e.stack);
+  //     return;
+  //   }
+
+  // },
   indexOfNewPost: async function() {
     try {
       var allPostIds = [];

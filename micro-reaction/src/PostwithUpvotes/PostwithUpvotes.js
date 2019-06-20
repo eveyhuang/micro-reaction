@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import fb from "../utils/firebaseWrapper";
 import { Link } from "react-router-dom";
+import { unmountComponentAtNode } from 'react-dom';
+
 import {
   Comment,
   Icon,
@@ -17,8 +19,10 @@ import "./PostwithUpvotes.css";
 export default class PostWithupvotes extends Component {
   state = {
     isAnnotated: false,
-    isDoubleClicked: false,
+    prevOpenItBelow: false,
     openItBelow: false,
+    prevIsActivePost: false,
+    originalText: this.props.data.content,
     isAdmin: false
   };
 
@@ -36,16 +40,15 @@ export default class PostWithupvotes extends Component {
         openItBelow: !this.state.openItBelow
       },
       function() {
-        if (this.state.openItBelow) {
-          this.props.startThreading(this.props.data.id, "toggleOpenItBelow");
-        }
+        console.log(this.state.openItBelow,this.props.data.id)
+        this.props.startThreading(this.props.data.id, "toggleOpenItBelow");
+
       }
     );
   };
 
   highlight = () => {
-    if (!this.state.isAnnotated) {
-      console.log("Y")
+    if (!this.state.isAnnotated && (window.getSelection().toString() !== '')) {
       var selection = window.getSelection();
       var range = selection.getRangeAt(0);
       var newNode = document.createElement("span");
@@ -58,24 +61,43 @@ export default class PostWithupvotes extends Component {
     }
   }
 
-  doubleclick = () => {
-    if(!this.state.isDoubleClicked) {
-      this.setState({isAnnotated: false, isDoubleClicked: true});
-      console.log("X")
-      this.highlight()
-    }
+  reset = () => {
+    this.setState({isAnnotated: false, originalText: this.props.data.content});
+    // The highlighted node from the article should be removed.
   }
 
-  remove_highlight = () => {
+  removeHighlight = () => {
     if (this.state.isAnnotated) {
       var range = document.createRange();
       var node = document.getElementsByName("text-highlight");
-      var pa = node.parentNode;
-      pa.removeChild(node);
+      console.log(node)
+      if (node[0].parentNode) {
+        node[0].parentNode.removeChild(node[0]);
+      }
       
       this.props.updateAnnotation(null);
       this.setState({isAnnotated: false});
     }    
+  }
+
+  openSource = (openItBelow, isActivePost) => {
+    console.log(openItBelow, isActivePost)
+    var pIsActivePost = isActivePost;
+    var pOpenItBelow = openItBelow;
+
+    if (isActivePost === false && this.state.prevIsActivePost === true) {
+      openItBelow = false
+    } else if (openItBelow === true && this.state.prevOpenItBelow === false) {
+      isActivePost = true
+    }
+
+    this.setState({
+      prevIsActivePost: pIsActivePost,
+      prevOpenItBelow: pOpenItBelow
+    })
+
+    return openItBelow && isActivePost
+
   }
 
   render() {
@@ -224,16 +246,28 @@ export default class PostWithupvotes extends Component {
                   </Button>
                 ) : null}
             </Header>
-            {props.data.source ? (
-              <Grid column={2}>
-              <Grid.Column width={6}>
-                <Button onClick={this.toggleOpenItBelow}> Open Source </Button>
-              </Grid.Column>
-              <Grid.Column width={10} style={{fontWeight: "bold"}} className="rightTextAlign">
-                By {props.data.user}
-              </Grid.Column>
-              </Grid>
-              ) : null}
+            {this.props.data.source ? 
+              (!(this.state.openItBelow && this.props.isActivePost) ? (
+                <Grid columns={2}>
+                <Grid.Column width={6}>
+                  <Button onClick={this.toggleOpenItBelow}> Open Source </Button>
+                </Grid.Column>
+                <Grid.Column width={10} style={{fontWeight: "bold"}} className="rightTextAlign">
+                  By {props.data.user}
+                </Grid.Column>
+                </Grid>
+              ) : (
+                <Grid columns={2}>
+                <Grid.Column width={6}>
+                  <Button onClick={this.toggleOpenItBelow}> Close Source </Button>
+                  <Button color='red' onClick={this.removeHighlight} className='buttonPos'> RESET </Button>
+                </Grid.Column>
+                <Grid.Column width={10} style={{fontWeight: "bold"}} className="rightTextAlign">
+                  By {props.data.user}
+                </Grid.Column>
+                </Grid>
+              )) 
+              : null}
 
               {/*<Comment.Author>
                 <text style={{ fontWeight: "bold" }}>{props.data.user}</text>
@@ -250,14 +284,19 @@ export default class PostWithupvotes extends Component {
           </Grid.Column>
         </Grid.Row>
         <Grid.Row>
-          {this.state.openItBelow ? (
+          {this.state.openItBelow && this.props.isActivePost ? (
             <div>
-              <div onMouseUp={this.highlight} onDoubleClick={this.doubleclick} className="textBox">
-                {props.data.content}
+              <Segment className="instrBox">
+                <List bulleted>
+                  <List.Item>Please drag the text to answer the question on the right panel.</List.Item>
+                  <List.Item>Please press the button "RESET" to retry your annotation.</List.Item>
+                </List>
+              </Segment>
+              <div onMouseUp={this.highlight} className="textBox">
+                {this.state.originalText}
               </div>
             </div>
           ) : null}
-
         </Grid.Row>
       </Grid>
 

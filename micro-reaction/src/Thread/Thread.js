@@ -6,7 +6,7 @@ import ThreadHistoryItem from "./ThreadHistoryItem";
 import fb from "../utils/firebaseWrapper";
 import {
   Button,
-  Dropdown,
+  Grid,
   Header,
   TextArea,
   Icon,
@@ -20,7 +20,7 @@ import classNames from "classnames";
 import "./Thread.css";
 
 
-// let selectedAnswer = [];
+let allTaskAnswer = [];
 
 class Thread extends Component {
   state = {
@@ -29,8 +29,9 @@ class Thread extends Component {
     createPost: false,
     isAdmin: false,
     selectedAnswer: "",
-    reasons:""
+    reasons:"",
   };
+  
 
   componentDidMount() {
     document.addEventListener("keydown", this.escFunction, false);
@@ -77,7 +78,7 @@ class Thread extends Component {
   };
 
   submitCateg = async currentTaskId=> {
-    const selectedAnswer = this.state.selectedAnswer;
+    const selectedAnswer = this.props.annotatedText;
     const userReasons = this.state.reasons;
     this.setState({
       selectedAnswer: "",
@@ -93,7 +94,7 @@ class Thread extends Component {
   };
 
   continueTask = async currentTaskId=> {
-    const selectedAnswer = this.state.selectedAnswer;
+    const selectedAnswer = this.props.annotatedText;
     const userReasons = this.state.reasons;
     this.setState({
       selectedAnswer: "",
@@ -198,17 +199,46 @@ class Thread extends Component {
           placeholder='What is your reasoning behind your answer?'
           onChange={this.setReasons}/>
           </Form>
+          {/* <Button onClick={()=> this.showOthersAnswers(credibilityTasks,currentTaskId)}> View others answers</Button> */}
+          {/* <Popup trigger= {<Button onClick={()=> this.showOthersAnswers(credibilityTasks,currentTaskId)}>View Others Answers</Button>}>
+           </Popup> */}
+           <React.Fragment>
+            {this.showOthersAnswers(credibilityTasks,currentTaskId).map((answer) => (
+              
+              <Popup
+                content={answer.user+ ": "+ answer.reason}
+                key={answer.user}
+                header={answer.answer}
+                trigger={<Button icon='user' />}
+              />
+            ))}
+          </React.Fragment>
+          
+          
         </div>
       );
     }
 
   };
 
-  viewOthersAnswerbox = (currentTaskId) => {
-    var allAnswers = this.props.getAnswers(this.props.curPost, currentTaskId);
-    console.log(allAnswers)
-
+  showOthersAnswers = (credibilityTasks, currentTaskId)=>{
+    let allAnswers=[];
+    let filterdAnswers=[];
+    if (credibilityTasks[currentTaskId].aType === "radio") {
+      // allAnswers=allAnswers.concat(this.props.getAnswers(this.props.post.id, currentTaskId))
+      allAnswers = this.props.getExistingAnswers(currentTaskId, this.props.currentPostId)
+      allAnswers.map(eachAnswer=>{
+        if (eachAnswer.answer !== "" && eachAnswer.reason !== "") {
+          filterdAnswers=filterdAnswers.concat(eachAnswer);
+        }
+      })
+      
+      return (
+        filterdAnswers         // <Grid centered divided columns={3}>     
+ 
+    )
   }
+  } 
 
   render() {
     const {
@@ -323,32 +353,31 @@ class Thread extends Component {
         </div>*/}
         {this.buildAnswerBox(credibilityTasks, currentTaskId)}
         {this.buildAnnotationAnswerBox(credibilityTasks, currentTaskId)}
-        {/* {this.viewOthersAnswerbox(currentTaskId)} */}
         <div className="thread-contents_button_box">
-          
           {this.props.isTaskOver ? (
             <div>
-            <Button
+            <Button color='blue'
             onClick={() =>
               this.submitCateg(currentTaskId)
             }
             >
-            Submit
+            SUBMIT
             </Button>
             <Button color='red' onClick={this.props.removeHighlight}> RESET </Button>
             </div>
           ) : (
             <div>
-            <Button
+            <Button color='blue'
               onClick={() =>
                 this.continueTask(currentTaskId)
               }
             >
-              Submit
+              SUBMIT
             </Button>
             <Button color='red' onClick={this.props.removeHighlight}> RESET </Button>
             </div>
           )}
+
         </div>
       </div>
     );
@@ -365,7 +394,7 @@ class Thread extends Component {
             
           </div>
         ) : null}
-        {this.state.isAdmin ? (
+        {/* {this.state.isAdmin ? (
           <div className="task_history">
             <Header size="medium">History of your contributions</Header>
             {this.state.isThreadLoaded ? (
@@ -396,7 +425,7 @@ class Thread extends Component {
               </div>
             ) : null}
           </div>
-        ) : null}
+        ) : null} */}
       </div>
     );
   }
